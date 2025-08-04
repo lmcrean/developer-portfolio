@@ -101,44 +101,39 @@ describe('RightSection Component', () => {
   it('renders all job titles', () => {
     render(<RightSection />);
     
-    // Updated to match current implementation
-    expect(screen.getByText('Back End')).toBeTruthy();
+    // Updated to match current implementation - "Back End" is hidden
     expect(screen.getByText('Software Developer')).toBeTruthy();
   });
 
-  it('renders the website URL', () => {
+  it('renders the developer name', () => {
     render(<RightSection />);
     
-    expect(screen.getByText('lauriecrean.dev')).toBeTruthy();
+    expect(screen.getByText('Laurie Crean')).toBeTruthy();
   });
 
   it('has the correct styling classes', () => {
     const { container }: RenderResult = render(<RightSection />);
     
     const section = container.querySelector('div') as HTMLElement;
-    expect(section.className).toContain('w-1/3');
-    expect(section.className).toContain('bg-white');
+    expect(section.className).toContain('w-full');
+    expect(section.className).toContain('bg-teal-800');
     expect(section.className).toContain('p-6');
     
-    // Check for name styling
+    // Check for name styling - find the parent div containing the name
     const nameElement = screen.getByText('Laurie Crean') as HTMLElement;
-    expect(nameElement.className).toContain('text-4xl');
-    expect(nameElement.className).toContain('font-bold');
-    expect(nameElement.className).toContain('text-blue-600');
+    const nameContainer = nameElement.parentElement as HTMLElement;
+    expect(nameContainer.className).toContain('text-4xl');
+    expect(nameContainer.className).toContain('font-bold');
+    expect(nameContainer.className).toContain('text-white');
   });
 
   it('has correct color classes for different job titles', () => {
     render(<RightSection />);
     
-    // Updated to match current implementation
-    const backEnd = screen.getByText('Back End') as HTMLElement;
-    expect(backEnd.className).toContain('text-2xl');
-    expect(backEnd.className).toContain('text-teal-500');
-    expect(backEnd.className).toContain('font-semibold');
-    
+    // Updated to match current implementation - only "Software Developer" is visible
     const developer = screen.getByText('Software Developer') as HTMLElement;
-    expect(developer.className).toContain('text-2xl');
-    expect(developer.className).toContain('text-orange-500');
-    expect(developer.className).toContain('font-semibold');
+    expect(developer.className).toContain('text-lg');
+    expect(developer.className).toContain('text-yellow-300');
+    expect(developer.className).toContain('italic');
   });
 }); 

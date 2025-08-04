@@ -22,7 +22,7 @@ const RightSection: React.FC = () => {
     whiteSpace: 'nowrap' as const,
     borderRight: '14px solid #fde047',
     paddingRight: '0px',
-    animation: 'typewriter-subtitle 2s steps(25, end) 2s both, show-yellow-caret 0.1s 2s both, blink-yellow-caret 0.75s step-end 4s infinite'
+    animation: 'typewriter-subtitle 2s steps(18, end) 2s both, show-yellow-caret 0.1s 2s both, blink-yellow-caret 0.75s step-end 4s infinite'
   };
 
   return (
@@ -36,7 +36,7 @@ const RightSection: React.FC = () => {
           
           @keyframes typewriter-subtitle {
             from { width: 0; }
-            to { width: 430px; }
+            to { width: 320px; }
           }
           
           @keyframes blink-white-caret {
@@ -70,7 +70,7 @@ const RightSection: React.FC = () => {
             className="text-lg sm:text-xl md:text-2xl lg:text-3xl italic text-yellow-300 banner-subtitle"
             style={subtitleStyle}
           >
-            Back End Software Developer
+            <span style={{ display: 'none' }}>Back End </span>Software Developer
           </div>
         </div>
       </div>
