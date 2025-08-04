@@ -75,7 +75,7 @@ Proctored 60 Minute Technical Test, solved 2 challenging technical problems.
 <img src="https://img.shields.io/badge/CSS-1C1C1C?&logo=css3&logoColor=white" alt="CSS" />
 </div>
 
-See **Wealth Quest** in [Older Projects](/archive) for more details.
+See **Wealth Quest** in [Project Archive](/archive) for more details.
 
 ## Hackathon Participant
 <a href="https://api.eu.badgr.io/public/assertions/qdN_WpdfRL27rBvapCClvg?identity__email=lmcrean%40gmail.com">
@@ -88,7 +88,7 @@ See **Wealth Quest** in [Older Projects](/archive) for more details.
 <img src="https://img.shields.io/badge/JavaScript-1C1C1C?&logo=javascript&logoColor=white" alt="JavaScript" />
 </div>
 
-See **Retrolympic Rush** in [Older Projects](/archive) for more details.
+See **Retrolympic Rush** in [Project Archive](/archive) for more details.
 
 ## Hackathon Participant
 <a href="https://api.eu.badgr.io/public/assertions/EE_rXje1Qq2PLTqcuD89XA?identity__email=lmcrean%40gmail.com">

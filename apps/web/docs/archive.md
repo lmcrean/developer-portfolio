@@ -1,7 +1,7 @@
 ---
 slug: /archive
 title: ""
-sidebar_label: Older Projects
+sidebar_label: Project Archive
 sidebar_position: 2
 hide_table_of_contents: true
 ---
@@ -12,7 +12,7 @@ import GitHubBadges from '@site/src/components/project/GitHubBadges';
 
 <div className="archive-page">
 
-# Older Projects
+# Project Archive
 
 This page contains some of my earlier projects that showcase my learning journey and development skills. Wealth Quest and Retrolympic Rush were developed in a hackathon setting, with myself as the Scrum Master role. Crocodile Kingdom was developed with a focus on local storage and responsive design.
 
