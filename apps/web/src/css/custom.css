@@ -260,40 +260,4 @@ html {
   margin-right: 8px;
 }
 
-/* Agile Pipeline sidebar item with yellow live badge */
-.menu__link[href*="github.com/users/lmcrean/projects"] {
-  position: relative;
-  display: flex !important;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.menu__link[href*="github.com/users/lmcrean/projects"]:after {
-  content: "live";
-  display: inline-flex;
-  align-items: center;
-  background: linear-gradient(45deg, #fbbf24, #f59e0b);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-left: auto;
-  animation: pulse 2s infinite;
-  flex-shrink: 0;
-}
-
-/* Dark theme support for yellow live badge */
-[data-theme='dark'] .menu__link[href*="github.com/users/lmcrean/projects"]:after {
-  background: linear-gradient(45deg, #fcd34d, #fbbf24);
-  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
-}
-
-/* Ensure the link text doesn't interfere with badge */
-.menu__link[href*="github.com/users/lmcrean/projects"] .menu__link-text {
-  flex: 1;
-  margin-right: 8px;
-}
 
