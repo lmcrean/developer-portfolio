@@ -70,7 +70,7 @@ const RightSection: React.FC = () => {
             className="text-lg sm:text-xl md:text-2xl lg:text-3xl italic text-yellow-300 banner-subtitle"
             style={subtitleStyle}
           >
-            <span style={{ display: 'none' }}>Back End </span>Software Developer
+            <span style={{ display: 'none' }}>Software Projects and Enterprise Solutions</span>
           </div>
         </div>
       </div>
