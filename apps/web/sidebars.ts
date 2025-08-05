@@ -17,8 +17,18 @@ const sidebars: SidebarsConfig = {
   docs: [
     {
       type: 'doc',
+      id: 'enterprise-contributions',
+      label: 'Enterprise Solutions',
+    },
+    {
+      type: 'doc',
       id: 'index',
-      label: 'Projects',
+      label: 'Software Projects',
+    },
+    {
+      type: 'doc',
+      id: 'data-projects',
+      label: 'Data Projects',
     },
     {
       type: 'doc',
@@ -32,14 +42,6 @@ const sidebars: SidebarsConfig = {
       type: 'link',
       label: 'Agile Pipeline',
       href: 'https://github.com/users/lmcrean/projects/',
-      customProps: {
-        badge: 'live-yellow'
-      }
-    },
-    {
-      type: 'doc',
-      id: 'archive',
-      label: 'Project Archive',
     },
     {
       type: 'doc',
