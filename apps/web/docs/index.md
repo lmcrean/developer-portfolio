@@ -1,7 +1,7 @@
 ---
 slug: /
 title: ""
-sidebar_label: Projects
+sidebar_label: Software Development
 sidebar_position: 1
 hide_table_of_contents: true
 ---
@@ -15,8 +15,6 @@ import TestBadges from '@site/src/components/project/TestBadges';
 import GitHubBadges from '@site/src/components/project/GitHubBadges';
 
 <DeveloperBusinessCard />
-
-Welcome to my portfolio website! On this page you will find a guide to my selected projects that demonstrate my skills in back end development. Many projects are deployed in iterations, with improved business solutions over time, in which case the latest version is included at the top.
 
 <CustomTOC />
 
@@ -38,7 +36,7 @@ An AI Chatbot that educates users on their menstrual health records.
 
 <TestBadges tests="vitest:303,playwright:40" />
 
-<GitHubBadges repo="lmcrean/dottie" badges="last-commit,created-at,commit-activity,issues,issues-closed,issues-pr,issues-pr-closed,contributors-anon,stars" />
+<GitHubBadges repo="lmcrean/dottie" badges="contributors-anon,stars, last-commit,created-at,commit-activity,issues,issues-closed,issues-pr,issues-pr-closed" />
 
 </section>
 
