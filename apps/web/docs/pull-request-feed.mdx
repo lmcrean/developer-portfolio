@@ -4,6 +4,7 @@ description: Live GitHub pull request activity feed
 ---
 
 import PullRequestFeed from '../src/components/pull-request-feed/PullRequestFeed';
+import HabitTracker from '../src/components/pull-request-feed/components/HabitTracker';
 
 # Pull Requests
 
@@ -11,6 +12,8 @@ import PullRequestFeed from '../src/components/pull-request-feed/PullRequestFeed
   <span className="live-badge">🔴 LIVE</span>
   <span className="live-description">Real-time data from GitHub API</span>
 </div>
+
+<HabitTracker username="lmcrean" className="mb-8" />
 
 <PullRequestFeed username="lmcrean" className="mb-8" />
 

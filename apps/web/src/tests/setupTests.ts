@@ -1,6 +1,6 @@
 // Add any global test setup here
 // For example, if using testing-library:
-// import '@testing-library/jest-dom';
+import '@testing-library/jest-dom';
 
 // TypeScript declarations for global test environment
 declare global {

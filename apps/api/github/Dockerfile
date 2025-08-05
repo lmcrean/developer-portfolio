@@ -1,6 +1,9 @@
 # Use minimal Node.js image for smallest footprint
 FROM node:18-alpine
 
+# Install Python and build dependencies for native modules
+RUN apk add --no-cache python3 make g++ py3-setuptools
+
 # Set working directory
 WORKDIR /app
 
@@ -8,7 +11,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install all dependencies (including dev dependencies for build)
-RUN npm ci && npm cache clean --force
+RUN npm install && npm cache clean --force
 
 # Copy source code
 COPY . .

@@ -36,7 +36,7 @@ setupValidationRoutes(app, githubService);
 setup404Handler(app);
 
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 8080;
 
 // If running in test environment, use a different port
 if (process.env.NODE_ENV === 'test') {
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === 'test') {
     process.exit(1);
   });
 } else {
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 GitHub API server running on port ${PORT}`);
   });
 } 

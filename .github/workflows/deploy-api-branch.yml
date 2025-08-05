@@ -34,7 +34,7 @@ jobs:
       - name: 📥 Install API Dependencies
         run: |
           cd apps/api/github
-          npm ci
+          npm install
       
       - name: 🔧 Build API
         run: |
@@ -226,7 +226,7 @@ jobs:
             --max-instances=10 \
             --timeout=60s \
             --concurrency=100 \
-            --set-env-vars="NODE_ENV=production,GITHUB_TOKEN=${{ secrets.API_GITHUB_TOKEN }}"
+            --set-env-vars="NODE_ENV=production,GITHUB_TOKEN=${{ secrets.API_GITHUB_TOKEN }},NEON_DATABASE_URL=${{ secrets.NEON_DATABASE_URL }}"
           
           # Get the service URL - should now be predictable
           SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform managed --region us-central1 --format 'value(status.url)')
@@ -326,6 +326,55 @@ jobs:
           else
             echo "⚠️ CORS preflight returned status: $CORS_RESPONSE"
             echo "🔍 This may indicate CORS issues with the frontend"
+          fi
+          
+          # Test database health specifically
+          echo "🗄️ Testing database health..."
+          DB_HEALTH_RESPONSE=$(curl -s -f "$API_URL/health/database" -m 30)
+          DB_CURL_EXIT_CODE=$?
+          
+          if [ $DB_CURL_EXIT_CODE -eq 0 ]; then
+            echo "✅ Database health endpoint responded!"
+            echo "📄 Database Health Response: $DB_HEALTH_RESPONSE"
+            
+            # Parse database health response
+            DB_STATUS=$(echo "$DB_HEALTH_RESPONSE" | jq -r '.status // "unknown"')
+            DB_TYPE=$(echo "$DB_HEALTH_RESPONSE" | jq -r '.database_type // "unknown"')
+            CONNECTION_TEST=$(echo "$DB_HEALTH_RESPONSE" | jq -r '.tests.connection // "unknown"')
+            TABLE_TEST=$(echo "$DB_HEALTH_RESPONSE" | jq -r '.tests.table_exists // "unknown"')
+            CRUD_TEST=$(echo "$DB_HEALTH_RESPONSE" | jq -r '.tests.crud_operations // "unknown"')
+            NEON_URL_PRESENT=$(echo "$DB_HEALTH_RESPONSE" | jq -r '.environment.neon_url_present // false')
+            
+            echo "🔍 Database Status: $DB_STATUS"
+            echo "🔍 Database Type: $DB_TYPE"
+            echo "🔍 Connection Test: $CONNECTION_TEST"
+            echo "🔍 Table Test: $TABLE_TEST"
+            echo "🔍 CRUD Test: $CRUD_TEST"
+            echo "🔍 Neon URL Present: $NEON_URL_PRESENT"
+            
+            # Validate all tests passed
+            if [ "$DB_STATUS" = "healthy" ] && [ "$CONNECTION_TEST" = "passed" ] && [ "$TABLE_TEST" = "passed" ] && [ "$CRUD_TEST" = "passed" ]; then
+              echo "✅ Database is healthy and all tests passed!"
+              
+              # Verify we're using the expected database type in production
+              if [ "$DB_TYPE" = "postgresql" ] && [ "$NEON_URL_PRESENT" = "true" ]; then
+                echo "✅ Using PostgreSQL (Neon DB) as expected in production!"
+              elif [ "$DB_TYPE" = "sqlite" ] && [ "$NEON_URL_PRESENT" = "false" ]; then
+                echo "✅ Using SQLite as expected in development!"
+              else
+                echo "⚠️ Database type configuration may be unexpected"
+                echo "🔍 Expected: PostgreSQL with Neon URL in production"
+                echo "🔍 Actual: $DB_TYPE with Neon URL present: $NEON_URL_PRESENT"
+              fi
+            else
+              echo "❌ Database health check failed!"
+              echo "🔍 Expected: status='healthy', all tests='passed'"
+              echo "🔍 Actual: status='$DB_STATUS', connection='$CONNECTION_TEST', table='$TABLE_TEST', crud='$CRUD_TEST'"
+              exit 1
+            fi
+          else
+            echo "❌ Database health endpoint failed!"
+            exit 1
           fi
       
       - name: 📊 Deployment Summary

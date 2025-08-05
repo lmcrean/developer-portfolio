@@ -73,4 +73,11 @@ export class GitHubService {
       throw error;
     }
   }
+
+  /**
+   * Get the Octokit instance for use in other services
+   */
+  getOctokit(): Octokit {
+    return this.octokit;
+  }
 } 

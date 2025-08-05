@@ -1,5 +1,6 @@
 import express from 'express';
 import { GitHubService } from '../github';
+import { createHabitTrackerRouter } from '../pull-requests/habit-tracker';
 
 /**
  * GitHub API endpoints
@@ -114,5 +115,10 @@ export function setupGitHubRoutes(app: express.Application, githubService: GitHu
     }
   });
 
-  console.log('✅ GitHub routes configured: /api/github/pull-requests, /api/github/rate-limit');
+  // Mount habit tracker routes
+  const username = process.env.GITHUB_USERNAME || 'lauriecrean';
+  const habitTrackerRouter = createHabitTrackerRouter(githubService.getOctokit(), username);
+  app.use('/api/github/habit-tracker', habitTrackerRouter);
+
+  console.log('✅ GitHub routes configured: /api/github/pull-requests, /api/github/rate-limit, /api/github/habit-tracker');
 } 

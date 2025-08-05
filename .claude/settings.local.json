@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(mv:*)",
+      "Bash(npm run dev:*)",
+      "Bash(node:*)",
+      "Bash(cross-env:*)",
+      "Bash(npx cross-env:*)",
+      "Bash(rm:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(npm run build:*)"
+    ],
+    "deny": []
+  }
+}

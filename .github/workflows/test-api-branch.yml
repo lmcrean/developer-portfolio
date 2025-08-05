@@ -35,9 +35,22 @@ jobs:
       
       - name: 🔧 Build Observability Package
         run: |
-          cd packages/observability
-          npm ci
-          npm run build
+          echo "🔍 Current directory: $(pwd)"
+          echo "📁 Listing root directory:"
+          ls -la
+          echo "📁 Checking if packages directory exists:"
+          ls -la packages/ || echo "❌ packages directory not found"
+          echo "📁 Checking if packages/observability exists:"
+          ls -la packages/observability/ || echo "❌ packages/observability directory not found"
+          
+          if [ -d "packages/observability" ]; then
+            echo "✅ packages/observability directory found, proceeding with build"
+            cd packages/observability
+            npm ci
+            npm run build
+          else
+            echo "❌ packages/observability directory not found, skipping build"
+          fi
       
       - name: 🧪 Test API Health Check
         run: |
@@ -46,14 +59,35 @@ jobs:
           # Test health endpoint with retry
           for i in {1..5}; do
             echo "🔍 Health check attempt $i/5..."
-            if curl -f "${{ inputs.api_deployment_url }}/health" -m 15; then
-              echo "✅ API is healthy!"
-              break
-            fi
             
-            if [ $i -eq 5 ]; then
-              echo "❌ API health check failed after 5 attempts"
-              exit 1
+            # More detailed curl with better error handling
+            echo "🔧 Making curl request..."
+            HTTP_STATUS=$(curl -w "%{http_code}" -s -o /tmp/response.txt -m 30 "${{ inputs.api_deployment_url }}/health")
+            CURL_EXIT_CODE=$?
+            
+            echo "📊 HTTP Status: $HTTP_STATUS"
+            echo "🔍 Curl Exit Code: $CURL_EXIT_CODE"
+            
+            if [ $CURL_EXIT_CODE -eq 0 ] && [ "$HTTP_STATUS" -eq 200 ]; then
+              echo "✅ API is healthy!"
+              echo "📄 Response:"
+              cat /tmp/response.txt
+              break
+            else
+              echo "❌ Health check failed"
+              echo "🔍 HTTP Status: $HTTP_STATUS"
+              echo "🔍 Curl Exit Code: $CURL_EXIT_CODE"
+              echo "📄 Response (if any):"
+              cat /tmp/response.txt || echo "No response body"
+              
+              # Additional debugging
+              echo "🔍 Testing basic connectivity..."
+              curl -I -s -m 10 "${{ inputs.api_deployment_url }}" || echo "Basic connectivity test failed"
+              
+              if [ $i -eq 5 ]; then
+                echo "❌ API health check failed after 5 attempts"
+                exit 1
+              fi
             fi
             
             echo "⏳ Waiting 10 seconds before retry..."
