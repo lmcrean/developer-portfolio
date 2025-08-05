@@ -42,3 +42,4 @@ frontend/tests-e2e/videos
 test-results/
 
 .software-architecture-reference/*
+CLAUDE.md
