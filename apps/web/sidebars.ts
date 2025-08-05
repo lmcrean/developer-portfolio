@@ -39,7 +39,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'doc',
       id: 'archive',
-      label: 'Older Projects',
+      label: 'Project Archive',
     },
     {
       type: 'doc',
