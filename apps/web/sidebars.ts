@@ -22,11 +22,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'doc',
-      id: 'data-projects',
-      label: 'Data Projects',
-    },
-    {
-      type: 'doc',
       id: 'pull-request-feed',
       label: 'Pull Requests',
       customProps: {
