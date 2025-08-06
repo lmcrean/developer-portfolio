@@ -17,11 +17,6 @@ const sidebars: SidebarsConfig = {
   docs: [
     {
       type: 'doc',
-      id: 'enterprise-contributions',
-      label: 'Enterprise Solutions',
-    },
-    {
-      type: 'doc',
       id: 'index',
       label: 'Software Projects',
     },
