@@ -30,15 +30,26 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
         </p>
       </div>
 
-      {/* Pull request list */}
-      <div className="space-y-4 mb-6">
-        {pullRequests.map((pr) => (
-          <PullRequestFeedListCard
-            key={pr.id}
-            pullRequest={pr}
-            onClick={() => onCardClick(pr)}
-          />
-        ))}
+      {/* Pull request table */}
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-6">
+        {/* Table Header */}
+        <div className="grid grid-cols-5 gap-4 p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300">Repository</div>
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300 col-span-2">Title</div>
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300">Language</div>
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300">Status</div>
+        </div>
+        
+        {/* Table Rows */}
+        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+          {pullRequests.map((pr) => (
+            <PullRequestFeedListCard
+              key={pr.id}
+              pullRequest={pr}
+              onClick={() => onCardClick(pr)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
