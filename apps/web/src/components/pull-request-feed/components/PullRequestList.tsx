@@ -31,17 +31,19 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
       </div>
 
       {/* Pull request table */}
-      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-6">
+      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-6" 
+           style={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', overflow: 'hidden', marginBottom: '24px' }}>
         {/* Table Header */}
-        <div className="grid grid-cols-5 gap-4 p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300">Repository</div>
-          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300 col-span-2">Title</div>
-          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300">Language</div>
-          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300">Status</div>
+        <div className="grid grid-cols-5 gap-4 p-4 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600"
+             style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr', gap: '16px', padding: '16px', backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb' }}>
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300" style={{ fontWeight: '600', fontSize: '14px', color: '#374151' }}>Repository</div>
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300 col-span-2" style={{ fontWeight: '600', fontSize: '14px', color: '#374151', gridColumn: 'span 2' }}>Title</div>
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300" style={{ fontWeight: '600', fontSize: '14px', color: '#374151' }}>Language</div>
+          <div className="font-semibold text-sm text-gray-700 dark:text-gray-300" style={{ fontWeight: '600', fontSize: '14px', color: '#374151' }}>Status</div>
         </div>
         
         {/* Table Rows */}
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
+        <div className="divide-y divide-gray-200 dark:divide-gray-700" style={{ borderTop: 'none' }}>
           {pullRequests.map((pr) => (
             <PullRequestFeedListCard
               key={pr.id}

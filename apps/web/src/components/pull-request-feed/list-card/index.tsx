@@ -31,6 +31,15 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
   return (
     <article 
       className="grid grid-cols-5 gap-4 p-4 cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-inset"
+      style={{ 
+        display: 'grid', 
+        gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr', 
+        gap: '16px', 
+        padding: '16px', 
+        cursor: 'pointer',
+        borderBottom: '1px solid #e5e7eb',
+        transition: 'background-color 0.2s ease'
+      }}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -40,47 +49,58 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           onClick();
         }
       }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = '#f9fafb';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = 'transparent';
+      }}
       aria-label={`Pull request #${pullRequest.number}, ${status.text} ${relativeTime}`}
       data-testid="pull-request-card"
       data-pr-number={pullRequest.number}
       data-pr-title={pullRequest.title}
     >
       {/* Repository Column */}
-      <div className="flex items-center space-x-2">
-        <span className="text-sm">📦</span>
-        <span className="text-gray-700 dark:text-gray-300 text-sm font-medium truncate">
+      <div className="flex items-center space-x-2" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span className="text-sm" style={{ fontSize: '14px' }}>📦</span>
+        <span className="text-gray-700 dark:text-gray-300 text-sm font-medium truncate" 
+              style={{ color: '#374151', fontSize: '14px', fontWeight: '500', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {pullRequest.repository.name}
         </span>
       </div>
 
       {/* Title Column (spans 2 columns for more space) */}
-      <div className="col-span-2 flex items-center space-x-2">
-        <span className="text-lg flex-shrink-0">{titleIcon}</span>
-        <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-tight truncate">
+      <div className="col-span-2 flex items-center space-x-2" style={{ gridColumn: 'span 2', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span className="text-lg flex-shrink-0" style={{ fontSize: '18px', flexShrink: 0 }}>{titleIcon}</span>
+        <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-tight truncate" 
+            style={{ fontWeight: '700', color: '#111827', fontSize: '14px', lineHeight: '1.25', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
           {pullRequest.title}
         </h3>
       </div>
 
       {/* Language Column */}
-      <div className="flex items-center">
+      <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
         {pullRequest.repository.language ? (
           <span 
             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${languageColor}`}
+            style={{ display: 'inline-flex', alignItems: 'center', padding: '4px 8px', borderRadius: '9999px', fontSize: '12px', fontWeight: '500', color: 'white', backgroundColor: '#6b7280' }}
           >
             🏷️ {pullRequest.repository.language}
           </span>
         ) : (
-          <span className="text-gray-400 dark:text-gray-500 text-xs">No language</span>
+          <span className="text-gray-400 dark:text-gray-500 text-xs" style={{ color: '#9ca3af', fontSize: '12px' }}>No language</span>
         )}
       </div>
 
       {/* Status Column */}
-      <div className="flex items-center justify-between">
-        <div className={`flex items-center space-x-1 ${status.color} font-medium text-xs`}>
+      <div className="flex items-center justify-between" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className={`flex items-center space-x-1 ${status.color} font-medium text-xs`} 
+             style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: '500', fontSize: '12px' }}>
           <span>{status.emoji}</span>
           <span>{status.text}</span>
         </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1" 
+             style={{ fontSize: '12px', color: '#6b7280', display: 'flex', alignItems: 'center', gap: '4px' }}>
           <i className="fas fa-clock"></i>
           <span>{relativeTime}</span>
         </div>
