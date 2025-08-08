@@ -6,7 +6,6 @@ import {
 import {
   getRelativeTime,
   getStatusDisplay,
-  getTitleIcon,
   getLanguageColor
 } from '@shared/types/pull-requests/utilities';
 
@@ -15,7 +14,6 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
   onClick
 }) => {
   const status = getStatusDisplay(pullRequest.state, pullRequest.merged_at);
-  const titleIcon = getTitleIcon(pullRequest.title);
   const languageColor = getLanguageColor(pullRequest.repository.language);
 
   // Add client-side only time calculation
@@ -79,9 +77,8 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       </div>
 
       {/* Title Column (now has more space) */}
-      <div className="flex items-center space-x-2" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span className="text-lg flex-shrink-0" style={{ fontSize: '18px', flexShrink: 0 }}>{titleIcon}</span>
-        <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-tight truncate" 
+      <div className="flex items-center min-w-0" style={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
+        <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-tight"
             style={{ 
               fontWeight: '700', 
               color: 'var(--text-primary, #111827)', 
@@ -90,8 +87,11 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
               whiteSpace: 'nowrap', 
               overflow: 'hidden', 
               textOverflow: 'ellipsis',
-              fontFamily: '"IBM Plex Serif", serif'
-            }}>
+              fontFamily: '"IBM Plex Serif", serif',
+              minWidth: 0,
+              flex: 1
+            }}
+            title={pullRequest.title}>
           {pullRequest.title}
         </h3>
       </div>
@@ -126,30 +126,33 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       </div>
 
       {/* Status Column */}
-      <div className="flex items-center justify-between" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div className={`flex items-center space-x-1 ${status.color} font-medium text-xs`} 
-             style={{ 
-               display: 'flex', 
-               alignItems: 'center', 
-               gap: '4px', 
-               fontWeight: '500', 
-               fontSize: '12px',
-               fontFamily: '"IBM Plex Serif", serif'
-             }}>
-          <span>{status.emoji}</span>
-          <span>{status.text}</span>
-        </div>
-        <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1" 
-             style={{ 
-               fontSize: '12px', 
-               color: 'var(--text-muted, #6b7280)', 
-               display: 'flex', 
-               alignItems: 'center', 
-               gap: '4px',
-               fontFamily: '"IBM Plex Serif", serif'
-             }}>
-          <i className="fas fa-clock"></i>
-          <span>{relativeTime}</span>
+      <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
+        <div className="flex items-center justify-start w-full" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', width: '100%' }}>
+          <div className={`flex items-center space-x-1 ${status.color} font-medium text-xs`} 
+               style={{ 
+                 display: 'flex', 
+                 alignItems: 'center', 
+                 gap: '4px', 
+                 fontWeight: '500', 
+                 fontSize: '12px',
+                 fontFamily: '"IBM Plex Serif", serif'
+               }}>
+            <span>{status.emoji}</span>
+            <span>{status.text}</span>
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 ml-auto" 
+               style={{ 
+                 fontSize: '12px', 
+                 color: 'var(--text-muted, #6b7280)', 
+                 display: 'flex', 
+                 alignItems: 'center', 
+                 gap: '4px',
+                 marginLeft: 'auto',
+                 fontFamily: '"IBM Plex Serif", serif'
+               }}>
+            <i className="fas fa-clock"></i>
+            <span>{relativeTime}</span>
+          </div>
         </div>
       </div>
     </article>
