@@ -3,7 +3,27 @@ import path from 'path';
 import { HabitEntry, HabitStats } from './types';
 import { IHabitTrackerDatabase } from './database-interface';
 
-const DB_PATH = process.env.HABIT_TRACKER_DB_PATH || path.join(process.cwd(), 'data', 'habit-tracker.db');
+function resolveDatabasePath(): string {
+  // Allow explicit override
+  const explicitPath = process.env.HABIT_TRACKER_DB_PATH;
+  if (explicitPath && explicitPath.trim().length > 0) {
+    return explicitPath;
+  }
+
+  // Detect Cloud Run via K_SERVICE or default to production rule
+  const isCloudRun = !!process.env.K_SERVICE;
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  // Cloud Run file system is read-only except /tmp
+  if (isCloudRun || isProduction) {
+    return path.join('/tmp', 'habit-tracker.db');
+  }
+
+  // Local/dev: store inside project dir
+  return path.join(process.cwd(), 'data', 'habit-tracker.db');
+}
+
+const DB_PATH = resolveDatabasePath();
 
 export class HabitTrackerSQLiteDatabase implements IHabitTrackerDatabase {
   private db: Database.Database;

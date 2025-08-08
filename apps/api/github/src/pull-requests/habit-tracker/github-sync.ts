@@ -23,7 +23,13 @@ export class GitHubHabitSync {
     console.log(`📅 Date range: ${startDate} to ${endDate}`);
 
     // Fetch all pull requests in the date range
-    const pullRequestsByDate = await this.fetchAllPullRequestsInRange(startDate, endDate);
+    let pullRequestsByDate = await this.fetchAllPullRequestsInRange(startDate, endDate);
+
+    // Fallback: if none found, use involves: to capture broader contributions
+    if (pullRequestsByDate.size === 0) {
+      console.log('⚠️ No PRs found with author filter; retrying with involves filter');
+      pullRequestsByDate = await this.fetchAllPullRequestsInRange(startDate, endDate, true);
+    }
 
     // Update database with the counts
     let daysUpdated = 0;
@@ -53,11 +59,13 @@ export class GitHubHabitSync {
     };
   }
 
-  private async fetchAllPullRequestsInRange(startDate: string, endDate: string): Promise<Map<string, number>> {
+  private async fetchAllPullRequestsInRange(startDate: string, endDate: string, useInvolves: boolean = false): Promise<Map<string, number>> {
     const pullRequestsByDate = new Map<string, number>();
     
     // Use search API to fetch all PRs by this user
-    const searchQuery = `author:${this.username} type:pr created:${startDate}..${endDate}`;
+    // GitHub recommends is:pr over type:pr in some contexts; include created range
+    const qualifier = useInvolves ? `involves:${this.username}` : `author:${this.username}`;
+    const searchQuery = `${qualifier} is:pr created:${startDate}..${endDate}`;
     
     let page = 1;
     let hasMore = true;
@@ -67,7 +75,7 @@ export class GitHubHabitSync {
       try {
         console.log(`📋 Fetching page ${page} of PRs...`);
         
-        const response = await this.octokit.search.issuesAndPullRequests({
+        const response = await this.octokit.rest.search.issuesAndPullRequests({
           q: searchQuery,
           per_page: perPage,
           page: page,

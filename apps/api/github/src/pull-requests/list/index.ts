@@ -23,7 +23,8 @@ export async function fetchPullRequests(
     throw new Error('Insufficient GitHub API rate limit for pull requests operation');
   }
 
-  const searchQuery = `author:${username} type:pr`;
+  // Use is:pr instead of type:pr and default to public PRs unless token has private access
+  const searchQuery = `author:${username} is:pr`;
   
   // Calculate how many results we need to fetch to serve this page
   const startIndex = (page - 1) * perPage;

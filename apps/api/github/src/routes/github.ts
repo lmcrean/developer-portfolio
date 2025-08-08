@@ -116,7 +116,7 @@ export function setupGitHubRoutes(app: express.Application, githubService: GitHu
   });
 
   // Mount habit tracker routes
-  const username = process.env.GITHUB_USERNAME || 'lauriecrean';
+  const username = process.env.GITHUB_USERNAME || 'lmcrean';
   const habitTrackerRouter = createHabitTrackerRouter(githubService.getOctokit(), username);
   app.use('/api/github/habit-tracker', habitTrackerRouter);
 
