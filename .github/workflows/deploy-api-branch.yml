@@ -119,8 +119,15 @@ jobs:
           
           # Test repository permissions
           echo "🔑 Testing repository permissions..."
-          CLEAN_BRANCH=$(echo "${{ inputs.branch_name }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-          SERVICE_NAME="api-github-${CLEAN_BRANCH}"
+          CLEAN_BRANCH=$(echo "${{ inputs.branch_name }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/--*/-/g' | sed 's/^\-\|-$//g')
+          BRANCH_HASH=$(echo -n "$CLEAN_BRANCH" | sha1sum | cut -c1-8)
+          PREFIX="api-github-"
+          MAX_TOTAL=63
+          RESERVED=$(( ${#PREFIX} + 1 + 8 ))
+          MAX_BRANCH_LEN=$(( MAX_TOTAL - RESERVED ))
+          TRUNCATED=${CLEAN_BRANCH:0:$MAX_BRANCH_LEN}
+          TRUNCATED=$(echo "$TRUNCATED" | sed 's/-$//')
+          SERVICE_NAME="${PREFIX}${TRUNCATED}-${BRANCH_HASH}"
           IMAGE_NAME="us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/api-images/${SERVICE_NAME}:test"
           
           echo "🧪 Testing image push permissions with test image..."
@@ -163,8 +170,15 @@ jobs:
           cd apps/api/github
           
           # Clean branch name for use in service names (remove special characters)
-          CLEAN_BRANCH=$(echo "${{ inputs.branch_name }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-          SERVICE_NAME="api-github-${CLEAN_BRANCH}"
+          CLEAN_BRANCH=$(echo "${{ inputs.branch_name }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/--*/-/g' | sed 's/^\-\|-$//g')
+          BRANCH_HASH=$(echo -n "$CLEAN_BRANCH" | sha1sum | cut -c1-8)
+          PREFIX="api-github-"
+          MAX_TOTAL=63
+          RESERVED=$(( ${#PREFIX} + 1 + 8 ))
+          MAX_BRANCH_LEN=$(( MAX_TOTAL - RESERVED ))
+          TRUNCATED=${CLEAN_BRANCH:0:$MAX_BRANCH_LEN}
+          TRUNCATED=$(echo "$TRUNCATED" | sed 's/-$//')
+          SERVICE_NAME="${PREFIX}${TRUNCATED}-${BRANCH_HASH}"
           IMAGE_NAME="us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/api-images/${SERVICE_NAME}:${{ github.sha }}"
           
           echo "🏷️ Building image: $IMAGE_NAME"
@@ -226,7 +240,7 @@ jobs:
             --max-instances=10 \
             --timeout=60s \
             --concurrency=100 \
-            --set-env-vars="NODE_ENV=production,GITHUB_TOKEN=${{ secrets.API_GITHUB_TOKEN }},NEON_DATABASE_URL=${{ secrets.NEON_DATABASE_URL }}"
+            --set-env-vars="NODE_ENV=production,GITHUB_TOKEN=${{ secrets.API_GITHUB_TOKEN }},NEON_DATABASE_URL=${{ secrets.NEON_DATABASE_URL }},GITHUB_USERNAME=lmcrean"
           
           # Get the service URL - should now be predictable
           SERVICE_URL=$(gcloud run services describe $SERVICE_NAME --platform managed --region us-central1 --format 'value(status.url)')
