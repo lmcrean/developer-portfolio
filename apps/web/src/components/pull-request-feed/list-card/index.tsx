@@ -60,8 +60,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       data-pr-title={pullRequest.title}
     >
       {/* Repository Column */}
-      <div className="flex items-center space-x-2" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span className="text-sm" style={{ fontSize: '14px' }}>📦</span>
+      <div className="flex items-center" style={{ display: 'flex', alignItems: 'center' }}>
         <span className="text-gray-700 dark:text-gray-300 text-sm font-medium truncate" 
               style={{ 
                 color: 'var(--text-secondary, #374151)', 
@@ -140,17 +139,15 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
             <span>{status.emoji}</span>
             <span>{status.text}</span>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 ml-auto" 
+          <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center ml-auto" 
                style={{ 
                  fontSize: '12px', 
                  color: 'var(--text-muted, #6b7280)', 
                  display: 'flex', 
-                 alignItems: 'center', 
-                 gap: '4px',
+                 alignItems: 'center',
                  marginLeft: 'auto',
                  fontFamily: '"IBM Plex Serif", serif'
                }}>
-            <i className="fas fa-clock"></i>
             <span>{relativeTime}</span>
           </div>
         </div>
