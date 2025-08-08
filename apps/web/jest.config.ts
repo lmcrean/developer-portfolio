@@ -4,6 +4,7 @@ const config: Config = {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^@shared/(.*)$': '<rootDir>/../../shared/$1',
   },
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { configFile: './babel.config.js' }],
