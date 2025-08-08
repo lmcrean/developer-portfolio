@@ -75,7 +75,8 @@ gcloud run deploy api-github \
     --timeout 60s \
     --cpu-throttling \
     --no-use-http2 \
-    --execution-environment gen2
+    --execution-environment gen2 \
+    --set-env-vars NODE_ENV=production,GITHUB_USERNAME=lmcrean
 
 # Get the service URL
 SERVICE_URL=$(gcloud run services describe api-github --platform managed --region us-central1 --format="value(status.url)")

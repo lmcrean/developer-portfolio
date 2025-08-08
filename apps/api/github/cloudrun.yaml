@@ -23,32 +23,34 @@ spec:
     spec:
       containerConcurrency: 100
       containers:
-              - image: gcr.io/lauriecrean-free-38256/api-github:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: PORT
-          value: "8080"
-        - name: NODE_ENV
-          value: "production"
-        resources:
-          limits:
-            # Stay within free tier limits
-            cpu: "1000m"
-            memory: "512Mi"
-          requests:
-            cpu: "100m"
-            memory: "128Mi"
-        # Health check
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 10
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-          initialDelaySeconds: 5
-          periodSeconds: 10 
+        - image: gcr.io/lauriecrean-free-38256/api-github:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: NODE_ENV
+              value: "production"
+            - name: GITHUB_USERNAME
+              value: "lmcrean"
+          resources:
+            limits:
+              # Stay within free tier limits
+              cpu: "1000m"
+              memory: "512Mi"
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+          # Health check
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10 
