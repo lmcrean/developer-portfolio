@@ -4,7 +4,6 @@ import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
 import LoadingErrorStates from './components/LoadingErrorStates';
 import PullRequestList from './components/PullRequestList';
-import PullRequestPagination from './components/PullRequestPagination';
 import PullRequestFeedDetailCard from './detail-card';
 
 export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
@@ -31,14 +30,6 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   const handleCardClick = React.useCallback((pr: PullRequestListData) => {
     api.fetchPullRequestDetails(pr);
   }, [api]);
-
-  // Handle pagination
-  const handlePageChange = React.useCallback((newPage: number) => {
-    const validPage = state.handlePageChange(newPage);
-    if (validPage) {
-      api.fetchPullRequests(validPage);
-    }
-  }, [state, api]);
 
   // Retry function
   const handleRetry = React.useCallback(() => {
@@ -104,13 +95,6 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
         username={username}
         className={className}
         onCardClick={handleCardClick}
-      />
-
-      <PullRequestPagination
-        pagination={state.pagination}
-        currentPage={state.currentPage}
-        loading={state.loading}
-        onPageChange={handlePageChange}
       />
 
       {/* Detail Modal */}
