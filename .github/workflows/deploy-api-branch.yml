@@ -120,7 +120,13 @@ jobs:
           # Test repository permissions
           echo "🔑 Testing repository permissions..."
           CLEAN_BRANCH=$(echo "${{ inputs.branch_name }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-          SERVICE_NAME="api-github-${CLEAN_BRANCH}"
+          PREFIX="api-github-"
+          SUFFIX="-${{ inputs.pr_number }}"
+          MAX_LEN=63
+          ALLOWED_BRANCH_LEN=$(( MAX_LEN - ${#PREFIX} - ${#SUFFIX} ))
+          TRUNC_BRANCH=$(echo "$CLEAN_BRANCH" | cut -c1-$ALLOWED_BRANCH_LEN | sed 's/-$//')
+          SERVICE_NAME="${PREFIX}${TRUNC_BRANCH}${SUFFIX}"
+          echo "🔖 Computed service name ($SERVICE_NAME) length=${#SERVICE_NAME}"
           IMAGE_NAME="us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/api-images/${SERVICE_NAME}:test"
           
           echo "🧪 Testing image push permissions with test image..."
@@ -164,11 +170,16 @@ jobs:
           
           # Clean branch name for use in service names (remove special characters)
           CLEAN_BRANCH=$(echo "${{ inputs.branch_name }}" | sed 's/[^a-zA-Z0-9-]/-/g' | tr '[:upper:]' '[:lower:]' | sed 's/--*/-/g' | sed 's/^-\|-$//g')
-          SERVICE_NAME="api-github-${CLEAN_BRANCH}"
+          PREFIX="api-github-"
+          SUFFIX="-${{ inputs.pr_number }}"
+          MAX_LEN=63
+          ALLOWED_BRANCH_LEN=$(( MAX_LEN - ${#PREFIX} - ${#SUFFIX} ))
+          TRUNC_BRANCH=$(echo "$CLEAN_BRANCH" | cut -c1-$ALLOWED_BRANCH_LEN | sed 's/-$//')
+          SERVICE_NAME="${PREFIX}${TRUNC_BRANCH}${SUFFIX}"
           IMAGE_NAME="us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/api-images/${SERVICE_NAME}:${{ github.sha }}"
           
           echo "🏷️ Building image: $IMAGE_NAME"
-          echo "🔖 Service name: $SERVICE_NAME"
+          echo "🔖 Service name: $SERVICE_NAME (len=${#SERVICE_NAME})"
           
           # Build and push the image
           docker build -t $IMAGE_NAME .
@@ -215,6 +226,9 @@ jobs:
           
           # Deploy the service with deterministic naming
           echo "🚀 Deploying service with name: $SERVICE_NAME"
+          if [ ${#SERVICE_NAME} -gt 63 ]; then
+            echo "❌ Computed service name exceeds 63 chars (len=${#SERVICE_NAME}). Aborting."; exit 1;
+          fi
           gcloud run deploy $SERVICE_NAME \
             --image $IMAGE_NAME \
             --platform managed \
