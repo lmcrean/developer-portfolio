@@ -19,17 +19,6 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
 }) => {
   return (
     <div className={`w-full p-4 ${className}`} data-testid="pull-request-feed" style={{ fontFamily: '"IBM Plex Serif", serif' }}>
-      {/* Header */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Pull Request Activity</h2>
-        <p className="text-gray-600 dark:text-gray-300">
-          {pagination 
-            ? `Showing ${pullRequests.length} of ${pagination.total_count} pull requests for ${username}`
-            : `Recent pull requests for ${username}`
-          }
-        </p>
-      </div>
-
       {/* Table Header */}
       <div className="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-semibold text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
         <div className="col-span-3">Repository</div>
