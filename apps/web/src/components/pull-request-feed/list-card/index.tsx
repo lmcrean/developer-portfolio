@@ -5,8 +5,7 @@ import {
 } from '@shared/types/pull-requests';
 import {
   getRelativeTime,
-  getStatusDisplay,
-  getLanguageColor
+  getStatusDisplay
 } from '@shared/types/pull-requests/utilities';
 
 export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = ({
@@ -14,7 +13,6 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
   onClick
 }) => {
   const status = getStatusDisplay(pullRequest.state, pullRequest.merged_at);
-  const languageColor = getLanguageColor(pullRequest.repository.language);
 
   // Add client-side only time calculation
   const [isClient, setIsClient] = useState(false);
@@ -60,9 +58,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       {/* Language Column */}
       <div className="col-span-2 flex items-center">
         {pullRequest.repository.language ? (
-          <span 
-            className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-white ${languageColor}`}
-          >
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600">
             {pullRequest.repository.language}
           </span>
         ) : (
