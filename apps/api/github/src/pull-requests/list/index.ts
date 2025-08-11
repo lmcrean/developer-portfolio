@@ -25,24 +25,14 @@ export async function fetchPullRequests(
 
   const searchQuery = `author:${username} type:pr`;
   
-  // Calculate how many results we need to fetch to serve this page
-  const startIndex = (page - 1) * perPage;
-  const endIndex = startIndex + perPage;
-  
-  // Fetch search results from GitHub
-  const allSearchItems = await fetchSearchResults(octokit, searchQuery, endIndex);
+  // Fetch search results from GitHub using native pagination
+  const searchItems = await fetchSearchResults(octokit, searchQuery, page, perPage);
   
   // Get total count for pagination
   const totalCount = await getTotalPullRequestCount(octokit, searchQuery);
   
   // Convert search results to our format with detailed data
-  const allPRs = await convertSearchResultsToPRs(octokit, allSearchItems);
-
-  // Sort by creation date (newest first)
-  const sortedPRs = allPRs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-  // Get the correct page of results
-  const paginatedPRs = sortedPRs.slice(startIndex, endIndex);
+  const paginatedPRs = await convertSearchResultsToPRs(octokit, searchItems);
 
   // Calculate pagination metadata
   const totalPages = Math.ceil(totalCount / perPage);
@@ -56,7 +46,6 @@ export async function fetchPullRequests(
   };
 
   console.log(`✅ Returning ${paginatedPRs.length} PRs for ${username} (page ${page}/${totalPages}, total: ${totalCount})`);
-  console.log(`📊 Fetched ${allPRs.length} total items, slicing ${startIndex}-${endIndex}`);
   
   if (paginatedPRs.length > 0) {
     console.log(`📄 First PR on this page: ${paginatedPRs[0]?.title} (${paginatedPRs[0]?.created_at})`);
