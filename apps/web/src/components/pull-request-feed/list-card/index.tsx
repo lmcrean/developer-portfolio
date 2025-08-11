@@ -26,7 +26,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
   return (
     <div 
-      className="grid grid-cols-12 gap-4 px-4 py-4 cursor-pointer transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-800"
+      className="grid grid-cols-12 gap-4 px-4 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 hover:shadow-sm"
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -36,7 +36,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           onClick();
         }
       }}
-      aria-label={`Pull request #${pullRequest.number}, ${status.text} ${relativeTime}`}
+      aria-label={`Pull request #${pullRequest.number}, ${status.text} ${relativeTime}. Opens in new tab.`}
       data-testid="pull-request-card"
       data-pr-number={pullRequest.number}
       data-pr-title={pullRequest.title}

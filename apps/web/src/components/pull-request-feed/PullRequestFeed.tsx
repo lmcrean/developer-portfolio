@@ -5,7 +5,6 @@ import { usePullRequestApi } from './hooks/usePullRequestApi';
 import LoadingErrorStates from './components/LoadingErrorStates';
 import PullRequestList from './components/PullRequestList';
 import PullRequestPagination from './components/PullRequestPagination';
-import PullRequestFeedDetailCard from './detail-card';
 
 export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   username = 'lmcrean',
@@ -18,19 +17,18 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     username,
     onListSuccess: state.handleListSuccess,
     onListError: state.handleListError,
-    onDetailSuccess: state.handleDetailSuccess,
-    onDetailError: state.handleDetailError,
-    setLoading: state.setLoading,
-    setModalLoading: state.setModalLoading
+    setLoading: state.setLoading
   });
 
   // Track if initial fetch has been performed
   const initialFetchRef = useRef(false);
 
-  // Handle card click with API hook
+  // Handle card click to open GitHub PR in new tab
   const handleCardClick = useCallback((pr: PullRequestListData) => {
-    api.fetchPullRequestDetails(pr);
-  }, [api]);
+    if (pr.html_url) {
+      window.open(pr.html_url, '_blank', 'noopener,noreferrer');
+    }
+  }, []);
 
   // Handle pagination
   const handlePageChange = useCallback((newPage: number) => {
@@ -113,14 +111,6 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
         onPageChange={handlePageChange}
       />
 
-      {/* Detail Modal */}
-      <PullRequestFeedDetailCard
-        pullRequest={state.selectedPR}
-        isOpen={state.isModalOpen}
-        onClose={state.handleModalClose}
-        loading={state.modalLoading}
-        error={state.modalError}
-      />
     </>
   );
 };

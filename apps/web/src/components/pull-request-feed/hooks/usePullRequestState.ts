@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import {
   PullRequestListData,
-  DetailedPullRequestData,
   PaginationMeta
 } from '@shared/types/pull-requests';
 
@@ -16,11 +15,6 @@ export const usePullRequestState = () => {
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   
-  // Modal state
-  const [selectedPR, setSelectedPR] = useState<DetailedPullRequestData | null>(null);
-  const [modalLoading, setModalLoading] = useState(false);
-  const [modalError, setModalError] = useState<string | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Handlers for list operations
   const handleListSuccess = useCallback((data: PullRequestListData[], paginationData: PaginationMeta) => {
@@ -33,24 +27,6 @@ export const usePullRequestState = () => {
     setError(errorMessage);
   }, []);
 
-  // Handlers for detail operations
-  const handleDetailSuccess = useCallback((data: DetailedPullRequestData) => {
-    setSelectedPR(data);
-    setIsModalOpen(true);
-  }, []);
-
-  const handleDetailError = useCallback((errorMessage: string) => {
-    setModalError(errorMessage);
-    setIsModalOpen(true);
-  }, []);
-
-  // Modal management
-  const handleModalClose = useCallback(() => {
-    setIsModalOpen(false);
-    setSelectedPR(null);
-    setModalError(null);
-    setModalLoading(false);
-  }, []);
 
   // Pagination
   const handlePageChange = useCallback((newPage: number) => {
@@ -73,22 +49,14 @@ export const usePullRequestState = () => {
     error,
     pagination,
     currentPage,
-    selectedPR,
-    modalLoading,
-    modalError,
-    isModalOpen,
 
     // Setters
     setIsClient,
     setLoading,
-    setModalLoading,
 
     // Handlers
     handleListSuccess,
     handleListError,
-    handleDetailSuccess,
-    handleDetailError,
-    handleModalClose,
     handlePageChange,
     clearError
   };
