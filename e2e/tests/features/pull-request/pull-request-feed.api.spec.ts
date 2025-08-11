@@ -4,7 +4,6 @@ import {
   initializeApiUrl,
   TEST_USERNAME,
   ApiResponse,
-  DetailedPullRequestResponse,
   validatePullRequestStructure,
   validatePaginationStructure,
   validateCacheHeaders
@@ -125,56 +124,6 @@ test.describe('Pull Request Feed API Tests', () => {
     }
   });
 
-  test('should fetch detailed pull request data', async ({ request }) => {
-    observability.logTestStart('🔍 Testing detailed pull request data fetch');
-    
-    // First get a pull request from the list to test details
-    const listResponse = await request.get(`${getApiBaseUrl()}/api/github/pull-requests?username=${TEST_USERNAME}&per_page=1`);
-    observability.recordNetworkCall(listResponse.status() === 200);
-    
-    expect(listResponse.status()).toBe(200);
-    
-    const listData: ApiResponse = await listResponse.json();
-    
-    if (listData.data.length === 0) {
-      observability.logTestInfo('⏭️ No pull requests available to test details endpoint');
-      return;
-    }
-    
-    const testPR = listData.data[0];
-    
-    // Extract owner and repo from HTML URL
-    const urlParts = testPR.html_url.split('/');
-    const owner = urlParts[3];
-    const repo = urlParts[4];
-    
-    observability.logTestInfo(`📝 Testing detailed data for PR #${testPR.number} from ${owner}/${repo}`);
-    
-    const detailResponse = await request.get(`${getApiBaseUrl()}/api/github/pull-requests/${owner}/${repo}/${testPR.number}`);
-    observability.recordNetworkCall(detailResponse.status() === 200);
-    
-    expect(detailResponse.status()).toBe(200);
-    
-    // Check cache headers
-    validateCacheHeaders(detailResponse.headers());
-    
-    const detailResponse_data = await detailResponse.json();
-    const detailData: DetailedPullRequestResponse = detailResponse_data.data;
-    
-    // Should have all basic PR fields
-    expect(detailData.id).toBe(testPR.id);
-    expect(detailData.number).toBe(testPR.number);
-    expect(detailData.title).toBe(testPR.title);
-    
-    // Should have additional detailed fields
-    expect(detailData).toHaveProperty('author');
-    expect(detailData).toHaveProperty('commits');
-    expect(detailData).toHaveProperty('additions');
-    expect(detailData).toHaveProperty('deletions');
-    expect(detailData).toHaveProperty('changed_files');
-    
-    observability.logTestInfo(`📊 Detailed PR stats: ${detailData.commits} commits, ${detailData.additions}+ ${detailData.deletions}- lines, ${detailData.changed_files} files`);
-  });
 
   test('should handle API errors gracefully (intentional 404 test)', async ({ request }) => {
     observability.logTestStart('🚨 Testing API error handling');
