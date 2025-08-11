@@ -107,8 +107,8 @@ jobs:
           cd e2e
           
           # Focus on PR-related web tests using package.json command
-          echo "🎭 Running PR detail web e2e tests..."
-          npm run test:prod-branch:web:pr-detail
+          echo "🎭 Running PR feed web e2e tests..."
+          npm run test:prod-branch:web:pr-feed
           
           echo "✅ PR e2e tests completed successfully"
         env:
@@ -146,7 +146,7 @@ jobs:
           echo "🔗 API Service: ${{ inputs.api_url }}"
           echo "🌿 Branch: ${{ inputs.branch_name }}"
           echo "🔢 PR: #${{ inputs.pr_number }}"
-          echo "🔍 Test Focus: PR feed and detail functionality"
+          echo "🔍 Test Focus: PR feed functionality"
           
           if [ $? -eq 0 ]; then
             echo "✅ PR e2e tests completed successfully!"
