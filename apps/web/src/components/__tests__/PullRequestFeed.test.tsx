@@ -33,16 +33,6 @@ jest.mock('../pull-request-feed/PullRequestFeedListCard', () => ({
   )
 }));
 
-jest.mock('../pull-request-feed/PullRequestFeedDetailCard', () => ({
-  default: ({ isOpen, onClose, pullRequest }: any) => (
-    isOpen ? (
-      <div data-testid="detail-modal" onClick={onClose}>
-        <h1>{pullRequest?.title || 'Loading...'}</h1>
-        <button onClick={onClose}>Close</button>
-      </div>
-    ) : null
-  )
-}));
 
 // Mock data
 const mockPullRequestsResponse = {
@@ -96,24 +86,6 @@ const mockPullRequestsResponse = {
   }
 };
 
-const mockDetailedPRResponse = {
-  data: {
-    ...mockPullRequestsResponse.data.data[0],
-    updated_at: '2024-01-16T12:15:00Z',
-    closed_at: null,
-    draft: false,
-    commits: 8,
-    additions: 142,
-    deletions: 73,
-    changed_files: 12,
-    comments: 5,
-    author: {
-      login: 'lmcrean',
-      avatar_url: 'https://github.com/lmcrean.png',
-      html_url: 'https://github.com/lmcrean'
-    }
-  }
-};
 
 describe('PullRequestFeed', () => {
   beforeEach(() => {
@@ -349,13 +321,18 @@ describe('PullRequestFeed', () => {
     });
   });
 
-  describe('Modal Interactions', () => {
+  describe('GitHub Link Interactions', () => {
     beforeEach(() => {
-      mockedApiClient.get.mockResolvedValueOnce(mockPullRequestsResponse)
-                      .mockResolvedValueOnce(mockDetailedPRResponse);
+      mockedApiClient.get.mockResolvedValue(mockPullRequestsResponse);
+      // Mock window.open
+      global.open = jest.fn();
     });
 
-    it('opens modal when PR card is clicked', async () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('opens GitHub PR in new tab when card is clicked', async () => {
       render(<PullRequestFeed />);
       
       await waitFor(() => {
@@ -364,12 +341,14 @@ describe('PullRequestFeed', () => {
       
       fireEvent.click(screen.getByTestId('pr-card-1'));
       
-      await waitFor(() => {
-        expect(screen.getByTestId('detail-modal')).toBeInTheDocument();
-      });
+      expect(global.open).toHaveBeenCalledWith(
+        'https://github.com/lmcrean/repo1/pull/123',
+        '_blank',
+        'noopener,noreferrer'
+      );
     });
 
-    it('fetches detailed PR data when card is clicked', async () => {
+    it('does not call API for detail data when card is clicked', async () => {
       render(<PullRequestFeed />);
       
       await waitFor(() => {
@@ -378,47 +357,14 @@ describe('PullRequestFeed', () => {
       
       fireEvent.click(screen.getByTestId('pr-card-1'));
       
-      await waitFor(() => {
-        expect(mockedApiClient.get).toHaveBeenCalledWith('/api/github/pull-requests/lmcrean/repo1/123');
-      });
-    });
-
-    it('closes modal when close is clicked', async () => {
-      render(<PullRequestFeed />);
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('pr-card-1')).toBeInTheDocument();
-      });
-      
-      fireEvent.click(screen.getByTestId('pr-card-1'));
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('detail-modal')).toBeInTheDocument();
-      });
-      
-      fireEvent.click(screen.getByText('Close'));
-      
-      await waitFor(() => {
-        expect(screen.queryByTestId('detail-modal')).not.toBeInTheDocument();
-      });
-    });
-
-    it('handles modal API errors gracefully', async () => {
-      const detailError = new Error('Failed to load details');
-      mockedApiClient.get.mockResolvedValueOnce(mockPullRequestsResponse)
-                      .mockRejectedValueOnce(detailError);
-      
-      render(<PullRequestFeed />);
-      
-      await waitFor(() => {
-        expect(screen.getByTestId('pr-card-1')).toBeInTheDocument();
-      });
-      
-      fireEvent.click(screen.getByTestId('pr-card-1'));
-      
-      // Modal should still open even if detail fetch fails
-      await waitFor(() => {
-        expect(screen.getByTestId('detail-modal')).toBeInTheDocument();
+      // Should only have called for initial list, not detail
+      expect(mockedApiClient.get).toHaveBeenCalledTimes(1);
+      expect(mockedApiClient.get).toHaveBeenCalledWith('/api/github/pull-requests', {
+        params: {
+          username: 'lmcrean',
+          page: 1,
+          per_page: 20
+        }
       });
     });
   });

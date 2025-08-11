@@ -10,7 +10,7 @@ import ProjectCarousel from '@site/src/components/ProjectCarousel';
 import TechBadges from '@site/src/components/project/TechBadges';
 import TestBadges from '@site/src/components/project/TestBadges';
 import GitHubBadges from '@site/src/components/project/GitHubBadges';
-import TypewriterTitle from '@site/src/components/TypewriterTitleWrapper';
+import TypewriterTitle from '@site/src/components/TypewriterTitle';
 
 <div className="archive-page">
 

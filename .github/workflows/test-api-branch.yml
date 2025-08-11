@@ -88,11 +88,11 @@ jobs:
           BRANCH_NAME: ${{ inputs.branch_name }}
           GITHUB_HEAD_REF: ${{ inputs.branch_name }}
       
-      - name: 🧪 Run Pull Request Detail API Tests
+      - name: 🧪 Run Pull Request Feed API Tests
         run: |
           cd e2e
-          echo "🎯 Running PR Detail API tests at: ${{ inputs.api_deployment_url }}"
-          npm run test:prod-branch:api:pr-detail
+          echo "🎯 Running PR Feed API tests at: ${{ inputs.api_deployment_url }}"
+          npm run test:prod-branch:api:pr-feed
         env:
           API_BASE_URL: ${{ inputs.api_deployment_url }}
           API_DEPLOYMENT_URL: ${{ inputs.api_deployment_url }}

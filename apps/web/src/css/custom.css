@@ -22,15 +22,6 @@
   /* Custom sidebar variables */
   --sidebar-project-indent: 1rem;
   --sidebar-item-indent: 0.5rem;
-
-  /* Pull Request Feed light mode colors */
-  --text-primary: #111827;
-  --text-secondary: #374151;
-  --text-muted: #6b7280;
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-hover: #f9fafb;
-  --border-color: #e5e7eb;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -52,15 +43,6 @@
   --ifm-heading-color: #ffffff;
   --ifm-footer-background-color: #121212;
   --ifm-footer-color: #eaeaea;
-
-  /* Pull Request Feed dark mode colors */
-  --text-primary: #ffffff;
-  --text-secondary: #d1d5db;
-  --text-muted: #9ca3af;
-  --bg-primary: #1f2937;
-  --bg-secondary: #374151;
-  --bg-hover: #374151;
-  --border-color: #4b5563;
 }
 
 /* Smooth transition for theme switching */
