@@ -1,9 +1,10 @@
-import * as React from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { PullRequestFeedProps, PullRequestListData } from '@shared/types/pull-requests';
 import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
 import LoadingErrorStates from './components/LoadingErrorStates';
 import PullRequestList from './components/PullRequestList';
+import PullRequestPagination from './components/PullRequestPagination';
 import PullRequestFeedDetailCard from './detail-card';
 
 export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
@@ -24,26 +25,34 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   });
 
   // Track if initial fetch has been performed
-  const initialFetchRef = React.useRef(false);
+  const initialFetchRef = useRef(false);
 
   // Handle card click with API hook
-  const handleCardClick = React.useCallback((pr: PullRequestListData) => {
+  const handleCardClick = useCallback((pr: PullRequestListData) => {
     api.fetchPullRequestDetails(pr);
   }, [api]);
 
+  // Handle pagination
+  const handlePageChange = useCallback((newPage: number) => {
+    const validPage = state.handlePageChange(newPage);
+    if (validPage) {
+      api.fetchPullRequests(validPage);
+    }
+  }, [state, api]);
+
   // Retry function
-  const handleRetry = React.useCallback(() => {
+  const handleRetry = useCallback(() => {
     state.clearError();
     api.fetchPullRequests(state.currentPage);
   }, [api, state]);
 
   // Hydration-safe effect to detect client-side rendering
-  React.useEffect(() => {
+  useEffect(() => {
     state.setIsClient(true);
   }, [state]);
 
   // Initial load with proper cleanup - only run once on client side
-  React.useEffect(() => {
+  useEffect(() => {
     if (!state.isClient || initialFetchRef.current) return;
     
     // Mark that initial fetch is starting
@@ -62,7 +71,7 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   }, [state.isClient]); // Only depend on isClient
 
   // Cleanup on unmount and username change
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       api.cleanup();
     };
@@ -95,6 +104,13 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
         username={username}
         className={className}
         onCardClick={handleCardClick}
+      />
+
+      <PullRequestPagination
+        pagination={state.pagination}
+        currentPage={state.currentPage}
+        loading={state.loading}
+        onPageChange={handlePageChange}
       />
 
       {/* Detail Modal */}

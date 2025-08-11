@@ -33,8 +33,6 @@ export const usePullRequestApi = ({
   const detailAbortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
 
-  const DEFAULT_PER_PAGE = 20;
-
   // Fetch pull requests list with proper cancellation
   const fetchPullRequests = useCallback(async (page: number = 1) => {
     try {
@@ -51,15 +49,13 @@ export const usePullRequestApi = ({
       
       console.log(`🔄 Fetching pull requests page ${page} for ${username}...`);
       
-      const requestedPerPage = DEFAULT_PER_PAGE;
-
       const response = await apiClient.get<ApiResponse>(
         '/api/github/pull-requests',
         {
           params: {
             username,
             page,
-            per_page: requestedPerPage
+            per_page: 20
           },
           signal: listAbortControllerRef.current.signal
         }
@@ -67,54 +63,8 @@ export const usePullRequestApi = ({
 
       // Only update state if component is still mounted
       if (isMountedRef.current && !listAbortControllerRef.current.signal.aborted) {
-        let listData = response.data.data as PullRequestListData[];
-        let pagination = response.data.meta.pagination as PaginationMeta;
-
-        // Fallback: some API deployments return empty arrays for page > 1
-        // Work around by fetching a larger first page and slicing client-side
-        if (page > 1 && listData.length === 0 && pagination.total_count > 0) {
-          try {
-            const endIndex = page * requestedPerPage;
-            const fallbackPerPage = Math.min(50, endIndex); // API caps at 50
-
-            console.warn(
-              `⚠️ Empty page ${page} received. Applying client-side pagination fallback with per_page=${fallbackPerPage}`
-            );
-
-            const fallbackResp = await apiClient.get<ApiResponse>(
-              '/api/github/pull-requests',
-              {
-                params: {
-                  username,
-                  page: 1,
-                  per_page: fallbackPerPage
-                },
-                signal: listAbortControllerRef.current.signal
-              }
-            );
-
-            const all = fallbackResp.data.data as PullRequestListData[];
-            const totalCount = fallbackResp.data.meta.pagination.total_count;
-            const start = (page - 1) * requestedPerPage;
-            const end = start + requestedPerPage;
-
-            listData = all.slice(start, end);
-
-            pagination = {
-              page,
-              per_page: requestedPerPage,
-              total_count: totalCount,
-              total_pages: Math.max(1, Math.ceil(totalCount / requestedPerPage)),
-              has_next_page: end < totalCount,
-              has_previous_page: page > 1
-            } as PaginationMeta;
-          } catch (fallbackErr) {
-            console.error('❌ Fallback pagination failed:', fallbackErr);
-          }
-        }
-
-        console.log(`✅ Successfully fetched ${listData.length} pull requests`);
-        onListSuccess(listData, pagination);
+        console.log(`✅ Successfully fetched ${response.data.data.length} pull requests`);
+        onListSuccess(response.data.data, response.data.meta.pagination);
       }
     } catch (err: any) {
       // Only handle errors if component is still mounted and request wasn't cancelled

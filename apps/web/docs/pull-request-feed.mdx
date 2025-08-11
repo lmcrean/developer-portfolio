@@ -15,4 +15,130 @@ import PullRequestFeed from '../src/components/pull-request-feed/PullRequestFeed
 <PullRequestFeed username="lmcrean" className="mb-8" />
 
 ---
- 
+
+## About This Component
+
+A responsive React component that displays GitHub pull request activity with detailed modal views.
+
+### Features
+
+- **Mobile-first responsive design** with full-screen modals on mobile
+- **Real-time pull request data** from GitHub API
+- **Interactive list cards** with quick scan information
+- **Detailed modal views** with complete PR metadata
+- **Pagination support** for large datasets
+- **Loading and error states** with retry functionality
+- **Tailwind CSS styling** with smooth animations
+- **Accessibility features** including keyboard navigation and screen reader support
+
+### Usage
+
+```tsx
+import PullRequestFeed from '../components/pull-request-feed/PullRequestFeed';
+
+// Basic usage with default username
+<PullRequestFeed />
+
+// With custom username
+<PullRequestFeed username="octocat" />
+
+// With custom styling
+<PullRequestFeed 
+  username="lmcrean" 
+  className="my-8" 
+/>
+```
+
+### Component Structure
+
+The feed consists of three main components:
+
+#### 1. PullRequestFeed (Main Container)
+- Manages state and API calls
+- Handles pagination
+- Coordinates between list and detail views
+
+#### 2. PullRequestFeedListCard
+- Individual PR cards in the list view
+- Shows status, title, description preview, repository, and language
+- Responsive mobile-first design
+
+#### 3. PullRequestFeedDetailCard
+- Full-screen modal with complete PR details
+- Statistics, timeline, and action buttons
+- Smooth animations and backdrop blur
+
+### API Integration
+
+The component connects to the GitHub API backend:
+
+- **Local Development**: `http://localhost:3001/api/github/pull-requests`
+- **Production**: `https://api-github-lmcreans-projects.vercel.app/api/github/pull-requests`
+
+### Mobile Experience
+
+#### List View (Mobile)
+- Full-width cards with touch-friendly 44px+ targets
+- Clear visual hierarchy with status indicators
+- Relative timestamps (e.g., "2 days ago")
+- Repository and language badges
+
+#### Detail Modal (Mobile)
+- Full-screen modal with slide-up animation
+- Sticky header with back/close buttons
+- Scrollable content with organized sections
+- Large action buttons for easy interaction
+
+### Status Colors
+- **Merged**: Purple 🟣
+- **Open**: Green 🟢  
+- **Closed**: Red 🔴
+- **Draft**: Gray ⚪
+
+### Accessibility Features
+
+- **Semantic HTML** with proper roles and ARIA labels
+- **Keyboard navigation** with focus management
+- **Screen reader support** with descriptive text
+- **Focus trapping** within modals
+- **Escape key** to close modals
+- **Color contrast** meeting WCAG guidelines
+
+<style>
+{`
+.live-badge-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(45deg, #ef4444, #dc2626);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  animation: pulse 2s infinite;
+}
+
+.live-description {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+`}
+</style> 

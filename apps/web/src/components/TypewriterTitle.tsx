@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 
 interface TypewriterTitleProps {
   text: string;
@@ -31,23 +31,23 @@ const TypewriterTitle: React.FC<TypewriterTitleProps> = ({
   level = 'h1',
   id
 }) => {
-  const elementRef = React.useRef<HTMLHeadingElement>(null);
-  const [isVisible, setIsVisible] = React.useState<boolean>(false);
-  const [displayText, setDisplayText] = React.useState<string>('');
-  const [currentIndex, setCurrentIndex] = React.useState<number>(0);
-  const [hasStarted, setHasStarted] = React.useState<boolean>(false);
-  const [isClient, setIsClient] = React.useState<boolean>(false);
+  const elementRef = useRef<HTMLHeadingElement>(null);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [displayText, setDisplayText] = useState<string>('');
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState<boolean>(false);
 
   // Create the heading element
   const HeadingTag = level;
 
   // Set client-side flag
-  React.useEffect(() => {
+  useEffect(() => {
     setIsClient(true);
   }, []);
 
   // Only run IntersectionObserver on client side
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isClient) return;
 
     const observer = new IntersectionObserver(
@@ -78,7 +78,7 @@ const TypewriterTitle: React.FC<TypewriterTitleProps> = ({
   }, [delay, hasStarted, isClient]);
 
   // Typewriter effect
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isClient) return;
 
     if (hasStarted && currentIndex < text.length) {
