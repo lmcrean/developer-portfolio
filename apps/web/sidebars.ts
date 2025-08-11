@@ -17,7 +17,7 @@ const sidebars: SidebarsConfig = {
   docs: [
     {
       type: 'doc',
-      id: 'pull-request-feed',
+      id: 'index',
       label: 'Pull Requests',
       customProps: {
         badge: 'live'

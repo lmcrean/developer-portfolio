@@ -24,7 +24,6 @@ export const LoadingErrorStates: React.FC<LoadingErrorStatesProps> = ({
     return (
       <div className={`w-full max-w-4xl mx-auto p-4 ${className}`} data-testid="pull-request-feed">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Pull Request Activity</h2>
           <p className="text-gray-600 dark:text-gray-300">
             {!isClient ? 'Initializing...' : `Loading pull requests for ${username}...`}
           </p>
