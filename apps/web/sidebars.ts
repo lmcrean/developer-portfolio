@@ -17,11 +17,6 @@ const sidebars: SidebarsConfig = {
   docs: [
     {
       type: 'doc',
-      id: 'index',
-      label: 'Software Projects',
-    },
-    {
-      type: 'doc',
       id: 'pull-request-feed',
       label: 'Pull Requests',
       customProps: {
