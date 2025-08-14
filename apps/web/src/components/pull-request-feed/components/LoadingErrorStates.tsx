@@ -22,7 +22,7 @@ export const LoadingErrorStates: React.FC<LoadingErrorStatesProps> = ({
   // Show loading state during SSR and initial client load
   if (!isClient || (loading && pullRequestsLength === 0)) {
     return (
-      <div className={`w-full max-w-4xl mx-auto p-4 ${className}`} data-testid="pull-request-feed">
+      <div className={`w-full p-4 ${className}`} data-testid="pull-request-feed">
         <div className="mb-6">
           <p className="text-gray-300 light:text-gray-600">
             {!isClient ? 'Initializing...' : `Loading pull requests for ${username}...`}
@@ -46,7 +46,7 @@ export const LoadingErrorStates: React.FC<LoadingErrorStatesProps> = ({
   // Error state
   if (error && pullRequestsLength === 0) {
     return (
-      <div className={`w-full max-w-4xl mx-auto p-4 ${className}`} data-testid="pull-request-feed">
+      <div className={`w-full p-4 ${className}`} data-testid="pull-request-feed">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-white light:text-gray-900 mb-2">Pull Request Activity</h2>
           <p className="text-gray-300 light:text-gray-600">Error loading pull requests</p>
