@@ -31,7 +31,7 @@ export const PullRequestPagination: React.FC<PullRequestPaginationProps> = ({
           <span>Previous</span>
         </button>
         
-        <div className="text-sm text-gray-400 light:text-gray-600 font-medium">
+        <div className="text-sm text-gray-300 light:text-gray-600 font-medium">
           Page {currentPage} of {pagination.total_pages}
         </div>
         
