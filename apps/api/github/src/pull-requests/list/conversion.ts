@@ -76,7 +76,11 @@ export async function fetchDetailedPRData(
       name: repo,
       description: repoData.description,
       language: repoData.language ?? null,
-      html_url: repoData.html_url
+      html_url: repoData.html_url,
+      owner: {
+        login: repoData.owner.login,
+        avatar_url: repoData.owner.avatar_url
+      }
     }
   };
 } 
