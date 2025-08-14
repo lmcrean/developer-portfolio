@@ -15,6 +15,10 @@ export interface PullRequestListData {
     description: string | null;
     language: string | null;
     html_url: string;
+    owner: {
+      login: string;
+      avatar_url: string;
+    };
   };
 }
 
