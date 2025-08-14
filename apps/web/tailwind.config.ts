@@ -5,6 +5,7 @@ const config: Config = {
     "./src/**/*.{js,jsx,ts,tsx,mdx}",
     "./docs/**/*.mdx",
     "./blog/**/*.mdx",
+    "../../shared/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
     extend: {

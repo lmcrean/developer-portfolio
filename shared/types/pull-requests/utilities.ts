@@ -36,10 +36,11 @@ export const formatAbsoluteDate = (dateString: string | null | undefined): strin
 };
 
 export const getStatusDisplay = (state: string | null | undefined, mergedAt: string | null, draft?: boolean) => {
-  if (draft) return { emoji: '•', text: 'draft', color: 'text-gray-600 dark:text-gray-400' };
-  if (mergedAt) return { emoji: '•', text: 'merged', color: 'text-purple-600 dark:text-purple-400' };
-  if (state === 'open') return { emoji: '○', text: 'open', color: 'text-green-600 dark:text-green-400' };
-  return { emoji: '×', text: 'closed', color: 'text-red-600 dark:text-red-400' };
+  if (draft) return { emoji: '•', text: 'draft', color: 'text-gray-400 dark:text-gray-500' };
+  // Light mode: monochrome; Dark mode: colorful
+  if (mergedAt) return { emoji: '•', text: 'merged', color: 'text-teal-600' };
+  if (state === 'open') return { emoji: '○', text: 'open', color: '!text-yellow-300' };
+  return { emoji: '×', text: 'closed', color: 'text-pink-600' };
 };
 
 export const getTitleIcon = (title: string | null | undefined): string => {
