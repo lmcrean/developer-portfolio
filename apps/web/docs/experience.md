@@ -13,7 +13,7 @@ My work experience demonstrates an contribution to the crucial intersection betw
 May 2023 - present 
 
 - Managed my own freelance software development practise. Required exceptional time management skills.
-- See [Projects](/projects) for more details.
+- See my portfolio projects on the [homepage](/) for more details.
 - Developed a range of software solutions. Use cases are currently hypothetical with intention of deploying real products in the future.
 - Networked with range of collaborators through hackathons and meetups.
 
