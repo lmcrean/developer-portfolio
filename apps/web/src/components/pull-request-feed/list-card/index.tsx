@@ -43,14 +43,14 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
     >
       {/* Repository Column */}
       <div className="col-span-3 flex items-center">
-        <span className="text-gray-400 light:text-gray-600 font-medium text-sm truncate">
+        <span className="pr-text-primary font-medium text-sm truncate">
           {pullRequest.repository.name}
         </span>
       </div>
 
       {/* Title Column */}
       <div className="col-span-5 flex items-center">
-        <span className="text-gray-400 light:text-gray-600 text-sm truncate">
+        <span className="pr-text-primary text-sm truncate">
           {pullRequest.title}
         </span>
       </div>
@@ -58,11 +58,11 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       {/* Language Column */}
       <div className="col-span-2 flex items-center">
         {pullRequest.repository.language ? (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-gray-300 light:text-gray-700 bg-gray-600 light:bg-gray-200">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium pr-text-secondary bg-gray-600 light:bg-gray-200">
             {pullRequest.repository.language}
           </span>
         ) : (
-          <span className="text-gray-500 light:text-gray-400 text-xs">—</span>
+          <span className="pr-text-muted text-xs">—</span>
         )}
       </div>
 
@@ -73,7 +73,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
             <span>{status.emoji}</span>
             <span>{status.text}</span>
           </div>
-          <span className="text-gray-400 light:text-gray-500 text-xs">
+          <span className="pr-text-muted text-xs">
             {relativeTime}
           </span>
         </div>

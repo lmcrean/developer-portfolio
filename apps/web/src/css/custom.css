@@ -260,4 +260,41 @@ html {
   margin-right: 8px;
 }
 
+/* Pull Request Feed Text Color Utilities */
+/* Primary text in pull request components */
+.pr-text-primary {
+  color: #e2e8f0; /* Lighter gray for better readability in dark mode */
+}
+
+[data-theme='light'] .pr-text-primary {
+  color: var(--ifm-font-color-base);
+}
+
+/* Secondary text in pull request components */
+.pr-text-secondary {
+  color: #cbd5e1; /* Light gray for secondary text in dark mode */
+}
+
+[data-theme='light'] .pr-text-secondary {
+  color: var(--ifm-font-color-base);
+}
+
+/* Muted text in pull request components */
+.pr-text-muted {
+  color: #94a3b8; /* Medium-light gray for muted text in dark mode */
+}
+
+[data-theme='light'] .pr-text-muted {
+  color: var(--ifm-font-color-base);
+}
+
+/* Table header text */
+.pr-text-header {
+  color: #cbd5e1; /* Light gray for headers in dark mode */
+}
+
+[data-theme='light'] .pr-text-header {
+  color: var(--ifm-font-color-base);
+}
+
 
