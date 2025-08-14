@@ -91,7 +91,7 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts',
+          sidebarPath: false, // Disable sidebar entirely
           // Set routeBasePath to '/' to make docs the landing page
           routeBasePath: '/',
           // Remove the edit URL
@@ -144,12 +144,6 @@ const config: Config = {
       defaultMode: 'dark',
       disableSwitch: false,
       respectPrefersColorScheme: true,
-    },
-    docs: {
-      sidebar: {
-        hideable: false,
-        autoCollapseCategories: false,
-      },
     },
     tableOfContents: {
       minHeadingLevel: 2,
