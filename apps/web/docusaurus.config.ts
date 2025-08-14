@@ -227,7 +227,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Laurie Crean. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Laurie Crean`,
     },
     prism: {
       theme: prismThemes.github,
