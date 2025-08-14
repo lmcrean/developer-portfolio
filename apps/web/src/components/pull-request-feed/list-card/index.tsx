@@ -26,7 +26,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
   return (
     <div 
-      className="grid grid-cols-12 gap-4 px-4 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 hover:shadow-sm"
+      className="grid grid-cols-12 gap-4 px-4 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-900/20 light:hover:bg-blue-50 focus:outline-none focus:bg-blue-900/20 light:focus:bg-blue-50 hover:shadow-sm"
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -43,14 +43,14 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
     >
       {/* Repository Column */}
       <div className="col-span-3 flex items-center">
-        <span className="text-gray-900 dark:text-white font-medium text-sm truncate">
+        <span className="text-gray-400 light:text-gray-600 font-medium text-sm truncate">
           {pullRequest.repository.name}
         </span>
       </div>
 
       {/* Title Column */}
       <div className="col-span-5 flex items-center">
-        <span className="text-gray-900 dark:text-white text-sm truncate">
+        <span className="text-gray-400 light:text-gray-600 text-sm truncate">
           {pullRequest.title}
         </span>
       </div>
@@ -58,11 +58,11 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       {/* Language Column */}
       <div className="col-span-2 flex items-center">
         {pullRequest.repository.language ? (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-gray-300 light:text-gray-700 bg-gray-600 light:bg-gray-200">
             {pullRequest.repository.language}
           </span>
         ) : (
-          <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
+          <span className="text-gray-500 light:text-gray-400 text-xs">—</span>
         )}
       </div>
 
@@ -73,7 +73,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
             <span>{status.emoji}</span>
             <span>{status.text}</span>
           </div>
-          <span className="text-gray-500 dark:text-gray-400 text-xs">
+          <span className="text-gray-400 light:text-gray-500 text-xs">
             {relativeTime}
           </span>
         </div>

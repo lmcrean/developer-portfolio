@@ -20,7 +20,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
   return (
     <div className={`w-full p-4 ${className}`} data-testid="pull-request-feed" style={{ fontFamily: '"IBM Plex Serif", serif' }}>
       {/* Table Header */}
-      <div className="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-semibold text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+      <div className="grid grid-cols-12 gap-4 px-4 py-3 text-sm font-semibold text-gray-400 light:text-gray-600 border-b border-gray-700 light:border-gray-200">
         <div className="col-span-3">Repository</div>
         <div className="col-span-5">Title</div>
         <div className="col-span-2">Language</div>
@@ -28,7 +28,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
       </div>
 
       {/* Table Rows */}
-      <div className="divide-y divide-gray-200 dark:divide-gray-700" style={{ borderTop: 'none' }}>
+      <div className="divide-y divide-gray-700 light:divide-gray-200" style={{ borderTop: 'none' }}>
         {pullRequests.map((pr) => (
           <PullRequestFeedListCard
             key={pr.id}
