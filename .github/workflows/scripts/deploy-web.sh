@@ -24,7 +24,11 @@ echo "🚀 Deploying web app in $MODE mode..."
 # Install web dependencies
 echo "📦 Installing web dependencies..."
 cd apps/web
-npm ci
+# Try npm ci first, fall back to npm install if lock file is out of sync
+npm ci || {
+  echo "⚠️ npm ci failed, falling back to npm install..."
+  npm install
+}
 
 # Run web tests
 echo "🧪 Running web tests..."

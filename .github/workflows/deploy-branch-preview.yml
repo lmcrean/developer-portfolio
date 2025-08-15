@@ -28,6 +28,19 @@ jobs:
           cache: 'npm'
           cache-dependency-path: apps/web/package-lock.json
       
+      - name: 🔧 Generate Static Data
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+          GITHUB_USERNAME: lmcrean
+        run: |
+          chmod +x .github/workflows/scripts/generate-static-data.sh
+          ./.github/workflows/scripts/generate-static-data.sh
+      
+      - name: 📁 Copy Static Data to Web App
+        run: |
+          chmod +x .github/workflows/scripts/copy-static-data.sh
+          ./.github/workflows/scripts/copy-static-data.sh
+      
       - name: 🏗️ Prepare Web App
         run: |
           chmod +x .github/workflows/scripts/deploy-web.sh
@@ -49,19 +62,6 @@ jobs:
           DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
           echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
           echo "🌐 Branch Preview URL: $DEPLOYMENT_URL"
-
-      - name: 🔧 Generate Static Data
-        env:
-          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-          GITHUB_USERNAME: lmcrean
-        run: |
-          chmod +x .github/workflows/scripts/generate-static-data.sh
-          ./.github/workflows/scripts/generate-static-data.sh
-      
-      - name: 📁 Copy Static Data to Web App
-        run: |
-          chmod +x .github/workflows/scripts/copy-static-data.sh
-          ./.github/workflows/scripts/copy-static-data.sh
       
       - name: 🌐 Test Static Data
         run: |

@@ -48,7 +48,7 @@ if [ -f "$metadata_source" ]; then
     exit 1
   fi
   echo "✅ Successfully copied metadata as pr-metadata.json"
-  ((copied_count++))
+  copied_count=$((copied_count + 1))
 else
   echo "❌ Metadata file not found: $metadata_source"
   exit 1
@@ -71,7 +71,7 @@ for api_file in "$API_STATIC_DIR"/page-*.json; do
       exit 1
     fi
     
-    ((copied_count++))
+    copied_count=$((copied_count + 1))
     echo "✅ Successfully copied $filename as pr-page-${page_num}.json"
   fi
 done
