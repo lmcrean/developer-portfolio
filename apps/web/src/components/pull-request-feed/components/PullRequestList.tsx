@@ -210,7 +210,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
             {!hasMoreItems && !isLoadingMore && (
               <div className="px-4 py-6 text-center">
                 <span className="text-sm text-gray-500 light:text-gray-400 font-medium">
-                  🎉 You've reached the end! All pull requests loaded.
+                  Visit github for more.
                 </span>
               </div>
             )}
