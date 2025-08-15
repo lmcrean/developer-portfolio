@@ -2,7 +2,6 @@ import React, { useEffect, useCallback, useRef } from 'react';
 import { PullRequestFeedProps, PullRequestListData } from '@shared/types/pull-requests';
 import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
-import LoadingErrorStates from './components/LoadingErrorStates';
 import PullRequestList from './components/PullRequestList';
 import PullRequestPagination from './components/PullRequestPagination';
 
@@ -75,25 +74,6 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     };
   }, [username, api.cleanup]); // Only depend on username and cleanup function
 
-  // Show loading state during SSR and initial client load
-  const shouldShowLoadingError = !state.isClient || 
-    (state.loading && state.pullRequests.length === 0) || 
-    (state.error && state.pullRequests.length === 0);
-
-  if (shouldShowLoadingError) {
-    return (
-      <LoadingErrorStates
-        loading={state.loading}
-        error={state.error}
-        pullRequestsLength={state.pullRequests.length}
-        username={username}
-        className={className}
-        isClient={state.isClient}
-        onRetry={handleRetry}
-      />
-    );
-  }
-
   return (
     <>
       <PullRequestList
@@ -101,7 +81,11 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
         pagination={state.pagination}
         username={username}
         className={className}
+        loading={state.loading}
+        error={state.error}
+        isClient={state.isClient}
         onCardClick={handleCardClick}
+        onRetry={handleRetry}
       />
 
       <PullRequestPagination
