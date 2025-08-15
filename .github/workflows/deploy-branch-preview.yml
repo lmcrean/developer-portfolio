@@ -12,7 +12,7 @@ permissions:
   checks: write
 
 jobs:
-  deploy-web:
+  deploy:
     runs-on: ubuntu-latest
     outputs:
       deployment_url: ${{ steps.set_url.outputs.deployment_url }}
@@ -28,47 +28,18 @@ jobs:
           cache: 'npm'
           cache-dependency-path: apps/web/package-lock.json
       
-      - name: 📥 Install Web Dependencies  
-        run: |
-          cd apps/web
-          npm ci
-      
-      - name: 📥 Install API Dependencies for Static Generation
-        run: |
-          cd apps/api/github
-          npm ci
-      
       - name: 🔧 Generate Static Data
         env:
           GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
           GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
         run: |
-          cd apps/api/github
-          npm run build
-          npm run generate-static-data
-          
-          # Copy static data to web app (flattened structure)
-          cd static/pull-requests
-          cp metadata.json ../../web/static/pr-metadata.json
-          
-          for file in page-*.json; do
-            if [ -f "$file" ]; then
-              page_num=$(echo "$file" | sed 's/page-\([0-9]*\)\.json/\1/')
-              cp "$file" "../../web/static/pr-page-${page_num}.json"
-            fi
-          done
-          
-          echo "✅ Static data generated and copied to web app"
+          chmod +x .github/workflows/scripts/generate-static-data.sh
+          ./.github/workflows/scripts/generate-static-data.sh
       
-      - name: 🧪 Run Web Tests
+      - name: 🏗️ Prepare Web App
         run: |
-          cd apps/web
-          npm test 2>/dev/null || echo "⚠️ Tests not configured or failed"
-      
-      - name: 🏗️ Build Web App
-        run: |
-          cd apps/web
-          npm run build
+          chmod +x .github/workflows/scripts/deploy-web.sh
+          ./.github/workflows/scripts/deploy-web.sh branch ${{ github.event.number }}
       
       - name: 🔐 Deploy to Firebase (Branch Preview)
         uses: FirebaseExtended/action-hosting-deploy@v0
@@ -85,89 +56,20 @@ jobs:
         run: |
           DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
           echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "🌐 Branch Preview URL: $DEPLOYMENT_URL"
       
-      - name: ✅ Validate Web Deployment
+      - name: 🌐 Test Static Data
         run: |
-          WEB_URL="${{ steps.set_url.outputs.deployment_url }}"
-          echo "🔍 Testing branch preview web app at: $WEB_URL"
-          
-          for i in {1..3}; do
-            if curl -f "$WEB_URL" -m 15 >/dev/null 2>&1; then
-              echo "✅ Web app is accessible!"
-              break
-            fi
-            
-            if [ $i -eq 3 ]; then
-              echo "❌ Web accessibility test failed"
-              exit 1
-            fi
-            
-            sleep 10
-          done
-
-  test-static:
-    needs: deploy-web
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: 🌐 Test Static Data Serving
-        run: |
-          WEB_URL="${{ needs.deploy-web.outputs.deployment_url }}"
-          echo "🔍 Testing static data endpoints..."
-          
-          # Test metadata endpoint
-          if curl -f "$WEB_URL/pr-metadata.json" -m 15 > /dev/null; then
-            echo "✅ Static metadata endpoint working"
-          else
-            echo "❌ Static metadata endpoint failed"
-            exit 1
-          fi
-          
-          # Test first page endpoint
-          if curl -f "$WEB_URL/pr-page-1.json" -m 15 > /dev/null; then
-            echo "✅ Static page endpoint working"
-          else
-            echo "❌ Static page endpoint failed"
-            exit 1
-          fi
-          
-          echo "🚀 Static data serving validation complete!"
-
-  test-e2e:
-    needs: [deploy-web, test-static]
-    if: needs.test-static.result == 'success'
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: 🛒 Checkout Repository
-        uses: actions/checkout@v4
+          chmod +x .github/workflows/scripts/test-static-data.sh
+          ./.github/workflows/scripts/test-static-data.sh "${{ steps.set_url.outputs.deployment_url }}"
       
-      - name: 📦 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: e2e/package-lock.json
-      
-      - name: 📥 Install E2E Dependencies
+      - name: 🧪 Run E2E Tests
         run: |
-          cd e2e
-          npm ci
-      
-      - name: 🎭 Install Playwright Browsers
-        run: |
-          cd e2e
-          npx playwright install webkit
-      
-      - name: 🧪 Run Single-Server E2E Tests
-        run: |
-          cd e2e
-          npx playwright test tests/features/pull-request/single-server-quick-test.web.spec.ts --reporter=line
-        env:
-          WEB_URL: ${{ needs.deploy-web.outputs.deployment_url }}
+          chmod +x .github/workflows/scripts/run-e2e-tests.sh
+          ./.github/workflows/scripts/run-e2e-tests.sh "${{ steps.set_url.outputs.deployment_url }}"
         continue-on-error: true
       
-      - name: 📊 Upload E2E Test Results
+      - name: 📊 Upload Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -176,30 +78,18 @@ jobs:
             e2e/test-results/
             e2e/playwright-report/
           retention-days: 30
-
-  update-pr:
-    needs: [deploy-web, test-static, test-e2e]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - name: 💬 Update PR with Deployment Status
+      
+      - name: 💬 Update PR Comment
         uses: actions/github-script@v7
         with:
           script: |
-            const webUrl = '${{ needs.deploy-web.outputs.deployment_url }}';
-            const staticTestStatus = '${{ needs.test-static.result }}';
-            const e2eStatus = '${{ needs.test-e2e.result }}';
-            const webStatus = '${{ needs.deploy-web.result }}';
+            const webUrl = '${{ steps.set_url.outputs.deployment_url }}';
+            const webStatus = '${{ job.status }}';
             
-            // Determine overall test status
-            const allTestsPassed = staticTestStatus === 'success' && e2eStatus === 'success';
-            const statusEmoji = allTestsPassed ? '✅' : '⚠️';
-            const statusText = allTestsPassed ? 'All tests passed!' : 'Some tests failed';
+            const statusEmoji = webStatus === 'success' ? '✅' : '⚠️';
+            const statusText = webStatus === 'success' ? 'Deployment successful!' : 'Deployment completed with issues';
             
-            // Handle deployment failures
-            let deploymentSection = '';
-            if (webStatus === 'success') {
-              deploymentSection = `## 🚀 SINGLE-SERVER DEPLOYMENT
+            const commentBody = `## 🚀 SINGLE-SERVER DEPLOYMENT
 
             ### 🌐 Web App with Embedded Static Data
             **Live Preview:** [${webUrl}](${webUrl})
@@ -215,21 +105,7 @@ jobs:
             - **Same-origin requests** for optimal performance
             - **Automatic fallback** to live GitHub API if needed
 
-            ### 🧪 Test Results
-            - **Static Data Tests**: ${staticTestStatus === 'success' ? '✅ Passed' : staticTestStatus === 'skipped' ? '⏭️ Skipped' : '❌ Failed'}
-            - **E2E Tests**: ${e2eStatus === 'success' ? '✅ Passed' : e2eStatus === 'skipped' ? '⏭️ Skipped' : '❌ Failed'}
-            
-            ${statusEmoji} ${statusText}`;
-            } else {
-              deploymentSection = `## ❌ DEPLOYMENT FAILED
-
-            ### Deployment Status
-            - **Web**: ${webStatus === 'success' ? '✅' : '❌'} ${webStatus === 'success' ? webUrl : 'Deployment failed'}
-            
-            ${webStatus !== 'success' ? `**Web Error:** ${webUrl || 'Web deployment failed - check logs'}` : ''}`;
-            }
-
-            const commentBody = `${deploymentSection}
+            ${statusEmoji} ${statusText}
 
             ---
             *🔄 Last updated: ${new Date().toLocaleString()} UTC*
@@ -260,4 +136,4 @@ jobs:
                 repo: context.repo.repo,
                 body: commentBody
               });
-            } 
+            }
