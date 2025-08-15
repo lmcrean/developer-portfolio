@@ -71,27 +71,29 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           </div>
         </div>
 
-        {/* Row 2: Repository, Language, Changes, Status Details */}
-        <div className="flex items-center gap-3 text-sm pr-text-muted flex-wrap">
-          {/* Repository */}
-          <span className="font-medium pr-text-secondary">
-            {pullRequest.repository.name}
-          </span>
+        {/* Row 2: Left and Right sections */}
+        <div className="flex items-center justify-between text-sm pr-text-muted">
+          {/* Left: Organization and Repository */}
+          <div className="flex items-center gap-2">
+            <span className="pr-text-muted">
+              {pullRequest.repository.owner.login}:
+            </span>
+            <span className="font-medium pr-text-secondary">
+              {pullRequest.repository.name}
+            </span>
+          </div>
           
-          {/* Language */}
-          {pullRequest.repository.language && (
-            <>
-              <span>•</span>
+          {/* Right: Language, Changes, Time */}
+          <div className="flex items-center gap-3 flex-wrap max-sm:hidden">
+            {/* Language */}
+            {pullRequest.repository.language && (
               <span className="italic">
                 {pullRequest.repository.language}
               </span>
-            </>
-          )}
-          
-          {/* Changes */}
-          {bytesChange.hasData && (
-            <>
-              <span>•</span>
+            )}
+            
+            {/* Changes */}
+            {bytesChange.hasData && (
               <span className="font-mono text-xs">
                 <span className="text-green-400 light:text-green-600">
                   {bytesChange.formatted.split(' ')[0]}
@@ -101,14 +103,13 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
                   {bytesChange.formatted.split(' ')[1]}
                 </span>
               </span>
-            </>
-          )}
-          
-          {/* Time */}
-          <span>•</span>
-          <span className="text-xs">
-            {relativeTime}
-          </span>
+            )}
+            
+            {/* Time */}
+            <span className="text-xs">
+              {relativeTime}
+            </span>
+          </div>
         </div>
       </div>
     </div>
