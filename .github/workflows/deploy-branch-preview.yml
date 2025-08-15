@@ -31,7 +31,7 @@ jobs:
       - name: 🔧 Generate Static Data
         env:
           GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_USERNAME: lmcrean
         run: |
           chmod +x .github/workflows/scripts/generate-static-data.sh
           ./.github/workflows/scripts/generate-static-data.sh

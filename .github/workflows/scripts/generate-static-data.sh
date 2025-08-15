@@ -14,7 +14,10 @@ npm ci
 # Build and generate static data
 echo "⚡ Building API and generating static data..."
 npm run build
-npm run generate-static-data
+
+# Use compiled JS instead of ts-node for CI reliability
+echo "🔧 Running static data generation with compiled JavaScript..."
+node dist/scripts/generateStaticData.js
 
 # Copy static data to web app (flattened structure)
 echo "📁 Copying static data to web app..."
