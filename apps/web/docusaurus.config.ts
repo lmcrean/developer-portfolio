@@ -127,26 +127,6 @@ const config: Config = {
             ],
           };
         },
-        configureServer(app) {
-          // Add express middleware to serve JSON files with correct content-type
-          app.use('/static/pull-requests', (req, res, next) => {
-            if (req.path.endsWith('.json')) {
-              res.type('application/json');
-              const filePath = path.join(__dirname, 'static/pull-requests', req.path);
-              try {
-                const fs = require('fs');
-                if (fs.existsSync(filePath)) {
-                  const content = fs.readFileSync(filePath, 'utf8');
-                  res.send(content);
-                  return;
-                }
-              } catch (error) {
-                console.error('Error serving static JSON:', error);
-              }
-            }
-            next();
-          });
-        },
       };
     },
   ],
