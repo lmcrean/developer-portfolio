@@ -32,40 +32,19 @@ interface StaticPageData {
 
 /**
  * Get static API base URL for fetching pre-generated JSON files
+ * Now uses same-origin paths to serve static data from the web app itself
  */
 const getStaticApiBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
-    // Check for environment variables (same as axiosClient)
-    const docusaurusApiUrl = (window as any).DOCUSAURUS_API_BASE_URL;
-    const reactApiUrl = (window as any).REACT_APP_API_BASE_URL;
-    
-    if (docusaurusApiUrl) {
-      console.log('🔗 Using Docusaurus API URL for static data:', docusaurusApiUrl);
-      return docusaurusApiUrl;
-    }
-    
-    if (reactApiUrl) {
-      console.log('🔗 Using React API URL for static data:', reactApiUrl);
-      return reactApiUrl;
-    }
-    
-    // Check for runtime configuration
-    if ((window as any).APP_CONFIG?.apiBaseUrl) {
-      console.log('🔗 Using APP_CONFIG API URL for static data:', (window as any).APP_CONFIG.apiBaseUrl);
-      return (window as any).APP_CONFIG.apiBaseUrl;
-    }
-    
-    // Development fallback
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
-      console.log('🔗 Using development fallback for static data: http://localhost:3000');
-      return 'http://localhost:3000';
-    }
+    // Use same-origin (no protocol/host) for static data served by web app
+    const origin = window.location.origin;
+    console.log('🔗 Using same-origin for static data:', origin);
+    return origin;
   }
   
-  // Production fallback
-  console.log('🔗 Using production fallback for static data');
-  return 'https://api-github-main-329000596728.us-central1.run.app';
+  // Server-side rendering fallback (shouldn't be used for static data)
+  console.log('🔗 Using empty base URL for server-side rendering');
+  return '';
 };
 
 const STATIC_API_BASE_URL = getStaticApiBaseUrl();
