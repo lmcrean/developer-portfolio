@@ -1,0 +1,166 @@
+name: Scheduled Data Update (Every 6 Hours)
+
+on:
+  schedule:
+    # Run every 6 hours at 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update even if data is fresh'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+  deployments: write
+  checks: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_url: ${{ steps.set_url.outputs.deployment_url }}
+      data_updated: ${{ steps.staleness_check.outputs.needs_update }}
+    
+    steps:
+      - name: 🛒 Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+      
+      - name: 🕐 Check Data Staleness and New External Activity
+        id: staleness_check
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+        run: |
+          chmod +x .github/workflows/scripts/check-data-staleness.sh
+          
+          # Run staleness check script and capture output
+          SCRIPT_OUTPUT=$(./.github/workflows/scripts/check-data-staleness.sh "${{ github.event.inputs.force_update }}" "$GITHUB_TOKEN")
+          
+          # Parse script output and set GitHub Actions outputs
+          echo "$SCRIPT_OUTPUT" | while IFS= read -r line; do
+            case $line in
+              needs_update=*)
+                echo "$line" >> $GITHUB_OUTPUT
+                ;;
+              reason=*)
+                echo "$line" >> $GITHUB_OUTPUT
+                ;;
+              external_pr_count=*)
+                echo "$line" >> $GITHUB_OUTPUT
+                ;;
+            esac
+          done
+      
+      - name: 🔧 Generate Static Data
+        if: steps.staleness_check.outputs.needs_update == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+          GITHUB_USERNAME: lmcrean
+        run: |
+          chmod +x .github/workflows/scripts/generate-static-data.sh
+          ./.github/workflows/scripts/generate-static-data.sh
+      
+      - name: 📁 Copy Static Data to Web App
+        if: steps.staleness_check.outputs.needs_update == 'true'
+        run: |
+          chmod +x .github/workflows/scripts/copy-static-data.sh
+          ./.github/workflows/scripts/copy-static-data.sh
+      
+      - name: 🏗️ Prepare Web App
+        if: steps.staleness_check.outputs.needs_update == 'true'
+        run: |
+          chmod +x .github/workflows/scripts/deploy-web.sh
+          ./.github/workflows/scripts/deploy-web.sh main
+      
+      - name: 🔐 Deploy to Firebase (Production Data Update)
+        if: steps.staleness_check.outputs.needs_update == 'true'
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LAURIECREAN_FREE_38256 }}
+          projectId: lauriecrean-free-38256
+          channelId: live
+          entryPoint: apps/web
+        id: deploy
+        timeout-minutes: 10
+      
+      - name: 🔗 Set Deployment URL
+        if: steps.staleness_check.outputs.needs_update == 'true'
+        id: set_url
+        run: |
+          DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
+          
+          # Fallback to default production URL if deploy output is empty
+          if [[ -z "$DEPLOYMENT_URL" || "$DEPLOYMENT_URL" == "null" ]]; then
+            DEPLOYMENT_URL="https://lauriecrean-free-38256.web.app"
+          fi
+          
+          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "🌐 Updated Production URL: $DEPLOYMENT_URL"
+      
+      - name: 🌐 Validate Static Data
+        if: steps.staleness_check.outputs.needs_update == 'true'
+        run: |
+          chmod +x .github/workflows/scripts/test-static-data.sh
+          echo "🔍 Validating static data on updated deployment..."
+          ./.github/workflows/scripts/test-static-data.sh "${{ steps.set_url.outputs.deployment_url }}"
+        timeout-minutes: 5
+      
+      - name: 📊 Update Summary
+        run: |
+          echo "=== 🕐 SCHEDULED DATA UPDATE SUMMARY ==="
+          echo "🕒 Update Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "🔄 Trigger: ${{ github.event_name }}"
+          echo "📋 Update Needed: ${{ steps.staleness_check.outputs.needs_update }}"
+          echo "💡 Reason: ${{ steps.staleness_check.outputs.reason }}"
+          
+          # Show external activity info if available
+          if [ -n "${{ steps.staleness_check.outputs.external_pr_count }}" ]; then
+            echo "👥 External PRs Found: ${{ steps.staleness_check.outputs.external_pr_count }}"
+          fi
+          
+          if [ "${{ steps.staleness_check.outputs.needs_update }}" = "true" ]; then
+            echo "✅ Data successfully updated and deployed"
+            echo "🌐 Production URL: ${{ steps.set_url.outputs.deployment_url }}"
+            
+            case "${{ steps.staleness_check.outputs.reason }}" in
+              "new_external_activity")
+                echo "🎯 Updated due to new external pull request activity"
+                ;;
+              "very_stale")
+                echo "🔄 Updated due to very stale data (24+ hours)"
+                ;;
+              "moderately_stale_no_external")
+                echo "⏰ Updated due to moderately stale data with no external activity"
+                ;;
+              "force_requested")
+                echo "🔧 Updated due to manual force request"
+                ;;
+              *)
+                echo "🔄 Updated due to other staleness conditions"
+                ;;
+            esac
+          else
+            case "${{ steps.staleness_check.outputs.reason }}" in
+              "no_external_activity_data_fresh")
+                echo "😴 Skipped - no external activity and data is fresh"
+                ;;
+              "api_error_data_fresh")
+                echo "⏭️  Skipped - API error but data is still fresh"
+                ;;
+              *)
+                echo "⏭️  Skipped - data is still fresh"
+                ;;
+            esac
+          fi
+          
+          echo "🚀 Smart scheduled update process completed!"

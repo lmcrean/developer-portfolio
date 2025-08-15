@@ -192,12 +192,10 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
               aria-hidden="true"
             />
             
-            {/* Loading more indicator */}
+            {/* Loading more indicator -- currently empty as we predict expectionally fast speeds */}
             {isLoadingMore && (
               <div className="px-4 py-6 text-center">
                 <div className="inline-flex items-center space-x-2 text-gray-400 light:text-gray-600">
-                  <div className="animate-spin w-4 h-4 border-2 border-blue-500 light:border-blue-600 border-t-transparent rounded-full"></div>
-                  <span className="text-sm font-medium">Loading more pull requests...</span>
                 </div>
               </div>
             )}
