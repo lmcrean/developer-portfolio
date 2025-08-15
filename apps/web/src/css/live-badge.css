@@ -14,19 +14,17 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: linear-gradient(45deg, #ef4444, oklch(75% 0.183 55.934));
   color: white;
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  animation: pulse 2s infinite;
 }
 
 .live-description {
   color: #6b7280;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 @keyframes pulse {
