@@ -3,6 +3,7 @@ import { PullRequestFeedProps, PullRequestListData } from '@shared/types/pull-re
 import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
 import PullRequestList from './components/PullRequestList';
+import { applyManualOverrides, HIDDEN_REPOSITORIES, LIMITED_REPOSITORIES } from './config/manual-overrides';
 
 export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   username = 'lmcrean',
@@ -84,13 +85,10 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   const filteredPullRequests = useMemo(() => {
     const displayedPRs = state.allPullRequests.slice(0, state.displayedCount);
     
-    // Configuration for hidden repositories
-    const hiddenRepositories = ['team-5', 'halloween-hackathon'];
-    
     // Apply custom filtering
     let filtered = displayedPRs.filter(pr => {
-      // Hide completely blacklisted repositories
-      if (hiddenRepositories.includes(pr.repository.name)) {
+      // Hide completely blacklisted repositories from config
+      if (HIDDEN_REPOSITORIES.includes(pr.repository.name)) {
         return false;
       }
       
@@ -98,20 +96,27 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
       return pr.repository.owner.login !== username;
     });
     
-    // For penpot repository, keep only the most recent PR
-    const penpotPRs = filtered.filter(pr => pr.repository.name === 'penpot');
-    if (penpotPRs.length > 1) {
-      // Sort by created_at date (most recent first) and keep only the first one
-      const mostRecentPenpotPR = penpotPRs.sort((a, b) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      )[0];
-      
-      // Remove all penpot PRs and add back only the most recent one
-      filtered = filtered.filter(pr => pr.repository.name !== 'penpot');
-      filtered.push(mostRecentPenpotPR);
-    }
+    // Apply special filtering for limited repositories
+    Object.entries(LIMITED_REPOSITORIES).forEach(([repoName, filterType]) => {
+      if (filterType === 'keep-latest-only') {
+        const repoPRs = filtered.filter(pr => pr.repository.name === repoName);
+        if (repoPRs.length > 1) {
+          // Sort by created_at date (most recent first) and keep only the first one
+          const mostRecentPR = repoPRs.sort((a, b) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )[0];
+          
+          // Remove all PRs from this repo and add back only the most recent one
+          filtered = filtered.filter(pr => pr.repository.name !== repoName);
+          filtered.push(mostRecentPR);
+        }
+      }
+    });
     
-    return filtered;
+    // Apply manual overrides to fix incorrect data
+    const filteredWithOverrides = filtered.map(pr => applyManualOverrides(pr));
+    
+    return filteredWithOverrides;
   }, [state.allPullRequests, state.displayedCount, username]);
 
   return (
