@@ -23,10 +23,11 @@ node dist/scripts/generateStaticData.js
 echo "📁 Preparing static data in temp location..."
 cd static/pull-requests
 
-# Create temp directory for static data
-TEMP_STATIC_DIR="/tmp/pr-static-data"
+# Create temp directory for static data (at project root for CI safety)
+TEMP_STATIC_DIR="../../../../../temp-static-data"
 echo "🔧 Creating temp directory: $TEMP_STATIC_DIR"
 mkdir -p "$TEMP_STATIC_DIR"
+echo "📁 Temp directory created successfully at: $(realpath $TEMP_STATIC_DIR)"
 
 # Copy metadata with flattened naming to temp location
 echo "📋 Copying metadata to temp location..."
@@ -43,9 +44,21 @@ for file in page-*.json; do
   if [ -f "$file" ]; then
     page_num=$(echo "$file" | sed 's/page-\([0-9]*\)\.json/\1/')
     target_file="$TEMP_STATIC_DIR/pr-page-${page_num}.json"
+    
+    echo "🔄 Copying $file (page ${page_num}) to temp location..."
     cp "$file" "$target_file"
+    
+    # Small delay for file system consistency in CI
+    sleep 0.1
+    
+    # Enhanced validation with detailed error info
     if [ ! -f "$target_file" ]; then
       echo "❌ Failed to copy $file to temp location"
+      echo "📍 Source file: $file ($(ls -la $file 2>/dev/null || echo 'not found'))"
+      echo "📍 Target file: $target_file"
+      echo "📍 Temp directory contents:"
+      ls -la "$TEMP_STATIC_DIR" 2>/dev/null || echo "Temp directory not accessible"
+      echo "📍 Current working directory: $(pwd)"
       exit 1
     fi
     echo "✅ Copied $file to temp as pr-page-${page_num}.json"
@@ -81,6 +94,8 @@ if [ "$actual_files" -ne "$expected_files" ]; then
 fi
 
 echo "🎯 Static data successfully prepared in temp location: $TEMP_STATIC_DIR"
+echo "📁 Temp location absolute path: $(realpath $TEMP_STATIC_DIR)"
 
 echo "✅ Static data generation complete!"
 echo "📁 Generated $page_count page files + 1 metadata file = $expected_files total files"
+echo "💡 Next step: Run copy-static-data.sh after web app is prepared"

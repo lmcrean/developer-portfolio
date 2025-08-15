@@ -6,8 +6,8 @@ set -e
 
 echo "📁 Copying static data from temp to web app..."
 
-# Define locations
-TEMP_STATIC_DIR="/tmp/pr-static-data"
+# Define locations (temp at project root, copy script runs from project root)
+TEMP_STATIC_DIR="./temp-static-data"
 WEB_STATIC_DIR="apps/web/static"
 
 # Verify temp location exists and has data
