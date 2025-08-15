@@ -3,7 +3,6 @@ import { PullRequestFeedProps, PullRequestListData } from '@shared/types/pull-re
 import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
 import PullRequestList from './components/PullRequestList';
-import PullRequestPagination from './components/PullRequestPagination';
 
 export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   username = 'lmcrean',
@@ -16,7 +15,8 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     username,
     onListSuccess: state.handleListSuccess,
     onListError: state.handleListError,
-    setLoading: state.setLoading
+    setLoading: state.setLoading,
+    setIsLoadingMore: state.setIsLoadingMore
   });
 
   // Track if initial fetch has been performed
@@ -29,18 +29,24 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     }
   }, []);
 
-  // Handle pagination
-  const handlePageChange = useCallback((newPage: number) => {
-    const validPage = state.handlePageChange(newPage);
-    if (validPage) {
-      api.fetchPullRequests(validPage);
+  // Handle loading more items for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    console.log('🔄 handleLoadMore called');
+    
+    // First try to load more from existing data
+    const newDisplayedCount = state.loadMoreItems();
+    
+    // Check if we need to fetch more data from API
+    if (state.shouldFetchMoreData()) {
+      console.log('📡 Fetching more data from API...');
+      await api.fetchMorePullRequests();
     }
   }, [state, api]);
 
   // Retry function
   const handleRetry = useCallback(() => {
     state.clearError();
-    api.fetchPullRequests(state.currentPage);
+    api.fetchPullRequests(1); // Always retry from first page
   }, [api, state]);
 
   // Hydration-safe effect to detect client-side rendering
@@ -76,37 +82,30 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
 
   // Filter pull requests based on enterprise mode
   const filteredPullRequests = useMemo(() => {
+    const displayedPRs = state.allPullRequests.slice(0, state.displayedCount);
     if (!state.enterpriseMode) {
-      return state.pullRequests; // Show all PRs when enterprise mode is off
+      return displayedPRs; // Show all displayed PRs when enterprise mode is off
     }
     // Show only PRs to external repositories (not user's own repos)
-    return state.pullRequests.filter(pr => pr.repository.owner.login !== username);
-  }, [state.pullRequests, state.enterpriseMode, username]);
+    return displayedPRs.filter(pr => pr.repository.owner.login !== username);
+  }, [state.allPullRequests, state.displayedCount, state.enterpriseMode, username]);
 
   return (
-    <>
-      <PullRequestList
-        pullRequests={filteredPullRequests}
-        pagination={state.pagination}
-        username={username}
-        className={className}
-        loading={state.loading}
-        error={state.error}
-        isClient={state.isClient}
-        onCardClick={handleCardClick}
-        onRetry={handleRetry}
-        enterpriseMode={state.enterpriseMode}
-        onEnterpriseToggle={state.setEnterpriseMode}
-      />
-
-      <PullRequestPagination
-        pagination={state.pagination}
-        currentPage={state.currentPage}
-        loading={state.loading}
-        onPageChange={handlePageChange}
-      />
-
-    </>
+    <PullRequestList
+      pullRequests={filteredPullRequests}
+      hasMoreItems={state.hasMoreItems}
+      isLoadingMore={state.isLoadingMore}
+      username={username}
+      className={className}
+      loading={state.loading}
+      error={state.error}
+      isClient={state.isClient}
+      onCardClick={handleCardClick}
+      onRetry={handleRetry}
+      onLoadMore={handleLoadMore}
+      enterpriseMode={state.enterpriseMode}
+      onEnterpriseToggle={state.setEnterpriseMode}
+    />
   );
 };
 

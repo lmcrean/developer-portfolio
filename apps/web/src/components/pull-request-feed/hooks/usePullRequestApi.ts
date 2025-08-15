@@ -9,9 +9,10 @@ import {
 
 interface UsePullRequestApiProps {
   username: string;
-  onListSuccess: (data: PullRequestListData[], pagination: PaginationMeta) => void;
+  onListSuccess: (data: PullRequestListData[], pagination: PaginationMeta, isAppending?: boolean) => void;
   onListError: (error: string) => void;
   setLoading: (loading: boolean) => void;
+  setIsLoadingMore: (loading: boolean) => void;
   useStaticMode?: boolean; // Optional flag to force static mode
 }
 
@@ -20,11 +21,14 @@ export const usePullRequestApi = ({
   onListSuccess,
   onListError,
   setLoading,
+  setIsLoadingMore,
   useStaticMode = false
 }: UsePullRequestApiProps) => {
-  // Refs for request cancellation
+  // Refs for request cancellation and pagination tracking
   const listAbortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
+  const currentPageRef = useRef(1);
+  const hasMorePagesRef = useRef(true);
 
   // Determine whether to use static or live API
   const shouldUseStatic = useCallback(async (): Promise<boolean> => {
@@ -91,7 +95,12 @@ export const usePullRequestApi = ({
       if (isMountedRef.current && !listAbortControllerRef.current.signal.aborted) {
         const dataSource = useStatic ? 'static data' : 'live API';
         console.log(`✅ Successfully fetched ${response.data.data.length} pull requests from ${dataSource}`);
-        onListSuccess(response.data.data, response.data.meta.pagination);
+        
+        // Update pagination refs
+        currentPageRef.current = response.data.meta.pagination.page;
+        hasMorePagesRef.current = response.data.meta.pagination.has_next_page;
+        
+        onListSuccess(response.data.data, response.data.meta.pagination, false);
       }
     } catch (err: any) {
       // Only handle errors if component is still mounted and request wasn't cancelled
@@ -107,6 +116,73 @@ export const usePullRequestApi = ({
     }
   }, [username, onListSuccess, onListError, setLoading, shouldUseStatic]);
 
+  // Fetch more pull requests for infinite scroll
+  const fetchMorePullRequests = useCallback(async () => {
+    if (!hasMorePagesRef.current) {
+      console.log('🚫 No more pages available');
+      return false;
+    }
+
+    try {
+      setIsLoadingMore(true);
+      const nextPage = currentPageRef.current + 1;
+      
+      console.log(`🔄 Fetching more pull requests page ${nextPage} for ${username}...`);
+      
+      // Determine which client to use
+      const useStatic = await shouldUseStatic();
+      let response;
+
+      if (useStatic) {
+        console.log('📁 Using static data client for more items');
+        response = await staticClient.getPullRequests({
+          username,
+          page: nextPage,
+          per_page: 20
+        });
+      } else {
+        console.log('🌐 Using live API client for more items');
+        response = await apiClient.get<ApiResponse>(
+          '/api/github/pull-requests',
+          {
+            params: {
+              username,
+              page: nextPage,
+              per_page: 20
+            }
+          }
+        );
+      }
+
+      // Only update state if component is still mounted
+      if (isMountedRef.current) {
+        const dataSource = useStatic ? 'static data' : 'live API';
+        console.log(`✅ Successfully fetched ${response.data.data.length} more pull requests from ${dataSource}`);
+        
+        // Update pagination refs
+        currentPageRef.current = response.data.meta.pagination.page;
+        hasMorePagesRef.current = response.data.meta.pagination.has_next_page;
+        
+        onListSuccess(response.data.data, response.data.meta.pagination, true);
+        return true;
+      }
+      
+      return false;
+    } catch (err: any) {
+      // Only handle errors if component is still mounted
+      if (isMountedRef.current) {
+        console.error('❌ Failed to fetch more pull requests:', err.message || 'Unknown error');
+        onListError(`Failed to load more pull requests: ${err.message || 'Unknown error'}`);
+      }
+      return false;
+    } finally {
+      // Only update loading state if component is still mounted
+      if (isMountedRef.current) {
+        setIsLoadingMore(false);
+      }
+    }
+  }, [username, onListSuccess, onListError, setIsLoadingMore, shouldUseStatic]);
+
 
   // Cleanup function
   const cleanup = useCallback(() => {
@@ -119,17 +195,24 @@ export const usePullRequestApi = ({
     if (listAbortControllerRef.current) {
       listAbortControllerRef.current.abort();
     }
+    
+    // Reset pagination refs
+    currentPageRef.current = 1;
+    hasMorePagesRef.current = true;
   }, []);
 
-  // Reset mounted flag
+  // Reset mounted flag and pagination refs
   const resetMountedFlag = useCallback(() => {
     isMountedRef.current = true;
+    currentPageRef.current = 1;
+    hasMorePagesRef.current = true;
   }, []);
 
   // Memoize the return object to prevent unnecessary re-renders
   return useMemo(() => ({
     fetchPullRequests,
+    fetchMorePullRequests,
     cleanup,
     resetMountedFlag
-  }), [fetchPullRequests, cleanup, resetMountedFlag]);
+  }), [fetchPullRequests, fetchMorePullRequests, cleanup, resetMountedFlag]);
 }; 
