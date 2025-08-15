@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import '../css/projectCarousel.css';
-import projectCarousels from '../data/projectCarousels';
+import '../../css/projectCarousel.css';
+import projectCarousels from '../../data/projectCarousels';
 
 interface ProjectCarouselProps {
   projectKey: string;

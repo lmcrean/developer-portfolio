@@ -3,8 +3,8 @@ sidebar_label: Data Analytics
 sidebar_position: 2
 ---
 
-import ProjectCarousel from '@site/src/components/ProjectCarousel';
-import CustomTOC from '@site/src/components/CustomTOC';
+import ProjectCarousel from '@site/src/components/archive/ProjectCarousel';
+import CustomTOC from '@site/src/components/archive/CustomTOC';
 import TechBadges from '@site/src/components/project/TechBadges';
 import TestBadges from '@site/src/components/project/TestBadges';
 import GitHubBadges from '@site/src/components/project/GitHubBadges';

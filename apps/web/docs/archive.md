@@ -6,7 +6,7 @@ sidebar_position: 2
 hide_table_of_contents: true
 ---
 
-import ProjectCarousel from '@site/src/components/ProjectCarousel';
+import ProjectCarousel from '@site/src/components/archive/ProjectCarousel';
 import TechBadges from '@site/src/components/project/TechBadges';
 import TestBadges from '@site/src/components/project/TestBadges';
 import GitHubBadges from '@site/src/components/project/GitHubBadges';

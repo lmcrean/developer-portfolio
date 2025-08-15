@@ -6,9 +6,9 @@ sidebar_position: 2
 hide_table_of_contents: false
 ---
 
-import Project from '@site/src/components/Project';
+import Project from '@site/src/components/archive/Project';
 import projects from '@site/src/data/projects';
-import SplideInit from '@site/src/components/SplideInit';
+import SplideInit from '@site/src/components/archive/SplideInit';
 
 <img src="/docs/banner.png" alt="banner" />
 

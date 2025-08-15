@@ -1,7 +1,7 @@
 import React from 'react';
-import '../css/project.css';
+import '../../css/project.css';
 import ProjectCarousel from './ProjectCarousel';
-import { ProjectData, ButtonData, ProjectVersion } from '../data/projects';
+import { ProjectData, ButtonData, ProjectVersion } from '../../data/projects';
 
 interface ProjectProps {
   projectData: ProjectData;

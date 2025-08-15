@@ -1,4 +1,5 @@
 import React from 'react';
+import TableSkeleton from './TableSkeleton';
 
 interface LoadingErrorStatesProps {
   loading: boolean;
@@ -21,26 +22,7 @@ export const LoadingErrorStates: React.FC<LoadingErrorStatesProps> = ({
 }) => {
   // Show loading state during SSR and initial client load
   if (!isClient || (loading && pullRequestsLength === 0)) {
-    return (
-      <div className={`w-full p-4 ${className}`} data-testid="pull-request-feed">
-        <div className="mb-6">
-          <p className="text-gray-300 light:text-gray-600">
-            {!isClient ? 'Initializing...' : `Loading pull requests for ${username}...`}
-          </p>
-        </div>
-        <div className="space-y-4">
-          {Array.from({ length: 3 }, (_, index) => (
-            <div key={index} className="bg-gray-800 light:bg-white border border-gray-700 light:border-gray-200 rounded-lg p-4 animate-pulse">
-              <div className="space-y-3">
-                <div className="h-4 bg-gray-700 light:bg-gray-200 rounded w-1/4"></div>
-                <div className="h-6 bg-gray-700 light:bg-gray-200 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-700 light:bg-gray-200 rounded w-1/2"></div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <TableSkeleton className={className} />;
   }
 
   // Error state

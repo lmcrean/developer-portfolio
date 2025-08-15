@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
-import Project from '../Project';
+import Project from '../archive/Project';
 import { ProjectData, ProjectVersion, ButtonData, TestResult, GitHubInfo } from '../../data/projects';
 
 

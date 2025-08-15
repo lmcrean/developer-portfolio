@@ -1,6 +1,6 @@
 import React from 'react';
-import ProjectCarousel from '../ProjectCarousel';
-import SplideInit from '../SplideInit';
+import ProjectCarousel from '../archive/ProjectCarousel';
+import SplideInit from '../archive/SplideInit';
 
 /**
  * Example component showing how to use the ProjectCarousel component

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from '@docusaurus/router';
-import CustomTOC from '../../components/CustomTOC';
+import CustomTOC from '../../components/archive/CustomTOC';
 
 /**
  * Custom TOC Theme Component
