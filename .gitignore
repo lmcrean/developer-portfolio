@@ -46,3 +46,4 @@ CLAUDE.md
 */settings.local.json
 .notes/
 */CLAUDE.md
+*.log
