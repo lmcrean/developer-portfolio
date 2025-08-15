@@ -32,8 +32,8 @@ test.describe('Single Server Quick Test', () => {
       }
     });
     
-    // Navigate to homepage
-    const webUrl = 'http://localhost:3023';
+    // Navigate to homepage - use environment variable or fallback to localhost
+    const webUrl = process.env.WEB_URL || 'http://localhost:3023';
     console.log(`🔍 Testing single server at: ${webUrl}`);
     
     await page.goto(webUrl, { 
@@ -74,8 +74,10 @@ test.describe('Single Server Quick Test', () => {
   });
 
   test('should serve individual static files correctly', async ({ page }) => {
+    const webUrl = process.env.WEB_URL || 'http://localhost:3023';
+    
     // Test metadata
-    const metadataResponse = await page.request.get('http://localhost:3023/pr-metadata.json');
+    const metadataResponse = await page.request.get(`${webUrl}/pr-metadata.json`);
     expect(metadataResponse.status()).toBe(200);
     
     const contentType = metadataResponse.headers()['content-type'];
@@ -88,7 +90,7 @@ test.describe('Single Server Quick Test', () => {
     console.log(`✅ Metadata: ${metadata.total_count} PRs, ${metadata.total_pages} pages`);
     
     // Test first page
-    const page1Response = await page.request.get('http://localhost:3023/pr-page-1.json');
+    const page1Response = await page.request.get(`${webUrl}/pr-page-1.json`);
     expect(page1Response.status()).toBe(200);
     
     const page1Data = await page1Response.json();

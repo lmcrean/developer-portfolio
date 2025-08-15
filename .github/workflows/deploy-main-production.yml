@@ -58,19 +58,15 @@ jobs:
       - name: 🔗 Set Deployment URL
         id: set_url
         run: |
-          DETAILS_URL="${{ steps.deploy.outputs.details_url }}"
-          URLS_OUTPUT="${{ steps.deploy.outputs.urls }}"
+          DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
           
-          if [[ -n "$DETAILS_URL" && "$DETAILS_URL" != "null" ]]; then
-            DEPLOYMENT_URL="$DETAILS_URL"
-          elif [[ -n "$URLS_OUTPUT" && "$URLS_OUTPUT" != "null" ]]; then
-            DEPLOYMENT_URL=$(echo "$URLS_OUTPUT" | head -n1 | sed 's/,.*$//')
-          else
+          # Fallback to default production URL if deploy output is empty
+          if [[ -z "$DEPLOYMENT_URL" || "$DEPLOYMENT_URL" == "null" ]]; then
             DEPLOYMENT_URL="https://lauriecrean-free-38256.web.app"
           fi
           
           echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
-          echo "🌐 Deployment URL: $DEPLOYMENT_URL"
+          echo "🌐 Production Deployment URL: $DEPLOYMENT_URL"
       
       - name: 🌐 Test Static Data
         run: |
