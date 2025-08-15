@@ -3,7 +3,6 @@ import { PullRequestListData } from '@shared/types/pull-requests';
 import PullRequestFeedListCard from '../list-card';
 import ErrorRow from './ErrorRow';
 import LoadingRows from './LoadingRows';
-import FilterToggle from './FilterToggle';
 
 interface PullRequestListProps {
   pullRequests: PullRequestListData[];
@@ -17,8 +16,6 @@ interface PullRequestListProps {
   onCardClick: (pr: PullRequestListData) => void;
   onRetry: () => void;
   onLoadMore: () => void;
-  enterpriseMode: boolean;
-  onEnterpriseToggle: (enabled: boolean) => void;
 }
 
 export const PullRequestList: React.FC<PullRequestListProps> = ({
@@ -32,9 +29,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
   isClient,
   onCardClick,
   onRetry,
-  onLoadMore,
-  enterpriseMode,
-  onEnterpriseToggle
+  onLoadMore
 }) => {
   // Ref for the infinite scroll trigger element
   const infiniteScrollTriggerRef = useRef<HTMLDivElement>(null);
@@ -177,15 +172,6 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
           }
         }
       `}} />
-      {/* Filter Controls */}
-      <div className="flex justify-between items-center px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200">
-        <div className="flex items-center gap-3">
-        </div>
-        <FilterToggle
-          enterpriseMode={enterpriseMode}
-          onToggle={onEnterpriseToggle}
-        />
-      </div>
 
       {/* Table Header - Always visible */}
       <div className="grid grid-cols-12 gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">

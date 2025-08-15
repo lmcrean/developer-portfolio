@@ -17,8 +17,6 @@ export const usePullRequestState = () => {
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [totalItemsAvailable, setTotalItemsAvailable] = useState(0);
   
-  // Filter state - Enterprise mode shows only external repos (default: true)
-  const [enterpriseMode, setEnterpriseMode] = useState(true);
   
 
   // Handlers for list operations
@@ -81,13 +79,11 @@ export const usePullRequestState = () => {
     error,
     hasMoreItems,
     totalItemsAvailable,
-    enterpriseMode,
 
     // Setters
     setIsClient,
     setLoading,
     setIsLoadingMore,
-    setEnterpriseMode,
 
     // Handlers
     handleListSuccess,

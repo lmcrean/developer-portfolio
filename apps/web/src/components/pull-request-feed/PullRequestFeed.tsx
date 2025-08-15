@@ -80,15 +80,39 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     };
   }, [username, api.cleanup]); // Only depend on username and cleanup function
 
-  // Filter pull requests based on enterprise mode
+  // Filter pull requests based on custom rules
   const filteredPullRequests = useMemo(() => {
     const displayedPRs = state.allPullRequests.slice(0, state.displayedCount);
-    if (!state.enterpriseMode) {
-      return displayedPRs; // Show all displayed PRs when enterprise mode is off
+    
+    // Configuration for hidden repositories
+    const hiddenRepositories = ['team-5', 'halloween-hackathon'];
+    
+    // Apply custom filtering
+    let filtered = displayedPRs.filter(pr => {
+      // Hide completely blacklisted repositories
+      if (hiddenRepositories.includes(pr.repository.name)) {
+        return false;
+      }
+      
+      // Show only external repositories (not user's own repos)
+      return pr.repository.owner.login !== username;
+    });
+    
+    // For penpot repository, keep only the most recent PR
+    const penpotPRs = filtered.filter(pr => pr.repository.name === 'penpot');
+    if (penpotPRs.length > 1) {
+      // Sort by created_at date (most recent first) and keep only the first one
+      const mostRecentPenpotPR = penpotPRs.sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )[0];
+      
+      // Remove all penpot PRs and add back only the most recent one
+      filtered = filtered.filter(pr => pr.repository.name !== 'penpot');
+      filtered.push(mostRecentPenpotPR);
     }
-    // Show only PRs to external repositories (not user's own repos)
-    return displayedPRs.filter(pr => pr.repository.owner.login !== username);
-  }, [state.allPullRequests, state.displayedCount, state.enterpriseMode, username]);
+    
+    return filtered;
+  }, [state.allPullRequests, state.displayedCount, username]);
 
   return (
     <PullRequestList
@@ -103,8 +127,6 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
       onCardClick={handleCardClick}
       onRetry={handleRetry}
       onLoadMore={handleLoadMore}
-      enterpriseMode={state.enterpriseMode}
-      onEnterpriseToggle={state.setEnterpriseMode}
     />
   );
 };
