@@ -53,7 +53,7 @@ export class CIStatusTracker {
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.printf(({ timestamp, level, message }) => {
-          const time = chalk.gray(timestamp.split('T')[1].split('.')[0]);
+          const time = chalk.gray(String(timestamp).split('T')[1]?.split('.')[0] || '');
           return `${time} ${chalk.magenta('[CI-TRACKER]')} ${message}`;
         })
       ),

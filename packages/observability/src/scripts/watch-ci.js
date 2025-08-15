@@ -83,7 +83,7 @@ class TerminalCIWatcher {
   async fetchRuns() {
     return new Promise((resolve, reject) => {
       const args = ['run', 'list', '--limit', '20', '--json', 
-        'id,name,status,conclusion,workflowName,headBranch,headSha,createdAt,updatedAt,htmlUrl'];
+        'databaseId,name,status,conclusion,workflowName,headBranch,headSha,createdAt,updatedAt,url'];
       
       if (this.options.workflow) {
         args.push('--workflow', this.options.workflow);
@@ -130,13 +130,13 @@ class TerminalCIWatcher {
     const currentRunIds = new Set();
     
     for (const run of runs) {
-      currentRunIds.add(run.id);
-      const existing = this.activeRuns.get(run.id);
+      currentRunIds.add(run.databaseId);
+      const existing = this.activeRuns.get(run.databaseId);
       
       if (!existing) {
         // New run
         if (run.status !== 'completed') {
-          this.activeRuns.set(run.id, run);
+          this.activeRuns.set(run.databaseId, run);
           this.logRunEvent('NEW', run);
         }
       } else {
@@ -145,13 +145,13 @@ class TerminalCIWatcher {
         const conclusionChanged = existing.conclusion !== run.conclusion;
         
         if (statusChanged || conclusionChanged) {
-          this.activeRuns.set(run.id, run);
+          this.activeRuns.set(run.databaseId, run);
           this.logRunEvent('UPDATE', run, existing);
         }
         
         // Remove completed runs
         if (run.status === 'completed') {
-          this.activeRuns.delete(run.id);
+          this.activeRuns.delete(run.databaseId);
         }
       }
     }
@@ -180,7 +180,7 @@ class TerminalCIWatcher {
     
     // Show URL for completed runs
     if (run.status === 'completed' && !this.options.quiet) {
-      console.log(`${chalk.gray('  └─')} ${chalk.blue(run.htmlUrl)}`);
+      console.log(`${chalk.gray('  └─')} ${chalk.blue(run.url)}`);
     }
   }
 

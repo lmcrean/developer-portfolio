@@ -170,7 +170,7 @@ export class GitHubCIWatcher extends EventEmitter {
   private async fetchWorkflowRuns(): Promise<WorkflowRun[]> {
     return new Promise((resolve, reject) => {
       const args = ['run', 'list', '--limit', '20', '--json', 
-        'id,name,status,conclusion,workflowName,headBranch,headSha,createdAt,updatedAt,htmlUrl'];
+        'databaseId,name,status,conclusion,workflowName,headBranch,headSha,createdAt,updatedAt,url'];
       
       // Add workflow filter if specified
       if (this.config.watchedWorkflows && this.config.watchedWorkflows.length > 0) {
@@ -198,18 +198,18 @@ export class GitHubCIWatcher extends EventEmitter {
       process.on('exit', (code) => {
         if (code === 0) {
           try {
-            const rawRuns = JSON.parse(output) as GitHubRunStatus[];
-            const runs: WorkflowRun[] = rawRuns.map(run => ({
-              id: run.id,
+            const rawRuns = JSON.parse(output);
+            const runs: WorkflowRun[] = rawRuns.map((run: any) => ({
+              id: run.databaseId,
               name: run.name,
               status: run.status,
               conclusion: run.conclusion,
-              workflow_name: run.workflow_name,
-              branch: run.head_branch,
-              sha: run.head_sha.substring(0, 7),
-              created_at: run.created_at,
-              updated_at: run.updated_at,
-              html_url: run.html_url
+              workflow_name: run.workflowName,
+              branch: run.headBranch,
+              sha: run.headSha.substring(0, 7),
+              created_at: run.createdAt,
+              updated_at: run.updatedAt,
+              html_url: run.url
             }));
             
             // Filter by watched branches if specified

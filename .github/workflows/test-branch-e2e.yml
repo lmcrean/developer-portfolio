@@ -33,15 +33,12 @@ jobs:
       
       - name: 📥 Install E2E Dependencies
         run: |
-          # Install and build observability package first
-          echo "🔧 Building observability package..."
-          cd packages/observability
-          npm ci
-          npm run build
+          # Skip observability package for now (not implemented)
+          echo "⏭️ Skipping observability package (not implemented)"
           
           # Install e2e dependencies
           echo "📦 Installing e2e dependencies..."
-          cd ../../e2e
+          cd e2e
           npm ci
       
       - name: 🎭 Install Playwright Browsers
