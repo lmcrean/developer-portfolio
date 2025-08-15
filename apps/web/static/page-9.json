@@ -1,0 +1,456 @@
+{
+  "data": [
+    {
+      "id": 2414611030,
+      "number": 18,
+      "title": "Merged febranch for pr",
+      "description": null,
+      "created_at": "2025-03-24T19:12:05Z",
+      "merged_at": "2025-03-24T19:12:12Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/18",
+      "state": "merged",
+      "additions": 3,
+      "deletions": 1,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2412843993,
+      "number": 16,
+      "title": "PR1(backend): refactor E2E tests, server and routes into seperation of concerns; PR2(frontend localhost): logic tree assessment passes in playwright E2E localhost; ",
+      "description": "# PR1 backend: update auth-lifecycle tests in dev and prod\r\n\r\n`cd backend; npm test`\r\n\r\n```\r\n Test Files  13 failed | 43 passed (56)\r\n      Tests  18 failed | 202 passed | 4 skipped (224)\r\n   Start at  17:23:59\r\n   Duration  52.57s (transform 783ms, setup 0ms, collect 46.89s, tests 319.43s, environment 21ms, prepare 9.07s)\r\n```   \r\n\r\nBased on the test failures, there are several categories of issues that need to be addressed in your PR:\r\n\r\n## 1. Authentication Issues\r\n\r\n- **Token Validation**: Several tests expecting invalid tokens to be rejected are failing (getting 200/201 when expecting 401)\r\n- **Password Validation**: Login with incorrect password succeeds when it should fail\r\n- **Password Reset**: The password reset functionality is not working correctly (401 instead of 200)\r\n\r\n## 2. Assessment API Issues\r\n\r\n- **Update/Delete Operations**: Assessment update and delete endpoints returning 500/404 errors instead of 200\r\n- **Input Validation**: Assessment endpoints are accepting invalid input that should be rejected\r\n- **API Authentication**: Inconsistent token validation across assessment endpoints\r\n\r\n## 3. Timeout Issues\r\n\r\n- **Production Endpoints**: Multiple production tests are failing with timeouts (504 errors)\r\n- **Hook Timeout**: `token-operations-errors.test.js` has a hook timing out after 30 seconds\r\n\r\n## 4. Status Code Inconsistencies\r\n\r\n- **DB Status Endpoint**: Expecting [200, 401] to include 504\r\n- **Assessment List**: Different expectations for how invalid tokens should be handled\r\n\r\n  \r\n  # PR2 frontend (localhost): logic tree assessment passes in playwright E2E localhost\r\n",
+      "created_at": "2025-03-24T07:13:05Z",
+      "merged_at": "2025-03-24T18:26:14Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/16",
+      "state": "merged",
+      "additions": 6696,
+      "deletions": 1053,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2412055228,
+      "number": 15,
+      "title": "Vercel Deployment for Frontend and Backend Production; 63% prod endpoints pass",
+      "description": "\r\nThis PR implements and configures Vercel deployment for both the backend API and frontend application, enabling production environment testing and continuous integration. The API is now accessible on Vercel at https://dottie-api-zeta.vercel.app/ with basic endpoints working successfully.\r\n\r\nBased on the test results in the output, 5 out of 8 README endpoints are working correctly:\r\n\r\n- ✅ GET /api/hello - Returns expected response (passed)\r\n- ✅ GET /api/auth/users - Returns 403 (expected behavior for protected endpoint)\r\n- ✅ GET /api/auth/users/:id - Returns 403 (expected behavior for protected endpoint)\r\n- ✅ POST /api/assessment/send - Returns 201 (created successfully)\r\n- ✅ GET /api/assessment/list - Returns 200 (successful)\r\n\r\nThe 3 failing endpoints are:\r\n\r\n- [ ] GET /api/db-status (times out with 504)\r\n- [ ] POST /api/auth/signup (times out with 504)\r\n- [ ] POST /api/auth/login (times out with 504)\r\n\r\n## Changes Made\r\n\r\n### Backend API Deployment\r\n- ✅ Successfully deployed backend API to Vercel at https://dottie-api-zeta.vercel.app/\r\n- ✅ Configured environment variables in Vercel for production environment\r\n- ✅ Basic API endpoints (/api/hello) are working correctly (200 responses)\r\n- ⚠️ Database-related endpoints currently timeout (504 responses)\r\n\r\n### Test Improvements\r\n- ✅ Refactored tests to correctly fail when production resources cannot be accessed\r\n- ✅ Added support for detecting and handling API authentication (401) responses\r\n- ✅ Added support for correctly handling database timeout (504) responses\r\n- ✅ Updated test files to use the correct production URL\r\n- ✅ No more false positive tests - tests now accurately report failures\r\n\r\n### Configuration Files\r\n- ✅ Updated vercel.json with proper route configurations\r\n- ✅ Created vercel-build.js to properly set NODE_ENV for production\r\n\r\n## Current Status\r\n- The API has been deployed and basic endpoints are accessible\r\n- Database connections (Azure SQL) currently time out and need further investigation\r\n- All tests properly report the current status of the API\r\n- Authentication tests pass with 401 responses (expected for authenticated APIs)\r\n\r\n## Next Steps\r\n1. Troubleshoot database connection timeouts on Vercel\r\n2. Complete frontend deployment to production\r\n3. Configure automatic deployment on pull requests\r\n4. Set up proper authentication for production endpoints\r\n5. Clean up architecture for e2e production testing\r\n6. get all readme-endpoints working  --key test file is `backend\\tests\\e2e\\prod\\readme-endpoints.test.js`\r\n\r\nrun with \r\n\r\n```\r\ncd backend;\r\nnpm test -- \"tests/e2e/prod/readme-endpoints.test.js\"\r\n```\r\n\r\n## Testing\r\n- Manual verification of API endpoints has been completed\r\n- All tests run successfully and accurately represent the current state\r\n- No false passes - tests fail appropriately when resources are unavailable\r\n",
+      "created_at": "2025-03-23T17:06:00Z",
+      "merged_at": "2025-03-23T18:31:08Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/15",
+      "state": "merged",
+      "additions": 1199,
+      "deletions": 33,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2411947898,
+      "number": 14,
+      "title": "Establish successful frontend-API connection in localhosts; Enhance Test Page Coverage; Optimize Test Conditions and clean codebase",
+      "description": "\r\n![image](https://github.com/user-attachments/assets/c0b67524-31c5-4afb-a5ce-9249145a829c)\r\n\r\n<b>\r\n\r\n# OvervIew\r\n\r\nPR1. Implement Comprehensive Test Suite for Database & API Connectivity test in frontend\r\nPR2. Remove unecessary console logs statements in backend for cleaner code\r\nPR3. remove unnecessary skip conditions in readme-endpoints in backend\\tests\\e2e\\dev\\readme-endpoints.test.js\r\n\r\n# Testing Prerequisites\r\n\r\n`cd backend; npm test` should return 100% pass\r\n`cd dottie-app; npm test` should return 100% pass\r\n`cd dottie-app; npx playwright test` should return 16 pass; 4 fail -- details below\r\n\r\n</b>\r\n\r\n# PR1: Implement Comprehensive Test Suite for Database & API Connectivity test in frontend\r\n\r\n## Overview\r\nThis PR introduces a comprehensive test suite for the `test_page` component, with complete coverage for both API and database connectivity features. The implementation includes unit tests, integration tests, and end-to-end tests using both mocked and real connections.\r\n\r\n## Key Features Implemented\r\n- **Dynamic Database Message**: Updated backend to correctly identify database type (SQLite/Azure SQL)\r\n- **Dual-layer Testing Strategy**: Both mock tests for CI/CD pipelines and real tests for true integration verification\r\n- **E2E Testing**: Playwright tests with screenshot capture for visual regression testing\r\n- **Combined Connection Tests**: Tests that verify both API and database connections simultaneously\r\n\r\n## Test Structure\r\nThe test suite is organized into a clear, maintainable structure:\r\n- **GetApiMessage/**: Tests focused on API connectivity\r\n- **DbConnection/**: Tests focused on database connectivity\r\n- **e2e/**: End-to-end tests combining both connection types\r\n- Each section contains both mock and real test variants\r\n\r\n## Testing Approach\r\n- **Unit Tests**: Testing individual components in isolation\r\n- **Integration Tests**: Testing real API interactions\r\n- **E2E Tests**: Full browser automation tests with Playwright\r\n- **Screenshot Capture**: Visual documentation of test outcomes\r\n\r\n## Technical Details\r\n- Implemented test helpers for consistent setup and teardown\r\n- Added proper error handling and test skipping when services unavailable\r\n- Created detailed README documentation for test organization\r\n- Structured for seamless CI/CD integration\r\n\r\n## Verification\r\nAll tests pass in both mock and real environments. The implementation provides:\r\n- ✅ 100% test coverage for API connection features\r\n- ✅ 100% test coverage for database connection features\r\n- ✅ Visual verification through screenshot captures\r\n- ✅ Proper error handling for all connection scenarios\r\n\r\n## Screenshots\r\nThe PR includes automated screenshot generation for visual verification of:\r\n- Initial state of connection UI\r\n- Successful API connections\r\n- Successful database connections\r\n- Combined successful connections\r\n- Error states for both connection types\r\n\r\nThis implementation significantly enhances our testing capabilities and ensures robust connectivity between frontend, API, and database layers.\r\n\r\n\r\n# PR2: Remove unecessary console logs statements in backend for cleaner code\r\n\r\n# PR3: remove unnecessary skip conditions in readme-endpoints in backend\\tests\\e2e\\dev\\readme-endpoints.test.js\r\n\r\n# Next Steps:\r\n\r\n- [ ] Verify API to Azure websites can run in serverless conditions\r\n- [ ] Deploy Frontend API to Azure with successful static build\r\n\r\n- [ ] use playwright to verify all test routes in logic tree returning results as expected; currently only regular is verified\r\n- [ ] Create Assessment result object post request in frontend with hooks and context\r\n- [ ] Send final assessment result object post request from context to SQLite API \r\n- [ ] Develop Authentication feature in frontend with endpoints to SQLite\r\n\r\n\r\n## remaining tests to pass\r\n\r\nthe remaining E2e development tests need to pass with `npx palywright test`\r\n```\r\n 4 failed\r\n    [safari] › src\\components\\assessment\\__tests__\\e2e\\development\\DevelopingPattern.spec.ts:11:3 › Developing Pattern Assessment Path › capture screenshots for Developing Pattern path \r\n    [safari] › src\\components\\assessment\\__tests__\\e2e\\development\\HeavyFlow.spec.ts:11:3 › Heavy Flow Assessment Path › capture screenshots for Heavy Flow path\r\n    [safari] › src\\components\\assessment\\__tests__\\e2e\\development\\IrregularCycle.spec.ts:11:3 › Irregular Cycle Assessment Path › capture screenshots for Irregular Cycle path\r\n    [safari] › src\\components\\assessment\\__tests__\\e2e\\development\\PainPredominant.spec.ts:11:3 › Pain Predominant Assessment Path › capture screenshots for Pain Predominant path\r\n```\r\n\r\n\r\n `Regular.spec.ts` is passing as expected.",
+      "created_at": "2025-03-23T13:39:25Z",
+      "merged_at": "2025-03-23T14:41:37Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/14",
+      "state": "merged",
+      "additions": 2998,
+      "deletions": 215,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2411269398,
+      "number": 13,
+      "title": "Secure sqlite integration tests in api; Port Next framework to Vite; Establish architecture for SQLite connection test in frontend",
+      "description": "This PR addresses the following issues:\r\n\r\n- Implement new API integration tests in the development layer for user lifecycle and assessment lifecycle. Endpoints appear secure in Development with SQLLite\r\n- Port Assessment from Next.JS to Vite for faster workflow, there were prior issues with `npm run build` now resolved\r\n- Develop a test page in the frontend to test the essential development environment API connections that are \"Hello World\" and \"Connected to the SQLite database\" (in development)\r\n\r\n## prerequisites\r\n\r\nvitest tests should all pass \r\n\r\n**`cd backend; npm test` should return 100% pass\r\n`cd dottie-app; npm test` should return 100% pass\r\n`cd dottie-app; npm run test:e2e:dev:regular` should return 100% pass (testing the standard integration route for a user with regular menstrual cycle)**\r\n\r\n\r\nvitest in particular has secure test coverage at present\r\n\r\n## next steps\r\n\r\n- [ ] establish the endpoints on [deployed API app ](http://dottie-api.azurewebsites.net/api/](http://dottie-api.azurewebsites.net/api/sql-hello)). _Use vitest endpoint testing for prod url_\r\n- [ ] test the frontend buttons in `localhost:3000/test` endpoint to verify that frontend connects to SQLite API\r\n- [ ] establish verify playwright E2E coverage, beyond `src/components/assessment/__tests__/e2e/development/RegularCycle.spec.ts`\r\n- [ ] deploy frontend, expect dottie APP homepage to function\r\n\r\n\r\n## screenshots sample\r\n\r\n![04-cycle-length-selected](https://github.com/user-attachments/assets/c58ba818-e45b-493c-aa65-d5b4892ca6cb)\r\n![06-period-duration-selected](https://github.com/user-attachments/assets/4ccd8204-060c-42aa-a945-01000e4559df)\r\n![08-flow-selected](https://github.com/user-attachments/assets/5a90cbfd-f256-449e-9008-9c1ddb71aa91)\r\n![10-pain-selected](https://github.com/user-attachments/assets/44fb8732-4990-4e01-901e-4f0bf7614df0)\r\n![12-symptoms-selected](https://github.com/user-attachments/assets/a798eeae-2133-429d-867b-15073a28ed38)\r\n![13-results-regular-cycle](https://github.com/user-attachments/assets/29ab7406-97de-45e1-9ff9-286d9ad6f795)",
+      "created_at": "2025-03-22T13:57:32Z",
+      "merged_at": "2025-03-22T17:56:11Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/13",
+      "state": "merged",
+      "additions": 14375,
+      "deletions": 1134,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2411209300,
+      "number": 12,
+      "title": " Secure development-layer integration tests in api",
+      "description": "\r\nThe PR introduces comprehensive integration tests to validate both the user lifecycle and assessment lifecycle in the backend. These tests ensure that critical user operations and assessment workflows function correctly across the application.\r\n\r\n## User Lifecycle Tests (`userlifecycle.test.js`)\r\n\r\nThese new integration tests validate core user functionality:\r\n- User registration with proper validation\r\n- User login and authentication\r\n- User profile management (viewing, updating user details)\r\n- User session handling (logout)\r\n- Account deletion and cleanup\r\n\r\nThe tests include proper error handling and are designed to work reliably whether run independently or as part of the test suite.\r\n\r\n## Assessment Lifecycle Tests (`assessmentlifecycle.test.js`)\r\n\r\nThese integration tests validate the assessment functionality:\r\n- Assessment creation and configuration\r\n- Assignment of assessments to users\r\n- Assessment retrieval and status updates\r\n- Assessment completion workflows\r\n- Assessment data management and deletion\r\n\r\n## Test Results\r\n\r\n- All 68 tests across 11 test files now pass successfully\r\n- Tests are resilient when run in isolation or as part of the full suite\r\n- Properly handles the authentication flow as implemented in the app",
+      "created_at": "2025-03-22T11:21:42Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/dottie/pull/12",
+      "state": "closed",
+      "additions": 9833,
+      "deletions": 2345,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2411182534,
+      "number": 11,
+      "title": "Secure development-layer integration tests in api; Establish architecture for SQLite connection test in frontend",
+      "description": "This PR addresses the following issues:\r\n- Implement new integration tests in the development layer for user lifecycle and assessment lifecycle\r\n- Develop a test page in the frontend to test the essential development environment API connections that are \"Hello World\" and \"Connected to the SQLite database\"\r\n\r\n# #1: Implement Integration Tests for User and Assessment Lifecycles\r\n\r\n## Overview\r\n\r\nThe PR introduces comprehensive integration tests to validate both the user lifecycle and assessment lifecycle in the backend. These tests ensure that critical user operations and assessment workflows function correctly across the application.\r\n\r\n## User Lifecycle Tests (`userlifecycle.test.js`)\r\n\r\nThese new integration tests validate core user functionality:\r\n- User registration with proper validation\r\n- User login and authentication\r\n- User profile management (viewing, updating user details)\r\n- User session handling (logout)\r\n- Account deletion and cleanup\r\n\r\nThe tests include proper error handling and are designed to work reliably whether run independently or as part of the test suite.\r\n\r\n## Assessment Lifecycle Tests (`assessmentlifecycle.test.js`)\r\n\r\nThese integration tests validate the assessment functionality:\r\n- Assessment creation and configuration\r\n- Assignment of assessments to users\r\n- Assessment retrieval and status updates\r\n- Assessment completion workflows\r\n- Assessment data management and deletion\r\n\r\n## Test Results\r\n\r\n- All 68 tests across 11 test files now pass successfully\r\n- Tests are resilient when run in isolation or as part of the full suite\r\n- Properly handles the authentication flow as implemented in the app\r\n\r\n# #2 Develop Test Page for the Dottie App in the frontend\r\n\r\nThe user should be able to go to a test page in /test endpoint and click on two buttons to test the essential development environment API connections that are \"Hello World\" and \"Connected to the SQLite database\"\r\n\r\nAt present there are still issues with rendering as well as the build failing. However, the overall abstract architecture seems sound.\r\n\r\nThe key frontend file is in `dottie-app/app/test_page/page.tsx`\r\n\r\n- Used axios to get the messages from the backend API endpoints\r\n- Used vitest to write the unit tests\r\n- Used playwright to write the end-to-end tests\r\n- Documented the process in the subfolder README.md file\r\n\r\n## Test Usage\r\n\r\n1. Ensure the terminal is in the `dottie-app` directory:\r\n\r\n```bash\r\ncd dottie-app\r\n```\r\n\r\n2. To run the vitest unit tests:\r\n\r\n```bash\r\nnpm run test\r\n```\r\n\r\n3. To run the playwright end-to-end tests:\r\n\r\n```bash\r\nnpx playwright test\r\n```\r\n",
+      "created_at": "2025-03-22T10:16:08Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/dottie/pull/11",
+      "state": "closed",
+      "additions": 9667,
+      "deletions": 2345,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2410389279,
+      "number": 1,
+      "title": "Convert Retrolympics Rush and WealthQuest to Carousel Components, project component is in draft state",
+      "description": "This PR converts the static image displays for Retrolympics Rush and WealthQuest projects into proper carousel components, consistent with the other projects on the site. The changes enable users to browse through multiple screenshots for each project rather than seeing only a single static image.\r\n\r\n## Changes Made\r\n- Added new carousel configuration for Retrolympics Rush with 4 screenshots\r\n- Added new carousel configuration for WealthQuest with 7 screenshots\r\n- Updated index.md to replace static image tags with ProjectCarousel components\r\n- Added new carousel IDs to carousel.js initialization scripts\r\n- Updated tests in projectCarousels.test.js to include the new carousels\r\n- Added examples to the CarouselExample.js component\r\n- Updated the carousel-usage.mdx documentation\r\n\r\n## Testing\r\nThe carousel functionality has been tested to ensure all images are properly displayed and that navigation controls work as expected.\r\n",
+      "created_at": "2025-03-21T19:54:27Z",
+      "merged_at": "2025-03-21T19:57:45Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/1",
+      "state": "merged",
+      "additions": 1003,
+      "deletions": 506,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2409882758,
+      "number": 9,
+      "title": "API Implementation and Test Infrastructure Improvements",
+      "description": "This PR implements the API endpoints described in the README documentation, improves the testing infrastructure, and fixes various configuration issues to ensure all tests pass consistently.\r\n\r\n## Changes\r\n\r\n### API Endpoints Implementation\r\n- Implemented authentication endpoints (`/api/auth/signup`, `/api/auth/login`, `/api/logout`, etc.)\r\n- Added new assessment endpoints (`/api/assessment/send`, `/api/assessment/list`, `/api/assessment/:id`)\r\n- Created a JWT-based authentication system for securing endpoints\r\n- Added comprehensive validation for request data\r\n\r\n### Testing Infrastructure\r\n- Created a new test suite (`readme-endpoints.test.js`) specifically for testing the API endpoints listed in the README\r\n- Fixed test environment configuration to ensure consistent test results\r\n- Enhanced test robustness by adding graceful handling for not-yet-implemented endpoints\r\n\r\n### Database Improvements\r\n- Consolidated SQLite database configuration to use a single file instead of separate dev and test databases\r\n- Updated database path references throughout the codebase for consistency\r\n- Improved error handling for database operations\r\n\r\n### Code Quality\r\n- Fixed linting issues across multiple files\r\n- Added JSDoc type annotations to improve code readability and type safety\r\n- Improved console logging for better debugging during test runs\r\n\r\n## Testing\r\nAll tests now pass, including:\r\n- Unit tests for database connectivity\r\n- Unit tests for user models\r\n- E2E tests for the assessment flow\r\n- E2E tests for API endpoints as documented in the README\r\n- E2E tests in the development layer appear to work as per `readme-endpoints.tests.js`\r\n\r\nto test run `cd backend; npm test`\r\n\r\n## Next Steps\r\n\r\n- Azure SQL server should be deployed with an Azure app\r\n- test static messages in deployed API website e.g. \"Hello World\", \"Connected to Azure SQL server\"\r\n",
+      "created_at": "2025-03-21T15:49:00Z",
+      "merged_at": "2025-03-21T20:50:24Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/9",
+      "state": "merged",
+      "additions": 1131,
+      "deletions": 211,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2407730376,
+      "number": 7,
+      "title": "Azure SQL Server Integration for Production Environment",
+      "description": "\r\n## Summary\r\nThis PR implements the Azure SQL Server connection for the production environment while maintaining SQLite for development. It includes the database configuration, environment setup, and testing infrastructure.\r\n\r\n## Changes\r\n\r\n- **Database Connection Configuration**:\r\n  - Updated db/index.js to conditionally connect to Azure SQL Server in production\r\n  - Maintained SQLite configuration for development environment\r\n  - Added proper error handling for database connections\r\n\r\n- **Environment Configuration**:\r\n  - Enhanced .env file with Azure SQL Server credentials from .azure_sql_json\r\n  - Added production mode toggle through NODE_ENV environment variable\r\n  - Included placeholder for secure password storage\r\n\r\n- **Testing Infrastructure**:\r\n  - Created azureSql.prod.test.js for production environment testing\r\n  - Added tests to verify SQL Server connection and query execution\r\n  - Maintained existing mock tests for development workflow\r\n\r\n- **Firewall Management**:\r\n  - Added scripts/add-firewall-rule.js utility to simplify IP whitelist management\r\n  - Documented process for updating Azure SQL firewall rules manually\r\n  - Explained the distinction between development access and production deployment\r\n\r\n## Architecture Notes\r\n\r\n- In production, only the backend server needs database access, not individual clients\r\n- For deployment, we'll need to:\r\n  1. Enable \"Allow Azure services\" if deploying to Azure\r\n  2. Add the production server's IP to the firewall\r\n  3. Or implement a more secure VNet/private link solution\r\n\r\n## How to Test\r\n\r\n1. Set environment to production:\r\n   ```\r\n   $env:NODE_ENV=\"production\"\r\n   ```\r\n\r\n2. Run the test suite:\r\n   ```\r\n   npm test -- \"azureSql.prod\"\r\n   ```\r\n\r\n3. For local development (with mock):\r\n   ```\r\n   npm test -- \"azureSql.mock\"\r\n   ```\r\n\r\n## Next Steps\r\n\r\n- Set up CI/CD pipeline with proper environment variables\r\n- Implement secure credential storage for production\r\n- Configure proper firewall rules for production server?? Connect to App Service??\r\n\r\nwe want API message deployed in api website root folder\r\n\r\nthen we want frontend i.e. cd dottie-app deployed on another Azure app service\r\n\r\n",
+      "created_at": "2025-03-20T18:35:23Z",
+      "merged_at": "2025-03-20T19:09:47Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/7",
+      "state": "merged",
+      "additions": 2568,
+      "deletions": 105,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2406038849,
+      "number": 6,
+      "title": "Add SQLite Database for Development with Azure SQL Compatibility",
+      "description": "This PR implements a dual-database approach that uses SQLite for local development while maintaining compatibility with Azure SQL for production environments. This architecture simplifies the development process by eliminating the need for external database servers while providing a clear path to production.\r\n\r\n## Changes\r\n- Added SQLite3 and Knex.js as ORM dependencies\r\n- Created a database configuration (`db/index.js`) that automatically switches between SQLite and Azure SQL based on environment variables\r\n- Implemented database migrations with table definitions for users, period logs, symptoms, and assessments\r\n- Added User model with CRUD operations\r\n- Created database service layer for common operations\r\n- Implemented user API routes for testing the database functionality\r\n- Added database utilities for testing\r\n- Fixed tests to work with the SQLite database\r\n- Updated documentation in both main and backend README files\r\n\r\n## Benefits\r\n- Simplified developer setup (no need for external database servers)\r\n- Consistent API for database operations across environments\r\n- Easy transition path from development to production\r\n- Better test isolation with database initialization utilities\r\n- Comprehensive data model supporting the application's core features\r\n\r\n## Testing\r\nAll tests are now passing with the SQLite integration. The project includes:\r\n- Database service unit tests\r\n- User model tests\r\n- API endpoint tests\r\n\r\n## Next Steps\r\n- Test and verify Azure SQL connectivity in production environment using the existing configuration\r\n- Add database seeding for consistent test and development data i.e. add some sample data\r\n- Implement schema versioning for future database changes",
+      "created_at": "2025-03-20T07:33:28Z",
+      "merged_at": "2025-03-20T09:15:47Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/6",
+      "state": "merged",
+      "additions": 2381,
+      "deletions": 54,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2396229335,
+      "number": 4,
+      "title": "Frontend UI",
+      "description": null,
+      "created_at": "2025-03-16T17:04:56Z",
+      "merged_at": "2025-03-17T04:48:37Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/4",
+      "state": "merged",
+      "additions": 11442,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2396153044,
+      "number": 3,
+      "title": "Clarify scope of Mininum Viable Product with Logic Tree, Stack Decisions, ERD",
+      "description": null,
+      "created_at": "2025-03-16T14:06:29Z",
+      "merged_at": "2025-03-16T14:09:39Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/3",
+      "state": "merged",
+      "additions": 306,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2395442906,
+      "number": 2,
+      "title": "Refactor API comprehensive tests to use Vitest and Supertest",
+      "description": "- Updated test structure to utilize Vitest for testing framework.\r\n- Replaced Playwright test commands with Supertest for API requests.\r\n- Implemented server lifecycle management with beforeAll and afterAll hooks.\r\n- Adjusted response handling to align with Supertest's API.\r\n- Enhanced test cases for better clarity and consistency.",
+      "created_at": "2025-03-15T15:39:12Z",
+      "merged_at": "2025-03-15T16:54:48Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/2",
+      "state": "merged",
+      "additions": 97,
+      "deletions": 95,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2349618842,
+      "number": 112,
+      "title": "Major PR -- React and API integrated successfully",
+      "description": "## test coverage outcomes from unit => dev => production layer\r\n\r\n`cd backend; pytest`\r\n![image](https://github.com/user-attachments/assets/2e841d0c-46a2-4523-8577-d613f34094e8)\r\n\r\n\r\n\r\n`cd frontend; npm run test`\r\n![image](https://github.com/user-attachments/assets/c44d43f6-7b4d-40d3-a04b-0d5a9ac2f6bb)\r\n\r\n\r\n`cd frontend; npx playwright test --ui`\r\n100% tests pass in prod, a few syntax errors remain in Development layer\r\n![image](https://github.com/user-attachments/assets/c1ede71b-eb91-4437-a07c-2bcfd949beb6)\r\n\r\n\r\n## important changes to supabase db integration\r\n\r\ncheck emails/slack for supabase project info",
+      "created_at": "2025-02-21T13:14:07Z",
+      "merged_at": "2025-02-21T16:23:09Z",
+      "html_url": "https://github.com/dimitri-edel/team-5/pull/112",
+      "state": "merged",
+      "additions": 18007,
+      "deletions": 909814,
+      "repository": {
+        "name": "team-5",
+        "description": null,
+        "language": "JavaScript",
+        "html_url": "https://github.com/dimitri-edel/team-5",
+        "owner": {
+          "login": "dimitri-edel",
+          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+        }
+      }
+    },
+    {
+      "id": 2338428342,
+      "number": 110,
+      "title": "clarified DEVELOPMENT LAYER through manual and automated testing; ready to test production",
+      "description": "### Development Layer Endpoints\r\n\r\n| Layer | URL | Endpoint | Method | Expected Response | Development Result |\r\n|----------|---------|------------------|-------------------|-------------------|-------------------|\r\n| Backend | `http://127.0.0.1:8000/` | `/` | GET | redirect to test | ✅ `{\"message\":\"API is working!\"}` | \r\n| Backend | `http://127.0.0.1:8000/` | `/test` | GET | Returns API TEST | ✅ `{\"message\":\"API is working!\"}` |\r\n| | | | | | |\r\n| Frontend | `http://localhost:3000/` |`/` | GET | Returns Auth view in frontend | ✅ (2 EMs, 2 warnings) | \r\n| Frontend | `http://localhost:3000/` | `api/test` | GET | Returns API call `{\"message\":\"API is working!\"}` | ✅ `{\"message\":\"API is working!\"}` |\r\n| | | | | | |\r\n| | | | | | |\r\n| Frontend | `http://localhost:3000/` | `/SignIn` | GET | Returns SignIn | ✅ | \r\n| Frontend | `http://localhost:3000/` | `/SignUp` | GET | Returns SignIn | ✅ | \r\n| Frontend | `http://localhost:3000/` | `/SignUp` | POST | Creates user in DB | no action | no action |\r\n\r\n\r\n### Production Layer Endpoints\r\n\r\n| Layer | URL | Endpoint | Method | Expected Response | Production Result |\r\n|----------|---------|------------------|-------------------|-------------------|-------------------|\r\n| Backend | `https://team5-api-eu-5d24fa110c36.herokuapp.app/` | `/` | GET | redirect to test | ❌'something went wrong' 500 error |\r\n| Backend | `https://team5-api-eu-5d24fa110c36.herokuapp.app/` | `/test` | GET | Returns API TEST | ❌  |\r\n\r\n",
+      "created_at": "2025-02-16T21:50:25Z",
+      "merged_at": "2025-02-16T22:04:26Z",
+      "html_url": "https://github.com/dimitri-edel/team-5/pull/110",
+      "state": "merged",
+      "additions": 310,
+      "deletions": 94,
+      "repository": {
+        "name": "team-5",
+        "description": null,
+        "language": "JavaScript",
+        "html_url": "https://github.com/dimitri-edel/team-5",
+        "owner": {
+          "login": "dimitri-edel",
+          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+        }
+      }
+    },
+    {
+      "id": 2338341308,
+      "number": 104,
+      "title": "Small PR -- testing confirms/isolates API working in frontend and proxy",
+      "description": "Babel is only used in our test environment to transpile modern JavaScript/JSX code for Jest to understand. It's configured in .babelrc and only affects our test files through the babel-jest transformer.",
+      "created_at": "2025-02-16T18:02:24Z",
+      "merged_at": "2025-02-16T18:39:34Z",
+      "html_url": "https://github.com/dimitri-edel/team-5/pull/104",
+      "state": "merged",
+      "additions": 6968,
+      "deletions": 3619,
+      "repository": {
+        "name": "team-5",
+        "description": null,
+        "language": "JavaScript",
+        "html_url": "https://github.com/dimitri-edel/team-5",
+        "owner": {
+          "login": "dimitri-edel",
+          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+        }
+      }
+    },
+    {
+      "id": 2338258105,
+      "number": 101,
+      "title": "Systems Design: remove vite and replace with node",
+      "description": "![image](https://github.com/user-attachments/assets/d5abe85d-4ecb-4f8d-b4d3-0c01c367625b)\r\n",
+      "created_at": "2025-02-16T14:46:18Z",
+      "merged_at": "2025-02-16T14:46:47Z",
+      "html_url": "https://github.com/dimitri-edel/team-5/pull/101",
+      "state": "merged",
+      "additions": 851,
+      "deletions": 948,
+      "repository": {
+        "name": "team-5",
+        "description": null,
+        "language": "JavaScript",
+        "html_url": "https://github.com/dimitri-edel/team-5",
+        "owner": {
+          "login": "dimitri-edel",
+          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+        }
+      }
+    },
+    {
+      "id": 2338221259,
+      "number": 100,
+      "title": "fix: resolve case sensitivity issues in file names",
+      "description": null,
+      "created_at": "2025-02-16T13:16:57Z",
+      "merged_at": "2025-02-16T13:43:15Z",
+      "html_url": "https://github.com/dimitri-edel/team-5/pull/100",
+      "state": "merged",
+      "additions": 213,
+      "deletions": 156,
+      "repository": {
+        "name": "team-5",
+        "description": null,
+        "language": "JavaScript",
+        "html_url": "https://github.com/dimitri-edel/team-5",
+        "owner": {
+          "login": "dimitri-edel",
+          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+        }
+      }
+    },
+    {
+      "id": 2338144322,
+      "number": 93,
+      "title": "API working in localhost",
+      "description": " this change won't interfere with deployment.\r\n \r\nThe changes we made are only in the server section of the Vite config, which is only used during local development (npm run dev).\r\n\r\nWhen you build and deploy the frontend (npm run build), Vite doesn't use these proxy settings at all. The production build will still make requests to the actual production URL.\r\n\r\n\r\n\r\n![image](https://github.com/user-attachments/assets/97361245-0f69-4a88-9e88-47e76c954add)\r\n\r\n\r\n![image](https://github.com/user-attachments/assets/343e0396-0a9b-437b-bebf-e2050a8511e5)\r\n\r\n![image](https://github.com/user-attachments/assets/8eaffebd-6858-4fae-a46c-8ebb2538c627)\r\n\r\n\r\n![image](https://github.com/user-attachments/assets/21a45e29-74da-4465-8b35-f3b44af55503)\r\n\r\n\r\n\r\n\r\n\r\n",
+      "created_at": "2025-02-16T09:57:06Z",
+      "merged_at": "2025-02-16T10:41:01Z",
+      "html_url": "https://github.com/dimitri-edel/team-5/pull/93",
+      "state": "merged",
+      "additions": 7,
+      "deletions": 4,
+      "repository": {
+        "name": "team-5",
+        "description": null,
+        "language": "JavaScript",
+        "html_url": "https://github.com/dimitri-edel/team-5",
+        "owner": {
+          "login": "dimitri-edel",
+          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+        }
+      }
+    }
+  ],
+  "meta": {
+    "username": "lmcrean",
+    "count": 20,
+    "pagination": {
+      "page": 9,
+      "per_page": 20,
+      "total_count": 218,
+      "total_pages": 11,
+      "has_next_page": true,
+      "has_previous_page": true
+    }
+  }
+}

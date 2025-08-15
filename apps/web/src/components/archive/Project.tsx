@@ -113,7 +113,7 @@ const Project: React.FC<ProjectProps> = ({ projectData }) => {
   };
 
   // Function to render a single button
-  const renderButton = (buttonType: string, buttonData: ButtonData | undefined): JSX.Element | null => {
+  const renderButton = (buttonType: string, buttonData: ButtonData | undefined): React.ReactElement | null => {
     if (!buttonData || !buttonData.url) return null;
     
     const { url, icon, text } = buttonData;
@@ -133,7 +133,7 @@ const Project: React.FC<ProjectProps> = ({ projectData }) => {
   };
 
   // Function to render a single version of the project
-  const renderVersion = (versionData: ProjectVersion, index: number): JSX.Element => {
+  const renderVersion = (versionData: ProjectVersion, index: number): React.ReactElement => {
     const {
       version,
       description: versionDescription,

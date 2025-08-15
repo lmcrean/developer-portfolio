@@ -1,0 +1,456 @@
+{
+  "data": [
+    {
+      "id": 2688413956,
+      "number": 24,
+      "title": "delete redundant reference folders",
+      "description": null,
+      "created_at": "2025-07-23T10:53:45Z",
+      "merged_at": "2025-07-23T10:54:22Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/24",
+      "state": "merged",
+      "additions": 157,
+      "deletions": 121383,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2688368790,
+      "number": 23,
+      "title": "Update integration workflow to target web directory for tests and dependencies",
+      "description": "- Adjust the integration workflow to change the directory to 'integration/web' for installing dependencies and running tests, ensuring the correct path is utilized for the integration process.\n- Update the cache-dependency-path to reflect the new directory structure, improving the efficiency of the workflow.",
+      "created_at": "2025-07-23T10:35:49Z",
+      "merged_at": "2025-07-23T10:36:01Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/23",
+      "state": "merged",
+      "additions": 4,
+      "deletions": 4,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2688344671,
+      "number": 22,
+      "title": "Remove redundant pull requests endpoint tests from API workflows",
+      "description": "- Eliminate redundant pull requests endpoint tests from both the API and integration workflow files, streamlining the testing process.\n- Ensure that the remaining tests continue to validate the functionality of the main production API endpoints effectively.",
+      "created_at": "2025-07-23T10:26:28Z",
+      "merged_at": "2025-07-23T10:26:39Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/22",
+      "state": "merged",
+      "additions": 0,
+      "deletions": 30,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2679157863,
+      "number": 20,
+      "title": "Refactor health check response to remove GitHub token details",
+      "description": "- Simplify the health check endpoint by removing GitHub token status and presence from the response.\n- Update the HealthResponse model to exclude GitHubTokenInfo, streamlining the response structure.\n- Adjust HealthController tests to reflect the changes in the health response, ensuring accurate validation of the updated API behavior.",
+      "created_at": "2025-07-19T16:47:06Z",
+      "merged_at": "2025-07-19T16:47:24Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/20",
+      "state": "merged",
+      "additions": 27,
+      "deletions": 50,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2679154048,
+      "number": 19,
+      "title": "Architect/c-platform",
+      "description": "- Update the health check endpoint to return the status of the GITHUB_TOKEN, indicating whether it is configured or not.\n- Modify the HealthResponse model to include GitHubTokenInfo, reflecting the presence and status of the token.\n- Adjust HealthController tests to verify the new GitHub token information in the response.",
+      "created_at": "2025-07-19T16:39:54Z",
+      "merged_at": "2025-07-19T16:40:02Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/19",
+      "state": "merged",
+      "additions": 6891,
+      "deletions": 8,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2679125993,
+      "number": 18,
+      "title": "Update deployment workflow to include GITHUB_TOKEN in environment variables",
+      "description": "- Modify the deployment workflow to set the GITHUB_TOKEN as an environment variable, enhancing API authentication during deployment and ensuring secure access to GitHub resources.",
+      "created_at": "2025-07-19T15:56:03Z",
+      "merged_at": "2025-07-19T15:56:08Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/18",
+      "state": "merged",
+      "additions": 1,
+      "deletions": 1,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2679121623,
+      "number": 17,
+      "title": "Update deployment workflow to use GITHUB_TOKEN for API authentication",
+      "description": "- Change the reference from API_GITHUB_TOKEN to GITHUB_TOKEN in the deployment workflow, ensuring correct token usage for GitHub actions and improving deployment validation.",
+      "created_at": "2025-07-19T15:47:52Z",
+      "merged_at": "2025-07-19T15:49:01Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/17",
+      "state": "merged",
+      "additions": 4,
+      "deletions": 4,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2679116198,
+      "number": 16,
+      "title": "Update deployment workflows to use production-specific configurations",
+      "description": "- Modify workflow files to reference production-specific deployment and testing configurations for API, web, and integration jobs, ensuring consistency and clarity in the deployment process.",
+      "created_at": "2025-07-19T15:40:16Z",
+      "merged_at": "2025-07-19T15:40:23Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/16",
+      "state": "merged",
+      "additions": 5,
+      "deletions": 5,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2679093919,
+      "number": 401,
+      "title": "Implement: new github actions to google cloud workflow with successful deployment branching",
+      "description": "\r\n## Overview\r\n\r\nThis PR migrates the deployment infrastructure from Vercel to Google Cloud Platform (GCP) and implements comprehensive deployment branching for both production and preview environments.\r\n\r\n## What Was Changed\r\n\r\n### Before (Vercel-based)\r\n- Single deployment target (Vercel)\r\n- Limited branching strategy\r\n- No containerized deployments\r\n- Simplified but less scalable architecture\r\n\r\n### After (Google Cloud-based)\r\n- **Containerized Deployments**: Docker images built and deployed to Google Cloud Run\r\n- **Artifact Registry**: Container image storage and management\r\n- **Deployment Branching**: Separate workflows for production and preview deployments\r\n- **Infrastructure as Code**: Comprehensive GitHub Actions workflows for CI/CD\r\n\r\n## Key Achievements\r\n\r\n### 1. Production Deployment Pipeline\r\n- **Workflow**: `deploy-api.production.main.yml`\r\n- **Trigger**: Pushes to `main` branch\r\n- **Target**: Cloud Run service with predictable naming (`dottie-api-main`)\r\n- **Features**: \r\n  - Automated testing before deployment\r\n  - Container image building and pushing\r\n  - Health checks and validation\r\n  - CORS configuration testing\r\n\r\n### 2. Branch Preview Deployments\r\n- **Workflow**: `deploy-api.production.branch.yml`\r\n- **Trigger**: Pull requests and feature branches\r\n- **Target**: Dynamic Cloud Run services (`api-{branch-name}`)\r\n- **Features**:\r\n  - Automatic cleanup of existing services\r\n  - Branch-specific URLs for testing\r\n  - Same validation as production\r\n\r\n### 3. Service Account Security\r\n- **Created**: `github-actions-deploy@dottie-app-37930.iam.gserviceaccount.com`\r\n- **Permissions**: Least-privilege access for deployment operations\r\n- **Authentication**: Service account key-based (replacing Workload Identity Federation)\r\n\r\n### 4. Comprehensive Validation\r\n- **GCP Authentication**: Multi-step verification of credentials and project access\r\n- **API Enablement**: Automatic enabling of required Google Cloud APIs\r\n- **Container Registry**: Artifact Registry setup and permission testing\r\n- **Deployment Health**: Endpoint testing and CORS validation\r\n\r\n### 5. GitHub Actions Integration\r\n- **Secrets Management**: Streamlined secret requirements (`GCP_SA_KEY`)\r\n- **Removed Dependencies**: Eliminated unnecessary GitHub token validation\r\n- **Error Handling**: Robust error detection and reporting\r\n- **Parallel Execution**: Optimized workflow performance\r\n\r\n## Technical Benefits\r\n\r\n### Scalability\r\n- Container-based architecture supports horizontal scaling\r\n- Cloud Run's serverless model handles traffic spikes automatically\r\n- Artifact Registry provides reliable image storage and versioning\r\n\r\n### Development Workflow\r\n- **Preview Deployments**: Every PR gets its own deployment URL\r\n- **Testing**: Automated testing in CI/CD pipeline\r\n- **Validation**: Comprehensive health checks before deployment completion\r\n\r\n### Monitoring & Debugging\r\n- Detailed logging throughout deployment process\r\n- Clear error messages with actionable troubleshooting\r\n- Health endpoint validation ensures deployments are functional\r\n\r\n## Deployment Architecture\r\n\r\n```\r\nGitHub Repository (PR/Push)\r\n    ↓\r\nGitHub Actions Workflow\r\n    ↓\r\nGoogle Cloud Build\r\n    ↓ (Docker Image)\r\nArtifact Registry\r\n    ↓ (Deploy Image)\r\nGoogle Cloud Run\r\n    ↓ (Live Service)\r\nPublic URL\r\n```\r\n\r\n## Workflow Files Added/Modified\r\n\r\n1. **`deploy-api.production.main.yml`** - Production deployments\r\n2. **`deploy-api.production.branch.yml`** - Preview deployments  \r\n3. **`project-config.yml`** - Centralized configuration\r\n4. **Load-config action** - Reusable configuration loading\r\n\r\n## Security Improvements\r\n\r\n- **Service Account Isolation**: Dedicated service account for deployments\r\n- **Minimal Permissions**: Only required GCP roles assigned\r\n- **Secret Management**: Reduced secret requirements\r\n- **Authentication Validation**: Multi-step verification process\r\n\r\n## Environment Support\r\n\r\n### Production Environment\r\n- **URL Pattern**: `https://dottie-api-main.{region}.run.app`\r\n- **Deployment**: Automatic on main branch\r\n- **Configuration**: Production-optimized settings\r\n\r\n### Preview Environment  \r\n- **URL Pattern**: `https://api-{branch-name}.{region}.run.app`\r\n- **Deployment**: Automatic on PR creation/updates\r\n- **Configuration**: Development-friendly settings\r\n\r\n## Migration Impact\r\n\r\nThis change represents a significant infrastructure upgrade:\r\n- **From**: Simple Vercel deployment\r\n- **To**: Enterprise-grade Google Cloud deployment with full CI/CD\r\n\r\nThe new system provides better scalability, monitoring, and development workflow while maintaining the same application functionality for end users.",
+      "created_at": "2025-07-19T15:00:44Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/dottie/pull/401",
+      "state": "closed",
+      "additions": 12460,
+      "deletions": 271,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2678978862,
+      "number": 54,
+      "title": "Add comprehensive project documentation including deployment, development, and testing guides",
+      "description": "enhance CLAUDE.md with documentation structure overview.",
+      "created_at": "2025-07-19T11:03:45Z",
+      "merged_at": "2025-07-19T11:03:58Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/54",
+      "state": "merged",
+      "additions": 498,
+      "deletions": 0,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2678974014,
+      "number": 53,
+      "title": "Updated Documentation",
+      "description": null,
+      "created_at": "2025-07-19T10:54:45Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/53",
+      "state": "closed",
+      "additions": 6428,
+      "deletions": 901,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2674570381,
+      "number": 52,
+      "title": "Implement: Habit Graph for Pull Request Section",
+      "description": "# Add GitHub Pull Request Habit Tracker Component\r\n\r\n## Summary\r\n\r\nThis PR implements a GitHub-style pull request habit tracker component that displays a year-long contribution calendar, similar to GitHub's contribution graph. The component integrates with the existing pull request feed page and connects to the habit tracker API backend.\r\n\r\n## Key Features\r\n\r\n- **GitHub-style contribution calendar** with year-long grid view showing daily PR activity\r\n- **Color-coded contribution levels** (5 intensity levels from gray to dark green)\r\n- **Interactive year selector** allowing users to view different years\r\n- **Real-time statistics** displaying total contributions, current streak, longest streak, and daily average\r\n- **Refresh functionality** to sync latest data from GitHub API\r\n- **Responsive design** with mobile-first approach and dark mode support\r\n- **Comprehensive error handling** and loading states\r\n\r\n## Technical Implementation\r\n\r\n### Frontend Components\r\n- **`HabitTracker.tsx`** - Main React component implementing the contribution calendar\r\n- **Calendar algorithm** - Generates year-long grid layout with proper week/month positioning\r\n- **API integration** - Connects to habit tracker backend endpoints\r\n- **TypeScript interfaces** - Proper typing for API responses and component props\r\n\r\n### Integration Points\r\n- **Pull Request Feed Page** - Added habit tracker above existing PR feed\r\n- **Existing API Backend** - Utilizes the habit tracker endpoints from previous implementation\r\n- **Design System** - Matches existing Tailwind CSS styling and dark mode themes\r\n\r\n### Testing Coverage\r\n- **Unit Tests** - Component behavior, API integration, user interactions\r\n- **Integration Tests** - Full API flow, data handling, error scenarios\r\n- **End-to-End Tests** - Complete user journey, visual validation, responsive design\r\n\r\n## Files Added\r\n\r\n```\r\napps/web/src/components/pull-request-feed/components/HabitTracker.tsx\r\napps/web/src/components/pull-request-feed/components/__tests__/HabitTracker.test.tsx\r\nintegration/pull-request-feed/HabitTracker.integration.test.tsx\r\ne2e/tests/features/pull-request/habit-tracker.web.spec.ts\r\n```\r\n\r\n## Files Modified\r\n\r\n```\r\napps/web/docs/pull-request-feed.mdx - Added HabitTracker component import and usage\r\napps/web/jest.config.ts - Fixed setup files configuration\r\napps/web/src/tests/setupTests.ts - Added testing-library/jest-dom import\r\napps/web/babel.config.js - Added for Jest compatibility\r\n```\r\n\r\n## API Integration\r\n\r\nThe component integrates with the existing habit tracker API endpoints:\r\n\r\n- `GET /api/github/habit-tracker/stats` - Retrieves contribution statistics\r\n- `GET /api/github/habit-tracker/entries` - Fetches daily contribution data\r\n- `POST /api/github/habit-tracker/refresh` - Triggers data refresh from GitHub\r\n\r\n## Visual Design\r\n\r\nThe component matches GitHub's contribution graph design:\r\n- **Calendar grid layout** with months across the top and days of week on the left\r\n- **Color intensity levels** representing contribution frequency (0, 1, 2-3, 4-5, 6+ PRs)\r\n- **Legend** showing \"Less\" to \"More\" contribution levels\r\n- **Statistics panel** displaying key metrics and streak information\r\n\r\n## User Experience\r\n\r\n- **Intuitive navigation** with year selector dropdown\r\n- **Hover tooltips** showing exact dates and contribution counts\r\n- **Loading states** during API calls\r\n- **Error recovery** with retry functionality\r\n- **Responsive behavior** adapting to different screen sizes\r\n\r\n## Test Coverage\r\n\r\n### Unit Tests\r\n- Component rendering and state management\r\n- API integration and error handling\r\n- User interactions (year selection, refresh)\r\n- Calendar grid generation and display\r\n\r\n### Integration Tests\r\n- Full API workflow testing\r\n- Data transformation and display\r\n- Error scenario handling\r\n- Environment-specific configurations\r\n\r\n### End-to-End Tests\r\n- Complete user journey validation\r\n- Visual layout verification\r\n- Interactive controls functionality\r\n- Mobile responsiveness testing\r\n\r\n## Deployment Ready\r\n\r\n- **Build verification** - Successfully compiles with existing codebase\r\n- **Type safety** - Full TypeScript implementation with proper interfaces\r\n- **Performance optimized** - Efficient calendar generation and API calls\r\n- **Accessibility** - Semantic HTML and keyboard navigation support\r\n\r\n## Screenshots\r\n\r\nThe implementation matches the provided GitHub contribution graph design with:\r\n- Year-long calendar view\r\n- Color-coded contribution squares\r\n- Month and day labels\r\n- Statistics display\r\n- Interactive controls\r\n\r\n## Future Enhancements\r\n\r\n- **Streak badges** for milestone achievements\r\n- **Weekly/monthly views** for different time perspectives\r\n- **Contribution trends** with comparative analytics\r\n- **Export functionality** for sharing progress",
+      "created_at": "2025-07-17T16:55:02Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/52",
+      "state": "closed",
+      "additions": 5927,
+      "deletions": 901,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671460522,
+      "number": 6908,
+      "title": ":sparkles: Add version locking feature to prevent accidental deletion",
+      "description": "## Summary\r\n\r\nThis PR implements a comprehensive version locking system that allows users to lock their saved versions to prevent deletion by other team members. The enhancement was requested on #6763\r\n\r\n### Key Features\r\n- ✅ Only version creators can lock/unlock their own versions\r\n- ✅ Locked versions cannot be deleted by anyone except the creator  \r\n- ✅ System snapshots cannot be locked (only user-created versions)\r\n- ✅ Clear visual indicators and menu options in the UI\r\n- ✅ Comprehensive authorization checks and error handling\r\n\r\n### Backend Changes\r\n- **Database Migration**: Added `locked_by` column to `file_change` table with proper indexing\r\n- **New RPC Endpoints**: \r\n  - `lock-file-snapshot` - Lock a version (creator only)\r\n  - `unlock-file-snapshot` - Unlock a version (creator only)\r\n- **Enhanced Security**: Updated `delete-file-snapshot` with lock protection\r\n- **Authorization**: Proper permission checks and descriptive error messages\r\n\r\n### Frontend Changes\r\n- **UI Components**: Added lock/unlock actions to version history sidebar\r\n- **Visual Indicators**: Clear display of locked status on versions\r\n- **Conditional Menus**: Show lock/unlock options based on current state\r\n- **Data Integration**: Connected to backend RPC commands\r\n\r\n### Files Modified\r\n- `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql` - Database migration\r\n- `backend/src/app/rpc/commands/files_snapshot.clj` - Backend API logic  \r\n- `frontend/src/app/main/data/workspace/versions.cljs` - Frontend data layer\r\n- `frontend/src/app/main/ui/workspace/sidebar/versions.cljs` - UI components\r\n\r\n## Manual Testing Instructions\r\n\r\n### Prerequisites\r\n1. Set up development environment:\r\n   ```bash\r\n   ./manage.sh start-devenv\r\n   ./manage.sh run-devenv\r\n   ```\r\n\r\n2. Apply database migration:\r\n   ```bash\r\n   cd backend\r\n   clojure -M:dev:migrate\r\n   ```\r\n\r\n3. Start backend and frontend:\r\n   ```bash\r\n   # Terminal 1: Backend\r\n   cd backend && ./scripts/repl\r\n   \r\n   # Terminal 2: Frontend  \r\n   cd frontend && yarn watch:app\r\n   ```\r\n\r\n### Test Scenarios\r\n\r\n#### ✅ Basic Lock/Unlock Functionality\r\n\r\n**Test 1: Lock Your Own Version**\r\n1. Create/open a file and make changes\r\n2. Go to versions panel (history icon in sidebar)\r\n3. Click \"Save Version\" to create a user version\r\n4. Click menu (three dots) on your saved version\r\n5. Select \"Lock\" from dropdown\r\n6. **Expected**: Version shows lock indicator, menu shows \"Unlock\"\r\n\r\n**Test 2: Unlock Version**\r\n1. With a locked version from Test 1\r\n2. Click menu → \"Unlock\"\r\n3. **Expected**: Version unlocked, menu shows \"Lock\" again\r\n\r\n**Test 3: Delete Protection**\r\n1. Lock a version\r\n2. Try to delete it via menu\r\n3. **Expected**: Deletion fails with error message\r\n\r\n#### ✅ Multi-User Authorization\r\n\r\n**Test 4: Other Users Cannot Delete Locked Versions**\r\n1. User A creates and locks a version\r\n2. User B opens same file\r\n3. User B tries to delete User A's locked version\r\n4. **Expected**: Deletion fails with authorization error\r\n\r\n**Test 5: Only Creator Can Lock/Unlock**\r\n1. User A creates version (unlocked)\r\n2. User B tries to lock User A's version\r\n3. **Expected**: Lock fails with \"only creator can lock\" error\r\n\r\n#### ✅ Error Handling\r\n\r\n**Test 6: Double Lock Prevention**\r\n1. Lock a version\r\n2. Try to lock it again\r\n3. **Expected**: Fails with \"already locked\" error\r\n\r\n**Test 7: Unlock Non-Locked Version**\r\n1. With unlocked version\r\n2. Try to unlock it\r\n3. **Expected**: Fails with \"not locked\" error\r\n\r\n**Test 8: System Snapshot Protection**\r\n1. Find auto-saved system snapshots (grouped by date)\r\n2. Try to lock a system snapshot\r\n3. **Expected**: Fails with \"system snapshots can't be locked\" error\r\n\r\n#### ✅ UI/UX Verification\r\n\r\n**Visual Indicators:**\r\n- [x] Locked versions show lock indicator\r\n- [x] Menu shows \"Lock\" for unlocked versions\r\n- [x] Menu shows \"Unlock\" for locked versions\r\n- [x] Lock/unlock options only appear for user versions\r\n\r\n**Functionality:**\r\n- [x] Lock/unlock actions work correctly\r\n- [x] Delete prevention works for locked versions\r\n- [x] Only creators can lock/unlock their versions\r\n- [x] System snapshots cannot be locked\r\n- [x] Proper error messages for all failure cases\r\n\r\n### Database Verification\r\n\r\nCheck migration and data integrity:\r\n```sql\r\n-- Verify migration applied\r\nSELECT * FROM file_change WHERE locked_by IS NOT NULL;\r\n\r\n-- Check lock status\r\nSELECT id, label, profile_id, locked_by, created_by \r\nFROM file_change \r\nWHERE file_id = 'test-file-id' \r\nAND created_by = 'user';\r\n```\r\n\r\n### Browser Testing\r\n\r\n1. **Network Tab**: Verify API calls\r\n   - Lock: `POST /api/rpc/command/lock-file-snapshot`\r\n   - Unlock: `POST /api/rpc/command/unlock-file-snapshot`\r\n   - Data: `locked_by` field in responses\r\n\r\n2. **Console**: Check for proper error handling\r\n   - No JavaScript errors\r\n   - Descriptive error messages for invalid operations\r\n\r\n### Performance Testing\r\n\r\n1. Create many versions (locked and unlocked)\r\n2. Verify version list loads quickly\r\n3. Check lock status displays correctly for all versions\r\n\r\n## Test Plan\r\n\r\n- [x] **Basic functionality**: Lock/unlock own versions\r\n- [ ] **Security**: Cannot lock/unlock others' versions\r\n- [x] **Protection**: Cannot delete locked versions\r\n- [x] **System snapshots**: Cannot be locked\r\n- [x] **Error handling**: All edge cases handled properly\r\n- [ ] **UI/UX**: Clear visual indicators and menu options\r\n- [x] **Performance**: No impact on version list loading\r\n- [x] **Database**: Migration applied correctly\r\n- [x] **Multi-user**: Authorization works across users",
+      "created_at": "2025-07-16T17:38:20Z",
+      "merged_at": null,
+      "html_url": "https://github.com/penpot/penpot/pull/6908",
+      "state": "closed",
+      "additions": 304,
+      "deletions": 24,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671406818,
+      "number": 6907,
+      "title": "Add version locking feature to prevent accidental deletion",
+      "description": "## Summary\n\nThis PR implements a comprehensive version locking system that allows users to lock their saved versions to prevent deletion by other team members.\n\n### Key Features\n- ✅ Only version creators can lock/unlock their own versions\n- ✅ Locked versions cannot be deleted by anyone except the creator  \n- ✅ System snapshots cannot be locked (only user-created versions)\n- ✅ Clear visual indicators and menu options in the UI\n- ✅ Comprehensive authorization checks and error handling\n\n### Backend Changes\n- **Database Migration**: Added `locked_by` column to `file_change` table with proper indexing\n- **New RPC Endpoints**: \n  - `lock-file-snapshot` - Lock a version (creator only)\n  - `unlock-file-snapshot` - Unlock a version (creator only)\n- **Enhanced Security**: Updated `delete-file-snapshot` with lock protection\n- **Authorization**: Proper permission checks and descriptive error messages\n\n### Frontend Changes\n- **UI Components**: Added lock/unlock actions to version history sidebar\n- **Visual Indicators**: Clear display of locked status on versions\n- **Conditional Menus**: Show lock/unlock options based on current state\n- **Data Integration**: Connected to backend RPC commands\n\n### Files Modified\n- `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql` - Database migration\n- `backend/src/app/rpc/commands/files_snapshot.clj` - Backend API logic  \n- `frontend/src/app/main/data/workspace/versions.cljs` - Frontend data layer\n- `frontend/src/app/main/ui/workspace/sidebar/versions.cljs` - UI components\n\n## Manual Testing Instructions\n\n### Prerequisites\n1. Set up development environment:\n   ```bash\n   ./manage.sh start-devenv\n   ./manage.sh run-devenv\n   ```\n\n2. Apply database migration:\n   ```bash\n   cd backend\n   clojure -M:dev:migrate\n   ```\n\n3. Start backend and frontend:\n   ```bash\n   # Terminal 1: Backend\n   cd backend && ./scripts/repl\n   \n   # Terminal 2: Frontend  \n   cd frontend && yarn watch:app\n   ```\n\n### Test Scenarios\n\n#### ✅ Basic Lock/Unlock Functionality\n\n**Test 1: Lock Your Own Version**\n1. Create/open a file and make changes\n2. Go to versions panel (history icon in sidebar)\n3. Click \"Save Version\" to create a user version\n4. Click menu (three dots) on your saved version\n5. Select \"Lock\" from dropdown\n6. **Expected**: Version shows lock indicator, menu shows \"Unlock\"\n\n**Test 2: Unlock Version**\n1. With a locked version from Test 1\n2. Click menu → \"Unlock\"\n3. **Expected**: Version unlocked, menu shows \"Lock\" again\n\n**Test 3: Delete Protection**\n1. Lock a version\n2. Try to delete it via menu\n3. **Expected**: Deletion fails with error message\n\n#### ✅ Multi-User Authorization\n\n**Test 4: Other Users Cannot Delete Locked Versions**\n1. User A creates and locks a version\n2. User B opens same file\n3. User B tries to delete User A's locked version\n4. **Expected**: Deletion fails with authorization error\n\n**Test 5: Only Creator Can Lock/Unlock**\n1. User A creates version (unlocked)\n2. User B tries to lock User A's version\n3. **Expected**: Lock fails with \"only creator can lock\" error\n\n#### ✅ Error Handling\n\n**Test 6: Double Lock Prevention**\n1. Lock a version\n2. Try to lock it again\n3. **Expected**: Fails with \"already locked\" error\n\n**Test 7: Unlock Non-Locked Version**\n1. With unlocked version\n2. Try to unlock it\n3. **Expected**: Fails with \"not locked\" error\n\n**Test 8: System Snapshot Protection**\n1. Find auto-saved system snapshots (grouped by date)\n2. Try to lock a system snapshot\n3. **Expected**: Fails with \"system snapshots can't be locked\" error\n\n#### ✅ UI/UX Verification\n\n**Visual Indicators:**\n- [ ] Locked versions show lock indicator\n- [ ] Menu shows \"Lock\" for unlocked versions\n- [ ] Menu shows \"Unlock\" for locked versions\n- [ ] Lock/unlock options only appear for user versions\n\n**Functionality:**\n- [ ] Lock/unlock actions work correctly\n- [ ] Delete prevention works for locked versions\n- [ ] Only creators can lock/unlock their versions\n- [ ] System snapshots cannot be locked\n- [ ] Proper error messages for all failure cases\n\n### Database Verification\n\nCheck migration and data integrity:\n```sql\n-- Verify migration applied\nSELECT * FROM file_change WHERE locked_by IS NOT NULL;\n\n-- Check lock status\nSELECT id, label, profile_id, locked_by, created_by \nFROM file_change \nWHERE file_id = 'test-file-id' \nAND created_by = 'user';\n```\n\n### Browser Testing\n\n1. **Network Tab**: Verify API calls\n   - Lock: `POST /api/rpc/command/lock-file-snapshot`\n   - Unlock: `POST /api/rpc/command/unlock-file-snapshot`\n   - Data: `locked_by` field in responses\n\n2. **Console**: Check for proper error handling\n   - No JavaScript errors\n   - Descriptive error messages for invalid operations\n\n### Performance Testing\n\n1. Create many versions (locked and unlocked)\n2. Verify version list loads quickly\n3. Check lock status displays correctly for all versions\n\n## Test Plan\n\n- [ ] **Basic functionality**: Lock/unlock own versions\n- [ ] **Security**: Cannot lock/unlock others' versions\n- [ ] **Protection**: Cannot delete locked versions\n- [ ] **System snapshots**: Cannot be locked\n- [ ] **Error handling**: All edge cases handled properly\n- [ ] **UI/UX**: Clear visual indicators and menu options\n- [ ] **Performance**: No impact on version list loading\n- [ ] **Database**: Migration applied correctly\n- [ ] **Multi-user**: Authorization works across users",
+      "created_at": "2025-07-16T17:15:37Z",
+      "merged_at": null,
+      "html_url": "https://github.com/penpot/penpot/pull/6907",
+      "state": "closed",
+      "additions": 173,
+      "deletions": 4,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671403737,
+      "number": 51,
+      "title": "Enhance Projects with cleaner interface",
+      "description": null,
+      "created_at": "2025-07-16T17:13:59Z",
+      "merged_at": "2025-07-16T17:51:24Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/51",
+      "state": "merged",
+      "additions": 171,
+      "deletions": 66,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671401348,
+      "number": 50,
+      "title": "Enhance projects with cleaner interface",
+      "description": null,
+      "created_at": "2025-07-16T17:12:51Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/50",
+      "state": "closed",
+      "additions": 171,
+      "deletions": 66,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671261049,
+      "number": 7,
+      "title": "Enhance detailed C# architecture plans and implementation phases",
+      "description": "\r\n\r\n- Update project overview to include new C# implementation alongside existing Django architecture.\r\n- Add sections for current and planned architecture, including tech stack, project structure, and development commands for C#.\r\n- Outline phases for C# implementation, detailing goals and key features for each phase.\r\n- Include security considerations and file naming conventions for C# documentation.",
+      "created_at": "2025-07-16T16:17:36Z",
+      "merged_at": "2025-07-16T16:17:42Z",
+      "html_url": "https://github.com/lmcrean/Coach-Matrix/pull/7",
+      "state": "merged",
+      "additions": 248,
+      "deletions": 17,
+      "repository": {
+        "name": "Coach-Matrix",
+        "description": "a multi-user blog for professionals working in education, built with Django and PostgreSQL",
+        "language": "Python",
+        "html_url": "https://github.com/lmcrean/Coach-Matrix",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671233553,
+      "number": 6,
+      "title": "Architect/c-platform",
+      "description": " 🏗️ Key Features Implemented\n\n  Backend Services (ASP.NET Core 8.0)\n\n  - API Service: Clean Architecture with MediatR, Entity Framework Core\n  - AI Service: Google Gemini integration with conversation memory\n  - Payments Service: Stripe integration with webhooks and subscriptions\n  - Workers Service: Hangfire background jobs for image processing and emails\n\n  Frontend (Angular 17+)\n\n  - Angular Material: Modern UI components\n  - NgRx: State management\n  - Standalone Components: Latest Angular patterns\n  - SignalR: Real-time communication\n\n  Google Cloud Deployment\n\n  - Cloud Run: Containerized microservices\n  - App Engine: Angular frontend hosting\n  - Cloud SQL: PostgreSQL database\n  - Cloud Storage: Media file storage\n  - Cloud Build: CI/CD integration\n\n  Testing Strategy\n\n  - Unit Tests: xUnit with Moq\n  - Integration Tests: TestContainers with PostgreSQL\n  - E2E Tests: Playwright for .NET\n  - GitHub Actions: Complete CI/CD pipeline\n\n  🔧 Technology Stack\n\n  | Component       | Technology                            |\n  |-----------------|---------------------------------------|\n  | Backend         | ASP.NET Core 8.0                      |\n  | Frontend        | Angular 17+ with TypeScript           |\n  | Database        | PostgreSQL with Entity Framework Core |\n  | Caching         | Redis                                 |\n  | AI              | Google Gemini API                     |\n  | Payments        | Stripe API                            |\n  | Background Jobs | Hangfire                              |\n  | Real-time       | SignalR                               |\n  | Testing         | xUnit, Playwright, TestContainers     |\n  | Deployment      | Google Cloud Platform                 |\n  | CI/CD           | GitHub Actions                        |\n\n  🚀 Ready for Implementation\n\n  The architecture is now complete with:\n  - ✅ Detailed code examples for all services\n  - ✅ Configuration files for all environments\n  - ✅ Testing strategies for unit, integration, and E2E testing\n  - ✅ CI/CD pipelines for automated deployment\n  - ✅ External service integrations documented\n  - ✅ Docker configurations for all services\n  - ✅ Google Cloud deployment scripts",
+      "created_at": "2025-07-16T16:07:16Z",
+      "merged_at": "2025-07-16T16:13:02Z",
+      "html_url": "https://github.com/lmcrean/Coach-Matrix/pull/6",
+      "state": "merged",
+      "additions": 20742,
+      "deletions": 1,
+      "repository": {
+        "name": "Coach-Matrix",
+        "description": "a multi-user blog for professionals working in education, built with Django and PostgreSQL",
+        "language": "Python",
+        "html_url": "https://github.com/lmcrean/Coach-Matrix",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671230069,
+      "number": 15,
+      "title": "Architect new B2B dashboard plan for Odyssey",
+      "description": "  Technology Stack:\r\n  - ✅ Backend: C# ASP.NET Core 8.0 on Google Cloud Run\r\n  - ✅ Frontend: Angular 17+ with TypeScript on Firebase Hosting    \r\n  - ✅ Database: PostgreSQL on Google Cloud SQL (free tier)\r\n  - ✅ Testing: C# integration tests + Vitest for Angular\r\n  - ✅ Authentication: JWT-based secure B2B system\r\n  - ✅ Github Actions: effective deployment branches workflow for previewing pull requests",
+      "created_at": "2025-07-16T16:06:19Z",
+      "merged_at": "2025-07-19T14:21:57Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/15",
+      "state": "merged",
+      "additions": 49774,
+      "deletions": 31018,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2671219927,
+      "number": 49,
+      "title": "Update badge styles to include images and enforce height",
+      "description": null,
+      "created_at": "2025-07-16T16:02:51Z",
+      "merged_at": "2025-07-16T16:02:56Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/49",
+      "state": "merged",
+      "additions": 1,
+      "deletions": 1,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    }
+  ],
+  "meta": {
+    "username": "lmcrean",
+    "count": 20,
+    "pagination": {
+      "page": 2,
+      "per_page": 20,
+      "total_count": 218,
+      "total_pages": 11,
+      "has_next_page": true,
+      "has_previous_page": true
+    }
+  }
+}

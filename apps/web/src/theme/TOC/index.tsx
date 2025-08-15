@@ -8,7 +8,7 @@ import CustomTOC from '../../components/archive/CustomTOC';
  * This overrides Docusaurus's default TOC behavior
  * Only renders the custom TOC on the index page
  */
-export default function TOC(): JSX.Element | null {
+export default function TOC(): React.ReactElement | null {
   const location = useLocation();
   
   // Only show custom TOC on the index page

@@ -14,7 +14,7 @@ jest.mock('../ProjectCarousel', () => {
     projectKey: string;
   }
   
-  return function MockProjectCarousel({ projectKey }: MockProjectCarouselProps): JSX.Element {
+  return function MockProjectCarousel({ projectKey }: MockProjectCarouselProps): React.ReactElement {
     return <div data-testid={`mocked-carousel-${projectKey}`}></div>;
   };
 });

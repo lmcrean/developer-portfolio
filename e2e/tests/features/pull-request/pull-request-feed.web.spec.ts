@@ -141,4 +141,108 @@ test.describe('Pull Request Feed API Integration - Refactored', () => {
     
     logger.logInfo('✅ Natural flow test completed - no infinite loops detected', 'test');
   });
+
+  test('should display Changes column in PR table with proper structure', async ({ page }) => {
+    const logger = serviceManager.getLogger();
+    
+    logger.logInfo('🔍 Testing Changes column implementation in PR table', 'test');
+    
+    // Navigate to homepage where pull request feed is displayed
+    const webUrl = `http://localhost:${config.webPort}`;
+    await page.goto(webUrl, { 
+      waitUntil: 'networkidle',
+      timeout: 30000 
+    });
+    
+    // Wait for pull request feed to load
+    const pullRequestFeed = page.locator('[data-testid="pull-request-feed"]');
+    await expect(pullRequestFeed).toBeVisible({ timeout: 15000 });
+    
+    // Check table header structure - should have 5 columns on desktop
+    const tableHeaders = page.locator('.grid.grid-cols-12 > div').first();
+    await expect(tableHeaders).toBeVisible();
+    
+    // Verify specific column headers exist
+    const repositoryHeader = page.locator('text=Repository').first();
+    const changesHeader = page.locator('text=Changes').first();
+    const titleHeader = page.locator('text=Title').first();
+    const languageHeader = page.locator('text=Language').first();
+    const statusHeader = page.locator('text=Status').first();
+    
+    await expect(repositoryHeader).toBeVisible();
+    await expect(changesHeader).toBeVisible();
+    await expect(titleHeader).toBeVisible();
+    await expect(languageHeader).toBeVisible();
+    await expect(statusHeader).toBeVisible();
+    
+    logger.logInfo('✅ Table headers verified: Repository, Changes, Title, Language, Status', 'test');
+    
+    // Check that Changes column is hidden on mobile (has max-lg:hidden class)
+    const changesColumn = page.locator('.col-span-2.max-lg\\:hidden').filter({ hasText: 'Changes' });
+    await expect(changesColumn).toBeVisible();
+    
+    // Wait for PR cards to load
+    const prCards = page.locator('[data-testid="pull-request-card"]');
+    await expect(prCards.first()).toBeVisible({ timeout: 10000 });
+    
+    // Check multiple PR cards to find one with external repository data
+    const cardCount = await prCards.count();
+    logger.logInfo(`📋 Found ${cardCount} PR cards to examine`, 'test');
+    
+    let foundActualChangesData = false;
+    let foundFallbackData = false;
+    
+    for (let i = 0; i < Math.min(cardCount, 5); i++) {
+      const prCard = prCards.nth(i);
+      const changesCell = prCard.locator('.col-span-2.max-lg\\:hidden').first();
+      
+      if (await changesCell.isVisible()) {
+        const changesText = await changesCell.textContent();
+        logger.logInfo(`📊 PR ${i + 1} Changes column content: "${changesText}"`, 'test');
+        
+        if (changesText && changesText.includes('+') && changesText.includes('-')) {
+          foundActualChangesData = true;
+          logger.logInfo(`✅ Found actual change data in PR ${i + 1}: "${changesText}"`, 'test');
+        } else if (changesText && changesText.includes('—')) {
+          foundFallbackData = true;
+          logger.logInfo(`ℹ️ Found fallback data in PR ${i + 1}: "${changesText}"`, 'test');
+        }
+      }
+    }
+    
+    // Verify that we found at least one valid Changes column content
+    const hasValidChangesData = foundActualChangesData || foundFallbackData;
+    expect(hasValidChangesData).toBe(true);
+    
+    if (foundActualChangesData) {
+      logger.logInfo(`✅ Spot check PASSED: Found external repository PRs with actual changes data (+X -Y format)`, 'test');
+    } else if (foundFallbackData) {
+      logger.logInfo(`✅ Changes column working correctly: All visible PRs show fallback data (—), which is expected for lmcrean repository PRs`, 'test');
+    }
+    
+    // Verify responsive behavior - changes column should be hidden on smaller screens
+    // Test by checking CSS classes
+    const hasResponsiveClass = await changesColumn.evaluate(el => 
+      el.classList.contains('max-lg:hidden')
+    );
+    expect(hasResponsiveClass).toBe(true);
+    
+    logger.logInfo('✅ Changes column responsive behavior verified (hidden on mobile)', 'test');
+    
+    // Check color coding if changes data is available
+    const greenText = page.locator('.text-green-400, .text-green-600');
+    const redText = page.locator('.text-red-400, .text-red-600');
+    
+    // If changes data is available, should have green and red text
+    const greenCount = await greenText.count();
+    const redCount = await redText.count();
+    
+    if (greenCount > 0 || redCount > 0) {
+      logger.logInfo('✅ Color coding detected in Changes column (green/red text)', 'test');
+    } else {
+      logger.logInfo('ℹ️ No color coding detected - likely showing fallback "—" (expected for old static data)', 'test');
+    }
+    
+    logger.logInfo('✅ Changes column implementation test completed successfully', 'test');
+  });
 }); 

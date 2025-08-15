@@ -1,0 +1,456 @@
+{
+  "data": [
+    {
+      "id": 2471616915,
+      "number": 280,
+      "title": "Update issue templates with Feature Request",
+      "description": null,
+      "created_at": "2025-04-21T16:31:09Z",
+      "merged_at": "2025-04-21T17:04:34Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/280",
+      "state": "merged",
+      "additions": 24,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2471262350,
+      "number": 273,
+      "title": "Create LICENSE.md",
+      "description": "# Screenshot(s)\r\nN/A\r\n# Checklist\r\nN/A",
+      "created_at": "2025-04-21T13:26:15Z",
+      "merged_at": "2025-04-21T15:06:09Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/273",
+      "state": "merged",
+      "additions": 9,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2471243149,
+      "number": 272,
+      "title": "Add issue templates for bug reports and feature requests",
+      "description": null,
+      "created_at": "2025-04-21T13:13:54Z",
+      "merged_at": "2025-04-21T15:21:02Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/272",
+      "state": "merged",
+      "additions": 23,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2470834250,
+      "number": 268,
+      "title": "Fix CORS issue in production between backend and frontend",
+      "description": "# Screenshot(s)\r\n\r\n![image](https://github.com/user-attachments/assets/4dcb8c59-ea1b-49c5-972d-86faa99382f8)\r\n\r\nsolved with updated SUPABASE_URL in backend env vars\r\n\r\n# Checklist submission\r\n\r\n- [x] pulled `main` branch to ensure latest version and no merge conflicts\r\n- [x] ran `cd frontend; npm run build` and confirm no type errors\r\n- Issue link: #218 \r\n\r\n***\r\n\r\n# problem statement\r\n\r\nexpecting sign up request to work in production\r\n\r\nthis feature works in development with localhost/ SQLite, but leads to CORS error in production with Vercel / Supabase PostrgreSQL:\r\n\r\n```\r\nAccess to XMLHttpRequest at 'https://dottie-backend-lmcreans-projects.vercel.app/api/user/me' from origin 'https://dottie-lmcreans-projects.vercel.app' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: It does not have HTTP ok status.\r\n\r\n```\r\n\r\n# Debugging steps \r\n\r\n## 1. inspect environment vars\r\n\r\n- [x] updated VITE_API_BASE_URL\r\n\r\nfrontend:\r\n```\r\nNODE_ENV\r\nproduction\r\nAdded 2d ago\r\n\r\n\r\nVITE_API_BASE_URL\r\nhttps://•••••••••••.vercel.app ( no / at end, confirmed as correct)\r\nUpdated Apr 13 \r\n````\r\n\r\n## 2. inspect failed Post Req URL from CORS\r\n\r\n<details>\r\n<summary> click here to view </summary>\r\n\r\n![image](https://github.com/user-attachments/assets/a34d3fbb-a6f5-4717-966b-36363c5a6af4)\r\n\r\n</details>\r\n\r\nThis Serverless Function has crashed.\r\n\r\nYour connection is working correctly.\r\n\r\nVercel is working correctly.\r\n\r\n500: INTERNAL_SERVER_ERROR\r\nCode: FUNCTION_INVOCATION_FAILED\r\nID: lhr1::88bz8-1745237856189-002c67c0f8cf\r\n\r\n## 3. inspect backend logs\r\n\r\n<details>\r\n<summary> click here to view </summary>\r\n\r\n```\r\nApr 21 13:17:38.51\r\nGET\r\n500\r\ndottie-backend.vercel.app\r\n/favicon.ico\r\nUsing Supabase database in production Error initializing Supabase: Error: supabaseUrl is required. at new SupabaseClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:43:19) at createClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/index.js:38:12) at initDB (file:///var/task/backend/db/database.js:31:24) at file:///var/task/backend/db/database.js:64:26 at ModuleJob.run (node:internal/modules/esm/module_job:271:25) at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26) at async d (/opt/rust/nodejs.js:16:18758) Error: supabaseUrl is required. at new SupabaseClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:43:19) at createClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/index.js:38:12) at file:///var/task/backend/services/supabaseService.js:50:14 at ModuleJob.run (node:internal/modules/esm/module_job:271:25) at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26) at async d (/opt/rust/nodejs.js:16:18758) Node.js process exited with exit status: 1. The logs above can help with debugging the issue.\r\nApr 21 13:17:36.18\r\nGET\r\n500\r\ndottie-backend.vercel.app\r\n/api/auth/signup\r\nUsing Supabase database in production Error initializing Supabase: Error: supabaseUrl is required. at new SupabaseClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:43:19) at createClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/index.js:38:12) at initDB (file:///var/task/backend/db/database.js:31:24) at file:///var/task/backend/db/database.js:64:26 at ModuleJob.run (node:internal/modules/esm/module_job:271:25) at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26) at async d (/opt/rust/nodejs.js:16:18758) Error: supabaseUrl is required. at new SupabaseClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:43:19) at createClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/index.js:38:12) at file:///var/task/backend/services/supabaseService.js:50:14 at ModuleJob.run (node:internal/modules/esm/module_job:271:25) at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26) at async d (/opt/rust/nodejs.js:16:18758) Node.js process exited with exit status: 1. The logs above can help with debugging the issue.\r\nApr 21 13:17:19.13\r\nOPTIONS\r\n500\r\ndottie-backend.vercel.app\r\n/api/auth/signup\r\nUsing Supabase database in production Error initializing Supabase: Error: supabaseUrl is required. at new SupabaseClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:43:19) at createClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/index.js:38:12) at initDB (file:///var/task/backend/db/database.js:31:24) at file:///var/task/backend/db/database.js:64:26 at ModuleJob.run (node:internal/modules/esm/module_job:271:25) at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26) at async d (/opt/rust/nodejs.js:16:18758) Error: supabaseUrl is required. at new SupabaseClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/SupabaseClient.js:43:19) at createClient (/var/task/backend/node_modules/@supabase/supabase-js/dist/main/index.js:38:12) at file:///var/task/backend/services/supabaseService.js:50:14 at ModuleJob.run (node:internal/modules/esm/module_job:271:25) at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:578:26) at async d (/opt/rust/nodejs.js:16:18758) Node.js process exited with exit status: 1. The logs above can help with debugging the issue.\r\n\r\n```\r\n\r\n</details>\r\n\r\n## 4. inspect env vars in frontend\r\n\r\n<details>\r\n<summary> click here to view </summary>\r\n\r\n```\r\nSUPABASE_ANON_PUBLIC\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nSUPABASE_SERVICE_ROLE_KEY\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nSUPABASE_JWT_SECRET\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nNODE_ENV\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nAZURE_SQL_SERVER\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nAZURE_SQL_DATABASE\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nAZURE_SQL_USER\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nAZURE_SQL_PASSWORD\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nAZURE_SQL_CONNECTION_STRING\r\nAll Environments\r\n•••••••••••••••\r\n\r\nAdded Apr 13\r\n\r\n\r\nVITE_GEMINI_API_KEY\r\nAll Environments\r\n•••••••••••••••\r\n```\r\n\r\n</details>\r\n\r\n# 5. added missing SUPABASE_URL to backaend Vercel env vars\r\n\r\n```\r\nSUPABASE_URL = https://[your-project-id-here].supabase.co\r\n```\r\n\r\n##  6. redeployed backend\r\n\r\n## 7. redeployed frontend\r\n\r\n## 8. review console after manual test auth signup\r\n\r\n![image](https://github.com/user-attachments/assets/0f4066e9-d514-440f-8c70-10aa3f1e95ea)\r\n\r\n# debugging checklist \r\n## production backend works as expected in isolation\r\n\r\n- [x] redeploy backend to isolated domain with `vercel --prod`\r\n- [x] confirm backend deployed as expected, specifically backend-auth\r\n\r\n## backend integrates as expected\r\n\r\n- [x] confirm latest CORS EM\r\n- [x] confirm vercel.json and server.js have CORS set; regex searched for other CORS blockers\r\n- [x] confirm frontend/src/api handles CORS as expected\r\n- [x] redeploy frontend to isolated domain with `vercel --prod`\r\n- [x] The backend/vercel.json file has appropriate CORS headers configured for all routes\r\n- [x] The server.js file uses the cors middleware with proper configuration allowing specific origins (development and production domains)\r\n- [x] Pre-flight OPTIONS requests are properly handled\r\n- [x] The API client correctly sets up axios with the appropriate base URL\r\n- [x] No client-side CORS issues found as the server properly sets CORS headers\r\n- [x] The frontend doesn't need to explicitly handle CORS as it's properly configured on the server side",
+      "created_at": "2025-04-21T08:52:35Z",
+      "merged_at": "2025-04-21T14:35:20Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/268",
+      "state": "merged",
+      "additions": 3,
+      "deletions": 3,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2470227836,
+      "number": 266,
+      "title": "Update CONTRIBUTING.md with Pull Request template",
+      "description": "Template added for PRs:\r\n\r\n***\r\n\r\n# Screenshots\r\nN/A\r\n\r\n# Checklist\r\n\r\n- [x] pulled `main` branch to ensure latest version and no merge conflicts\r\n- [x] ran `cd frontend; npm run build` and confirm no type errors\r\n- Issue link: #267\r\n\r\n\r\n\r\n\r\n\r\n",
+      "created_at": "2025-04-20T21:18:21Z",
+      "merged_at": "2025-04-21T07:16:28Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/266",
+      "state": "merged",
+      "additions": 56,
+      "deletions": 33,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2470023264,
+      "number": 248,
+      "title": "Update CONTRIBUTING.md",
+      "description": null,
+      "created_at": "2025-04-20T11:50:33Z",
+      "merged_at": "2025-04-20T13:00:35Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/248",
+      "state": "merged",
+      "additions": 24,
+      "deletions": 4,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2470002449,
+      "number": 240,
+      "title": "Fix build issues in frontend",
+      "description": "# acceptance criteria\n`cd frontend; npm run build` works as expected with no EMs\n\n# info\nI've fixed the build issues by:\n\nUpdated the postLogout function in frontend/src/api/auth/requests/postLogout/Request.ts to make the userId parameter optional with a default empty string value\n\nFixed the updatePassword function in frontend/src/context/AuthContext.tsx to return a boolean value instead of trying to access a non-existent response.success property\n\nUpdated the handleLogout function in frontend/src/test_page/page.tsx to pass an empty string to authApi.logout(\"\")\n\nThe build now completes successfully, and the development server is running. You should be able to access the application at http://localhost:3000/.",
+      "created_at": "2025-04-20T10:52:26Z",
+      "merged_at": "2025-04-20T11:03:26Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/240",
+      "state": "merged",
+      "additions": 142,
+      "deletions": 51,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2469624524,
+      "number": 225,
+      "title": "Update various components to improve type safety and UI consistency; refactor imports and enhance user experience with PageTransition in assessment pages.",
+      "description": "# acceptance criteria\r\ncd frontend; npm run build should work\r\nquick complete should be visible page 1 of assessment\r\nfullscreenchat should work (issue #126 spotted)\r\n\r\n\r\n![image](https://github.com/user-attachments/assets/6d7bf169-3ca0-48c6-86f7-a1ff888d13d2)\r\n\r\n![image](https://github.com/user-attachments/assets/071667db-4c39-4db2-a10a-e5f9927fc9c2)\r\n",
+      "created_at": "2025-04-19T14:45:05Z",
+      "merged_at": "2025-04-19T14:51:14Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/225",
+      "state": "merged",
+      "additions": 633,
+      "deletions": 963,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2469077252,
+      "number": 217,
+      "title": "Update CODEOWNERS",
+      "description": null,
+      "created_at": "2025-04-18T21:56:30Z",
+      "merged_at": "2025-04-18T21:59:20Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/217",
+      "state": "merged",
+      "additions": 1,
+      "deletions": 1,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2468728008,
+      "number": 200,
+      "title": "Update CONTRIBUTING.md",
+      "description": null,
+      "created_at": "2025-04-18T17:38:33Z",
+      "merged_at": "2025-04-18T17:39:22Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/200",
+      "state": "merged",
+      "additions": 5,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2468709169,
+      "number": 199,
+      "title": "Update CONTRIBUTING.md",
+      "description": null,
+      "created_at": "2025-04-18T17:24:55Z",
+      "merged_at": "2025-04-18T17:26:18Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/199",
+      "state": "merged",
+      "additions": 33,
+      "deletions": 14,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2468295655,
+      "number": 193,
+      "title": "Update README-developers.md",
+      "description": null,
+      "created_at": "2025-04-18T13:20:45Z",
+      "merged_at": "2025-04-18T13:21:43Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/193",
+      "state": "merged",
+      "additions": 3,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2468073285,
+      "number": 190,
+      "title": "Update CONTRIBUTING.md",
+      "description": null,
+      "created_at": "2025-04-18T10:52:54Z",
+      "merged_at": "2025-04-18T10:53:00Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/190",
+      "state": "merged",
+      "additions": 3,
+      "deletions": 1,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2468067666,
+      "number": 189,
+      "title": "Integration(assessment): Fix 3 requests to render as expected in development",
+      "description": "# Screenshots \r\n\r\nlist and detail view working\r\n\r\n![image](https://github.com/user-attachments/assets/5273b8ac-e71e-4f79-8b72-32e10b3533ca)\r\n\r\n![image](https://github.com/user-attachments/assets/a6f18cf1-b034-4493-a741-27058042d045)\r\n\r\n# Task List\r\n\r\n- [x] endpoints pass in `developer mode` tests\r\n- [x] fix issue with categorisation between physical and emotional symptoms found in frontend\r\n- [x] clarified formatting between snake_case and camelCase throughout dependency chain (see Readme-developers.md)\r\n- [x] fix rendering of assessment in frontend\r\n\r\n# chores\r\n- [x] import tables fixed in Frontend around fullscreen chat\r\n\r\n# ready to merge chores\r\n- [ ] main branch pulled, no merge conflicts\r\n- [ ] npm run build working in frontend\r\n- [x] linked to issue\r\n",
+      "created_at": "2025-04-18T10:47:56Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/dottie/pull/189",
+      "state": "closed",
+      "additions": 4670,
+      "deletions": 792,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2467995759,
+      "number": 184,
+      "title": "Laurie-Integration",
+      "description": null,
+      "created_at": "2025-04-18T10:04:06Z",
+      "merged_at": "2025-04-18T10:04:40Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/184",
+      "state": "merged",
+      "additions": 328,
+      "deletions": 221,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2467949517,
+      "number": 183,
+      "title": "Chore: Update package dependencies",
+      "description": null,
+      "created_at": "2025-04-18T09:34:52Z",
+      "merged_at": "2025-04-18T09:35:01Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/183",
+      "state": "merged",
+      "additions": 708,
+      "deletions": 27,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2467898443,
+      "number": 182,
+      "title": "Lmcrean patch 14",
+      "description": null,
+      "created_at": "2025-04-18T09:11:04Z",
+      "merged_at": "2025-04-18T09:11:10Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/182",
+      "state": "merged",
+      "additions": 1,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2466211894,
+      "number": 176,
+      "title": "Update CONTRIBUTING.md",
+      "description": null,
+      "created_at": "2025-04-17T14:11:19Z",
+      "merged_at": "2025-04-17T14:11:26Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/176",
+      "state": "merged",
+      "additions": 2,
+      "deletions": 2,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2466203531,
+      "number": 175,
+      "title": "Update CONTRIBUTING.md",
+      "description": null,
+      "created_at": "2025-04-17T14:08:40Z",
+      "merged_at": "2025-04-17T14:08:46Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/175",
+      "state": "merged",
+      "additions": 2,
+      "deletions": 0,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2465865259,
+      "number": 172,
+      "title": "Update README-developers.md",
+      "description": null,
+      "created_at": "2025-04-17T11:36:48Z",
+      "merged_at": "2025-04-17T11:37:37Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/172",
+      "state": "merged",
+      "additions": 25,
+      "deletions": 25,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    }
+  ],
+  "meta": {
+    "username": "lmcrean",
+    "count": 20,
+    "pagination": {
+      "page": 5,
+      "per_page": 20,
+      "total_count": 218,
+      "total_pages": 11,
+      "has_next_page": true,
+      "has_previous_page": true
+    }
+  }
+}

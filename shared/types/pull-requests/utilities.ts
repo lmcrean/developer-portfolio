@@ -78,6 +78,30 @@ export const truncateText = (text: string | null, maxLength: number): string => 
   return text.substring(0, maxLength) + '...';
 };
 
+export const formatBytesChange = (additions?: number, deletions?: number): { 
+  formatted: string; 
+  hasData: boolean;
+} => {
+  if (additions === undefined && deletions === undefined) {
+    return { formatted: '—', hasData: false };
+  }
+  
+  // Format large numbers (1000+ becomes 1k+, etc.)
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
+    return num.toString();
+  };
+  
+  const addStr = additions !== undefined ? `+${formatNumber(additions)}` : '+0';
+  const delStr = deletions !== undefined ? `-${formatNumber(deletions)}` : '-0';
+  
+  return { 
+    formatted: `${addStr} ${delStr}`,
+    hasData: true
+  };
+};
+
 // copyToClipboard moved to detail-utilities.ts to avoid duplication
 
 export const parseOwnerAndRepo = (htmlUrl: string): { owner: string; repo: string } => {

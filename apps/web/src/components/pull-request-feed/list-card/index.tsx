@@ -5,7 +5,8 @@ import {
 } from '@shared/types/pull-requests';
 import {
   getRelativeTime,
-  getStatusDisplay
+  getStatusDisplay,
+  formatBytesChange
 } from '@shared/types/pull-requests/utilities';
 
 export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = ({
@@ -13,6 +14,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
   onClick
 }) => {
   const status = getStatusDisplay(pullRequest.state, pullRequest.merged_at);
+  const bytesChange = formatBytesChange(pullRequest.additions, pullRequest.deletions);
 
   // Add client-side only time calculation
   const [isClient, setIsClient] = useState(false);
@@ -42,7 +44,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       data-pr-title={pullRequest.title}
     >
       {/* Repository Column */}
-      <div className="col-span-3 max-lg:col-span-4 flex items-center gap-2">
+      <div className="col-span-2 max-lg:col-span-3 flex items-center gap-2">
         <img 
           src={pullRequest.repository.owner.avatar_url}
           alt={`${pullRequest.repository.owner.login} avatar`}
@@ -57,8 +59,25 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
         </span>
       </div>
 
+      {/* Changes Column */}
+      <div className="col-span-2 max-lg:hidden flex items-center justify-center">
+        {bytesChange.hasData ? (
+          <span className="font-mono text-xs">
+            <span className="text-green-400 light:text-green-600">
+              {bytesChange.formatted.split(' ')[0]}
+            </span>
+            {' '}
+            <span className="text-red-400 light:text-red-600">
+              {bytesChange.formatted.split(' ')[1]}
+            </span>
+          </span>
+        ) : (
+          <span className="pr-text-muted text-xs">—</span>
+        )}
+      </div>
+
       {/* Title Column */}
-      <div className="col-span-5 max-lg:col-span-8 flex items-center">
+      <div className="col-span-4 max-lg:col-span-9 flex items-center">
         <span className="pr-text-primary text-sm truncate">
           {pullRequest.title}
         </span>
@@ -67,7 +86,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       {/* Language Column */}
       <div className="col-span-2 max-lg:hidden flex items-center">
         {pullRequest.repository.language ? (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium pr-text-secondary bg-gray-600 light:bg-gray-200">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium pr-text-secondary italic">
             {pullRequest.repository.language}
           </span>
         ) : (
@@ -76,7 +95,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       </div>
 
       {/* Status Column */}
-      <div className="col-span-2 max-lg:hidden flex items-center justify-end">
+      <div className="col-span-2 max-lg:hidden flex items-center justify-end italic">
         <div className="flex items-center gap-2">
           <div className={`flex items-center gap-1 ${status.color} text-sm font-medium`}>
             <span>{status.emoji}</span>
