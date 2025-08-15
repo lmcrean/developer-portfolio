@@ -174,12 +174,8 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
       `}} />
 
       {/* Table Header - Always visible */}
-      <div className="grid grid-cols-12 gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
-        <div className="col-span-2 max-lg:col-span-3">Repository</div>
-        <div className="col-span-2 max-lg:hidden text-center">Changes</div>
-        <div className="col-span-4 max-lg:col-span-9">Title</div>
-        <div className="col-span-2 max-lg:hidden">Language</div>
-        <div className="col-span-2 text-right max-lg:hidden">Status</div>
+      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
+        Enterprise Solutions
       </div>
 
       {/* Table Body - Dynamic content based on state */}
