@@ -15,6 +15,9 @@ export const usePullRequestState = () => {
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   
+  // Filter state - Enterprise mode shows only external repos (default: true)
+  const [enterpriseMode, setEnterpriseMode] = useState(true);
+  
 
   // Handlers for list operations
   const handleListSuccess = useCallback((data: PullRequestListData[], paginationData: PaginationMeta) => {
@@ -49,10 +52,12 @@ export const usePullRequestState = () => {
     error,
     pagination,
     currentPage,
+    enterpriseMode,
 
     // Setters
     setIsClient,
     setLoading,
+    setEnterpriseMode,
 
     // Handlers
     handleListSuccess,

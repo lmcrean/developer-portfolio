@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useMemo } from 'react';
 import { PullRequestFeedProps, PullRequestListData } from '@shared/types/pull-requests';
 import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
@@ -74,10 +74,19 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     };
   }, [username, api.cleanup]); // Only depend on username and cleanup function
 
+  // Filter pull requests based on enterprise mode
+  const filteredPullRequests = useMemo(() => {
+    if (!state.enterpriseMode) {
+      return state.pullRequests; // Show all PRs when enterprise mode is off
+    }
+    // Show only PRs to external repositories (not user's own repos)
+    return state.pullRequests.filter(pr => pr.repository.owner.login !== username);
+  }, [state.pullRequests, state.enterpriseMode, username]);
+
   return (
     <>
       <PullRequestList
-        pullRequests={state.pullRequests}
+        pullRequests={filteredPullRequests}
         pagination={state.pagination}
         username={username}
         className={className}
@@ -86,6 +95,8 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
         isClient={state.isClient}
         onCardClick={handleCardClick}
         onRetry={handleRetry}
+        enterpriseMode={state.enterpriseMode}
+        onEnterpriseToggle={state.setEnterpriseMode}
       />
 
       <PullRequestPagination

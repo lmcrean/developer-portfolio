@@ -3,6 +3,7 @@ import { PullRequestListData, PaginationMeta } from '@shared/types/pull-requests
 import PullRequestFeedListCard from '../list-card';
 import ErrorRow from './ErrorRow';
 import LoadingRows from './LoadingRows';
+import FilterToggle from './FilterToggle';
 
 interface PullRequestListProps {
   pullRequests: PullRequestListData[];
@@ -14,6 +15,8 @@ interface PullRequestListProps {
   isClient: boolean;
   onCardClick: (pr: PullRequestListData) => void;
   onRetry: () => void;
+  enterpriseMode: boolean;
+  onEnterpriseToggle: (enabled: boolean) => void;
 }
 
 export const PullRequestList: React.FC<PullRequestListProps> = ({
@@ -25,7 +28,9 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
   error,
   isClient,
   onCardClick,
-  onRetry
+  onRetry,
+  enterpriseMode,
+  onEnterpriseToggle
 }) => {
   // Determine what to render in the table body
   const renderTableBody = () => {
@@ -60,6 +65,16 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
 
   return (
     <div className={`w-full p-4 max-sm:px-1 max-sm:py-2 ${className}`} data-testid="pull-request-feed" style={{ fontFamily: '"IBM Plex Serif", serif' }}>
+      {/* Filter Controls */}
+      <div className="flex justify-between items-center px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200">
+        <div className="flex items-center gap-3">
+        </div>
+        <FilterToggle
+          enterpriseMode={enterpriseMode}
+          onToggle={onEnterpriseToggle}
+        />
+      </div>
+
       {/* Table Header - Always visible */}
       <div className="grid grid-cols-12 gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
         <div className="col-span-3 max-lg:col-span-4">Repository</div>
