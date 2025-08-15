@@ -1,4 +1,4 @@
-name: Deploy Branch Preview (API → Web → Test)
+name: Deploy Branch Preview (Single-Server)
 
 on:
   pull_request:
@@ -12,53 +12,33 @@ permissions:
   checks: write
 
 jobs:
-  deploy-api:
-    uses: ./.github/workflows/deploy-api-branch.yml
-    secrets: inherit
-    with:
-      branch_name: ${{ github.head_ref }}
-      pr_number: ${{ github.event.number }}
-
-  test-api:
-    needs: deploy-api
-    uses: ./.github/workflows/test-api-branch.yml
-    secrets: inherit
-    with:
-      api_deployment_url: ${{ needs.deploy-api.outputs.deployment_url }}
-      branch_name: ${{ github.head_ref }}
-      pr_number: ${{ github.event.number }}
-
   deploy-web:
-    needs: [deploy-api, test-api]
-    if: needs.test-api.result == 'success'
     uses: ./.github/workflows/deploy-web-branch.yml
     secrets: inherit
     with:
       branch_name: ${{ github.head_ref }}
       pr_number: ${{ github.event.number }}
-      api_url: ${{ needs.deploy-api.outputs.deployment_url }}
 
-  test-integration:
-    needs: [deploy-api, test-api, deploy-web]
-    uses: ./.github/workflows/test-branch-integration.yml
+  test-static:
+    needs: deploy-web
+    uses: ./.github/workflows/test-static.yml
     secrets: inherit
     with:
       web_url: ${{ needs.deploy-web.outputs.deployment_url }}
-      api_url: ${{ needs.deploy-api.outputs.deployment_url }}
 
   test-e2e:
-    needs: [deploy-api, test-api, deploy-web, test-integration]
-    if: needs.test-integration.result == 'success'
+    needs: [deploy-web, test-static]
+    if: needs.test-static.result == 'success'
     uses: ./.github/workflows/test-branch-e2e.yml
     secrets: inherit
     with:
       web_url: ${{ needs.deploy-web.outputs.deployment_url }}
-      api_url: ${{ needs.deploy-api.outputs.deployment_url }}
+      api_url: ${{ needs.deploy-web.outputs.deployment_url }}  # Same origin for fallback
       branch_name: ${{ github.head_ref }}
       pr_number: ${{ github.event.number }}
 
   update-pr:
-    needs: [deploy-api, test-api, deploy-web, test-integration, test-e2e]
+    needs: [deploy-web, test-static, test-e2e]
     if: always()
     runs-on: ubuntu-latest
     steps:
@@ -67,48 +47,45 @@ jobs:
         with:
           script: |
             const webUrl = '${{ needs.deploy-web.outputs.deployment_url }}';
-            const apiUrl = '${{ needs.deploy-api.outputs.deployment_url }}';
-            const apiTestStatus = '${{ needs.test-api.result }}';
-            const integrationStatus = '${{ needs.test-integration.result }}';
+            const staticTestStatus = '${{ needs.test-static.result }}';
             const e2eStatus = '${{ needs.test-e2e.result }}';
-            const apiStatus = '${{ needs.deploy-api.result }}';
             const webStatus = '${{ needs.deploy-web.result }}';
             
             // Determine overall test status
-            const allTestsPassed = apiTestStatus === 'success' && integrationStatus === 'success' && e2eStatus === 'success';
+            const allTestsPassed = staticTestStatus === 'success' && e2eStatus === 'success';
             const statusEmoji = allTestsPassed ? '✅' : '⚠️';
             const statusText = allTestsPassed ? 'All tests passed!' : 'Some tests failed';
             
             // Handle deployment failures
             let deploymentSection = '';
-            if (apiStatus === 'success' && webStatus === 'success') {
-              deploymentSection = `## 🚀 DEPLOYMENT BRANCH
+            if (webStatus === 'success') {
+              deploymentSection = `## 🚀 SINGLE-SERVER DEPLOYMENT
 
-            ### 🌐 Web App
+            ### 🌐 Web App with Embedded Static Data
             **Live Preview:** [${webUrl}](${webUrl})
-
-            ### ⚡ API Service  
-            **API Endpoint:** [${apiUrl}](${apiUrl})
 
             ### 🧪 Quick Test Links
             - [📱 Web App](${webUrl}) - Test the user interface
-            - [❤️ API Health](${apiUrl}/health) - Verify API status
+            - [📊 Static Data](${webUrl}/pr-metadata.json) - Verify static data serving
             - [🔗 Click here to test!](${webUrl})
 
+            ### ⚡ Performance Features
+            - **Sub-second loading** with embedded static data
+            - **No API server dependency** - single-server architecture
+            - **Same-origin requests** for optimal performance
+            - **Automatic fallback** to live GitHub API if needed
+
             ### 🧪 Test Results
-            - **API Tests**: ${apiTestStatus === 'success' ? '✅ Passed' : apiTestStatus === 'skipped' ? '⏭️ Skipped' : '❌ Failed'}
-            - **Integration Tests**: ${integrationStatus === 'success' ? '✅ Passed' : integrationStatus === 'skipped' ? '⏭️ Skipped' : '❌ Failed'}
+            - **Static Data Tests**: ${staticTestStatus === 'success' ? '✅ Passed' : staticTestStatus === 'skipped' ? '⏭️ Skipped' : '❌ Failed'}
             - **E2E Tests**: ${e2eStatus === 'success' ? '✅ Passed' : e2eStatus === 'skipped' ? '⏭️ Skipped' : '❌ Failed'}
             
             ${statusEmoji} ${statusText}`;
             } else {
-              deploymentSection = `## ❌ FAILED
+              deploymentSection = `## ❌ DEPLOYMENT FAILED
 
             ### Deployment Status
-            - **API**: ${apiStatus === 'success' ? '✅' : '❌'} ${apiStatus === 'success' ? apiUrl : 'Deployment failed'}
             - **Web**: ${webStatus === 'success' ? '✅' : '❌'} ${webStatus === 'success' ? webUrl : 'Deployment failed'}
             
-            ${apiStatus !== 'success' ? `**API Error:** ${apiUrl || 'API deployment failed - check logs'}` : ''}
             ${webStatus !== 'success' ? `**Web Error:** ${webUrl || 'Web deployment failed - check logs'}` : ''}`;
             }
 
