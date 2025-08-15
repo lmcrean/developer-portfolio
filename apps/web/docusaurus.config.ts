@@ -32,11 +32,6 @@ const config: Config = {
 
   // Add splide scripts directly to the head
   scripts: [
-    // Runtime configuration (generated during build)
-    {
-      src: '/config.js',
-      async: false, // Load synchronously to ensure APP_CONFIG is available early
-    },
     {
       src: 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js',
       async: true,
