@@ -96,7 +96,7 @@ const config: Config = {
           showLastUpdateAuthor: false,
         },
         theme: {
-          customCss: ['./src/css/tailwind.css', './src/css/custom.css', './src/css/splide-custom.css', './src/css/buttons.css', './src/css/typefaces.css'],
+          customCss: ['./src/css/tailwind.css', './src/css/custom.css', './src/css/splide-custom.css', './src/css/buttons.css', './src/css/typefaces.css', './src/css/live-badge.css'],
         },
       } satisfies Preset.Options,
     ],
