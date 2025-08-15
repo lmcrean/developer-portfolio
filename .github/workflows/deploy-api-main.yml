@@ -39,6 +39,28 @@ jobs:
           cd apps/api/github
           npm test 2>/dev/null || echo "⚠️ Tests not configured or failed"
       
+      - name: 📊 Generate Static Data for Deployment
+        run: |
+          cd apps/api/github
+          
+          echo "🔄 Generating static data for deployment..."
+          echo "👤 Target username: ${{ secrets.GITHUB_USERNAME }}"
+          
+          # Generate static data that will be included in Docker image
+          npm run generate-static-data
+          
+          # Verify generation was successful
+          if [ ! -f "static/pull-requests/metadata.json" ]; then
+            echo "❌ Static data generation failed"
+            exit 1
+          fi
+          
+          TOTAL_COUNT=$(cat static/pull-requests/metadata.json | jq -r '.total_count')
+          echo "✅ Generated static data with $TOTAL_COUNT pull requests"
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+      
       - name: 🔐 Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:

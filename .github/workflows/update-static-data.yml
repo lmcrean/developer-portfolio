@@ -1,0 +1,159 @@
+name: Update Static API Data
+
+on:
+  schedule:
+    # Run every 6 hours at 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update even if recent data exists'
+        required: false
+        default: 'false'
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  update-static-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🛒 Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/api/github/package-lock.json
+      
+      - name: 📥 Install API Dependencies
+        run: |
+          cd apps/api/github
+          npm ci
+      
+      - name: 🔧 Build API
+        run: |
+          cd apps/api/github
+          npm run build
+      
+      - name: 🔍 Validate Environment
+        run: |
+          echo "=== 🔍 ENVIRONMENT VALIDATION ==="
+          
+          # Check for required secrets
+          if [ -z "${{ secrets.API_GITHUB_TOKEN }}" ]; then
+            echo "❌ ERROR: API_GITHUB_TOKEN secret is not set!"
+            exit 1
+          fi
+          
+          if [ -z "${{ secrets.GITHUB_USERNAME }}" ]; then
+            echo "❌ ERROR: GITHUB_USERNAME secret is not set!"
+            exit 1
+          fi
+          
+          # Log token presence (first 4 characters for debugging)
+          GITHUB_TOKEN_VALUE="${{ secrets.API_GITHUB_TOKEN }}"
+          TOKEN_PREFIX=$(echo "$GITHUB_TOKEN_VALUE" | cut -c1-4)
+          TOKEN_LENGTH=${#GITHUB_TOKEN_VALUE}
+          echo "🔑 GitHub Token Debug: prefix='$TOKEN_PREFIX' length=$TOKEN_LENGTH"
+          echo "👤 GitHub Username: ${{ secrets.GITHUB_USERNAME }}"
+          
+          echo "✅ Environment validation passed"
+      
+      - name: 📊 Generate Static Data
+        run: |
+          cd apps/api/github
+          
+          echo "🔄 Generating static pull request data..."
+          echo "👤 Target username: ${{ secrets.GITHUB_USERNAME }}"
+          echo "⏰ Generation time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          
+          # Run the static data generation script
+          npm run generate-static-data
+          
+          echo "✅ Static data generation completed"
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+      
+      - name: 🔍 Validate Generated Data
+        run: |
+          cd apps/api/github
+          
+          echo "🔍 Validating generated static data..."
+          
+          # Check if static directory was created
+          if [ ! -d "static/pull-requests" ]; then
+            echo "❌ Static pull-requests directory not found"
+            exit 1
+          fi
+          
+          # Check if metadata file exists
+          if [ ! -f "static/pull-requests/metadata.json" ]; then
+            echo "❌ Metadata file not found"
+            exit 1
+          fi
+          
+          # Read and validate metadata
+          METADATA=$(cat static/pull-requests/metadata.json)
+          TOTAL_PAGES=$(echo "$METADATA" | jq -r '.total_pages')
+          TOTAL_COUNT=$(echo "$METADATA" | jq -r '.total_count')
+          LAST_GENERATED=$(echo "$METADATA" | jq -r '.last_generated')
+          
+          echo "📋 Metadata Summary:"
+          echo "   Total PRs: $TOTAL_COUNT"
+          echo "   Total Pages: $TOTAL_PAGES"
+          echo "   Generated: $LAST_GENERATED"
+          
+          # Validate that we have the expected number of page files
+          PAGE_FILES=$(ls -1 static/pull-requests/page-*.json | wc -l)
+          if [ "$PAGE_FILES" -ne "$TOTAL_PAGES" ]; then
+            echo "❌ Page file count mismatch: expected $TOTAL_PAGES, found $PAGE_FILES"
+            exit 1
+          fi
+          
+          # Validate first page has data
+          if [ ! -f "static/pull-requests/page-1.json" ]; then
+            echo "❌ First page file not found"
+            exit 1
+          fi
+          
+          PAGE1_COUNT=$(cat static/pull-requests/page-1.json | jq '.data | length')
+          if [ "$PAGE1_COUNT" -eq 0 ]; then
+            echo "❌ First page contains no data"
+            exit 1
+          fi
+          
+          echo "✅ Static data validation passed"
+          echo "📄 Generated $PAGE_FILES page files with $TOTAL_COUNT total pull requests"
+      
+      - name: 📤 Upload Static Data as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-api-data-${{ github.run_id }}
+          path: apps/api/github/static/
+          retention-days: 30
+      
+      - name: 📊 Summary
+        run: |
+          echo "=== 🎯 STATIC DATA UPDATE SUMMARY ==="
+          echo "🕒 Update Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "👤 GitHub User: ${{ secrets.GITHUB_USERNAME }}"
+          echo "📁 Data Location: apps/api/github/static/"
+          echo "🔄 Trigger: ${{ github.event_name }}"
+          
+          # Read final metadata for summary
+          cd apps/api/github
+          if [ -f "static/pull-requests/metadata.json" ]; then
+            METADATA=$(cat static/pull-requests/metadata.json)
+            echo "📊 Total Pull Requests: $(echo "$METADATA" | jq -r '.total_count')"
+            echo "📄 Total Pages: $(echo "$METADATA" | jq -r '.total_pages')"
+            echo "⚡ Per Page: $(echo "$METADATA" | jq -r '.per_page')"
+            echo "🏷️  Generator Version: $(echo "$METADATA" | jq -r '.generator_version')"
+          fi
+          
+          echo "✅ Static data update completed successfully!"
