@@ -205,8 +205,8 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
             {/* End of list message */}
             {!hasMoreItems && !isLoadingMore && (
               <div className="px-4 py-6 text-center">
-                <span className="text-sm text-gray-500 light:text-gray-400 font-medium">
-                  Visit github for more.
+                <span className="text-sm text-gray-400 light:text-gray-200 font-medium">
+                  Visit Github for more
                 </span>
               </div>
             )}
