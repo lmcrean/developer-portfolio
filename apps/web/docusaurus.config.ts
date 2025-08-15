@@ -145,7 +145,6 @@ const config: Config = {
       maxHeadingLevel: 3,
     },
     navbar: {
-      title: 'Laurie Crean',
       logo: {
         alt: 'Laurie Crean Portfolio Logo',
         src: 'img/logo.svg',

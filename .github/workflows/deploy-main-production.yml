@@ -54,6 +54,7 @@ jobs:
           channelId: live
           entryPoint: apps/web
         id: deploy
+        timeout-minutes: 15
       
       - name: 🔗 Set Deployment URL
         id: set_url
@@ -71,13 +72,21 @@ jobs:
       - name: 🌐 Test Static Data
         run: |
           chmod +x .github/workflows/scripts/test-static-data.sh
+          echo "🔍 Testing static data availability on production deployment..."
           ./.github/workflows/scripts/test-static-data.sh "${{ steps.set_url.outputs.deployment_url }}"
+        timeout-minutes: 10
       
       - name: 🧪 Run E2E Tests
         run: |
           chmod +x .github/workflows/scripts/run-e2e-tests.sh
-          ./.github/workflows/scripts/run-e2e-tests.sh "${{ steps.set_url.outputs.deployment_url }}"
-        continue-on-error: true
+          echo "🎯 Starting E2E tests for production deployment..."
+          if ./.github/workflows/scripts/run-e2e-tests.sh "${{ steps.set_url.outputs.deployment_url }}"; then
+            echo "✅ E2E tests passed successfully"
+          else
+            echo "⚠️ E2E tests failed - deployment succeeded but tests need attention"
+            exit 0  # Don't fail the deployment
+          fi
+        timeout-minutes: 20
       
       - name: 📊 Upload Test Results
         uses: actions/upload-artifact@v4

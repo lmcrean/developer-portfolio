@@ -34,15 +34,21 @@ test.describe('Single Server Quick Test', () => {
     
     // Navigate to homepage - use environment variable or fallback to localhost
     const webUrl = process.env.WEB_URL || 'http://localhost:3023';
+    const isProduction = webUrl.includes('web.app') || webUrl.includes('firebase');
+    const timeout = isProduction ? 120000 : 60000; // Longer timeout for production
+    
     console.log(`🔍 Testing single server at: ${webUrl}`);
+    console.log(`⏰ Using timeout: ${timeout}ms (${isProduction ? 'production' : 'local'})`);
     
     await page.goto(webUrl, { 
       waitUntil: 'networkidle',
-      timeout: 60000 
+      timeout: timeout 
     });
     
-    // Wait for page to fully load
-    await page.waitForTimeout(5000);
+    // Wait for page to fully load - longer for production
+    const waitTime = isProduction ? 10000 : 5000;
+    console.log(`⏱️ Waiting ${waitTime}ms for full page load...`);
+    await page.waitForTimeout(waitTime);
     
     // Check if pull request content appeared
     const pullRequestContent = page.locator('[data-testid="pull-request-feed"], .pull-request, [class*="pull-request"]').first();
@@ -75,9 +81,16 @@ test.describe('Single Server Quick Test', () => {
 
   test('should serve individual static files correctly', async ({ page }) => {
     const webUrl = process.env.WEB_URL || 'http://localhost:3023';
+    const isProduction = webUrl.includes('web.app') || webUrl.includes('firebase');
+    const requestTimeout = isProduction ? 30000 : 15000; // Longer timeout for production
+    
+    console.log(`🔍 Testing static files at: ${webUrl}`);
+    console.log(`⏰ Using request timeout: ${requestTimeout}ms`);
     
     // Test metadata
-    const metadataResponse = await page.request.get(`${webUrl}/pr-metadata.json`);
+    const metadataResponse = await page.request.get(`${webUrl}/pr-metadata.json`, {
+      timeout: requestTimeout
+    });
     expect(metadataResponse.status()).toBe(200);
     
     const contentType = metadataResponse.headers()['content-type'];
@@ -90,7 +103,9 @@ test.describe('Single Server Quick Test', () => {
     console.log(`✅ Metadata: ${metadata.total_count} PRs, ${metadata.total_pages} pages`);
     
     // Test first page
-    const page1Response = await page.request.get(`${webUrl}/pr-page-1.json`);
+    const page1Response = await page.request.get(`${webUrl}/pr-page-1.json`, {
+      timeout: requestTimeout
+    });
     expect(page1Response.status()).toBe(200);
     
     const page1Data = await page1Response.json();

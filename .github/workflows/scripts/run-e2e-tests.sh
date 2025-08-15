@@ -26,7 +26,7 @@ npm ci
 
 # Install Playwright browsers
 echo "🎭 Installing Playwright browsers..."
-npx playwright install webkit
+npx playwright install
 
 # Pre-test validation
 echo "🌐 Pre-test validation..."
