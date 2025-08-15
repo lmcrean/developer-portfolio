@@ -13,6 +13,7 @@ export interface PullRequestOverride {
 export const HIDDEN_REPOSITORIES = [
   'team-5',           // Hide team-5 repository contributions
   'halloween-hackathon', // Hide halloween-hackathon repository contributions
+  'vitest-dev',
   'vitest'
 ];
 
