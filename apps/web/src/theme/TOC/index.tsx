@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from '@docusaurus/router';
-import CustomTOC from '../../components/CustomTOC';
+import CustomTOC from '../../components/archive/CustomTOC';
 
 /**
  * Custom TOC Theme Component
@@ -8,7 +8,7 @@ import CustomTOC from '../../components/CustomTOC';
  * This overrides Docusaurus's default TOC behavior
  * Only renders the custom TOC on the index page
  */
-export default function TOC(): JSX.Element | null {
+export default function TOC(): React.ReactElement | null {
   const location = useLocation();
   
   // Only show custom TOC on the index page

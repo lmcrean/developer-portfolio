@@ -10,11 +10,17 @@ export interface PullRequestListData {
   merged_at: string | null;
   state: 'open' | 'closed' | 'merged';
   html_url: string;
+  additions?: number;
+  deletions?: number;
   repository: {
     name: string;
     description: string | null;
     language: string | null;
     html_url: string;
+    owner: {
+      login: string;
+      avatar_url: string;
+    };
   };
 }
 

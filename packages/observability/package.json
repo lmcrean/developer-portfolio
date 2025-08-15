@@ -7,7 +7,10 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "clean": "rimraf dist"
+    "clean": "rimraf dist",
+    "ci:watch": "node src/scripts/watch-ci.js",
+    "ci:monitor": "node src/scripts/monitor-workflows.js",
+    "ci:dashboard": "node src/scripts/ci-dashboard.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",

@@ -1,0 +1,456 @@
+{
+  "data": [
+    {
+      "id": 2747464252,
+      "number": 93,
+      "title": "Enhancement: use staticClient to improve artifact load times",
+      "description": null,
+      "created_at": "2025-08-14T22:01:46Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/93",
+      "state": "open",
+      "additions": 9058,
+      "deletions": 3954,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2746051142,
+      "number": 232,
+      "title": "Fix: Support `GENERATED ALWAYS AS` columns (#212)",
+      "description": "## Problem Statement (#212)\r\n\r\npg-schema-diff incorrectly treats `GENERATED ALWAYS AS (expression) STORED` columns as `DEFAULT` columns, causing migration failures:\r\n\r\n```\r\nERROR: cannot use column reference in DEFAULT expression (SQLSTATE 0A000)\r\n```\r\n\r\n**Example**: A `tsvector` column with `GENERATED ALWAYS AS (to_tsvector('simple', title || ' ' || coalesce(artist, ''))) STORED` gets incorrectly converted to `DEFAULT to_tsvector(...)`, which fails because DEFAULT expressions cannot reference other columns.\r\n\r\n## Root Cause Analysis\r\n\r\n1. **Schema Introspection** (`internal/queries/queries.sql:91-151`): \r\n   - The `GetColumnsForTable` query doesn't check `pg_attribute.attgenerated` \r\n   - It treats all columns with expressions as DEFAULT columns\r\n\r\n2. **DDL Generation** (`pkg/diff/sql_generator.go:2671`):\r\n   - The `buildColumnDefinition` function only handles DEFAULT expressions\r\n   - No support for `GENERATED ALWAYS AS ... STORED` syntax\r\n\r\n## Solution\r\n\r\n### 1. Update Schema Introspection ✅\r\n**Modified** `internal/queries/queries.sql:94-106`:\r\n- Added `pg_attribute.attgenerated` detection ('s' = STORED generated column)\r\n- Split default and generation expressions using CASE statements:\r\n  ```sql\r\n  -- Only populate default_value for non-generated columns\r\n  COALESCE(\r\n      CASE \r\n          WHEN a.attgenerated = 's' THEN ''\r\n          ELSE pg_catalog.pg_get_expr(d.adbin, d.adrelid)\r\n      END, ''\r\n  )::TEXT AS default_value,\r\n  -- Only populate generation_expression for generated columns\r\n  COALESCE(\r\n      CASE\r\n          WHEN a.attgenerated = 's' THEN pg_catalog.pg_get_expr(d.adbin, d.adrelid)\r\n          ELSE ''\r\n      END, ''\r\n  )::TEXT AS generation_expression,\r\n  (a.attgenerated = 's') AS is_generated,\r\n  ```\r\n\r\n**Updated** `internal/queries/queries.sql.go` with new struct fields:\r\n- Added `GenerationExpression string`\r\n- Added `IsGenerated bool`\r\n- Updated row scanning to handle new fields\r\n\r\n### 2. Extend Column Model ✅\r\n**Enhanced** `internal/schema/schema.go:268-275`:\r\n```go\r\nColumn struct {\r\n    Name      string\r\n    Type      string\r\n    Collation SchemaQualifiedName\r\n    Default   string\r\n    // NEW: Generated column support\r\n    IsGenerated          bool\r\n    GenerationExpression string\r\n    IsNullable bool\r\n    Size     int\r\n    Identity *ColumnIdentity\r\n}\r\n```\r\n\r\n**Updated** `internal/schema/schema.go:992-996` column building logic:\r\n```go\r\ncolumns = append(columns, Column{\r\n    // ... existing fields ...\r\n    Default:             column.DefaultValue,\r\n    IsGenerated:         column.IsGenerated,\r\n    GenerationExpression: column.GenerationExpression,\r\n    // ... rest of fields ...\r\n})\r\n```\r\n\r\n### 3. Fix DDL Generation ✅\r\n**Fixed** `pkg/diff/sql_generator.go:2677-2681`:\r\n```go\r\nfunc buildColumnDefinition(column schema.Column) (string, error) {\r\n    sb := strings.Builder{}\r\n    sb.WriteString(fmt.Sprintf(\"%s %s\", schema.EscapeIdentifier(column.Name), column.Type))\r\n    if column.IsCollated() {\r\n        sb.WriteString(fmt.Sprintf(\" COLLATE %s\", column.Collation.GetFQEscapedName()))\r\n    }\r\n    // NEW: Handle generated columns first\r\n    if column.IsGenerated {\r\n        sb.WriteString(fmt.Sprintf(\" GENERATED ALWAYS AS (%s) STORED\", column.GenerationExpression))\r\n    } else if len(column.Default) > 0 {\r\n        sb.WriteString(fmt.Sprintf(\" DEFAULT %s\", column.Default))\r\n    }\r\n    if !column.IsNullable {\r\n        sb.WriteString(\" NOT NULL\")\r\n    }\r\n    // ... identity handling ...\r\n    return sb.String(), nil\r\n}\r\n```\r\n\r\n## Test Plan for Reviewers\r\n\r\n### 1. Automated Test Validation (Required)\r\n\r\nRun the automated test suite to verify all generated column functionality:\r\n\r\n```bash\r\n# Test generated column functionality (~6 seconds)\r\nPATH=\"/usr/lib/postgresql/16/bin:$PATH\" go test ./internal/migration_acceptance_tests -run \"TestColumnTestCases/.*[Gg]enerated.*\" -v\r\n\r\n# Test DDL generation unit tests (instant, no PostgreSQL needed)\r\ngo test ./pkg/diff -run \"TestBuildColumnDefinition\" -v\r\n\r\n# Verify no regressions in unit tests (instant)\r\ngo test ./pkg/diff -run \"TestBuild|TestTransform|TestPlan\"\r\n```\r\n\r\n**Success Criteria:**\r\n- All 5 generated column integration tests pass\r\n- All 4 column definition unit tests pass  \r\n- No unit test failures\r\n\r\n### 2. Manual End-to-End Validation (Optional)\r\n\r\nTo manually verify the fix resolves the original issue:\r\n\r\n<details><summary>Manual Test Steps</summary>\r\n\r\n```bash\r\n# 1. Start test database\r\ndocker run -d --name pg-test-generated \\\r\n  -e POSTGRES_PASSWORD=postgres \\\r\n  -e POSTGRES_DB=testdb \\\r\n  -p 5433:5432 postgres:15\r\n\r\n# 2. Create initial table\r\ndocker exec pg-test-generated psql -U postgres -d testdb -c \"\r\nCREATE TABLE public.tabs (\r\n    id serial PRIMARY KEY,\r\n    title text NOT NULL,\r\n    artist text\r\n);\"\r\n\r\n# 3. Create target schema with generated column\r\nmkdir test_schema_generated\r\ncat > test_schema_generated/tabs.sql << 'EOF'\r\nCREATE TABLE public.tabs (\r\n    id serial PRIMARY KEY,\r\n    title text NOT NULL,\r\n    artist text,\r\n    search_vector tsvector GENERATED ALWAYS AS (\r\n        to_tsvector('simple', title || ' ' || coalesce(artist, ''))\r\n    ) STORED\r\n);\r\nEOF\r\n\r\n# 4. Build and test pg-schema-diff  \r\ngo build -o pg-schema-diff ./cmd/pg-schema-diff\r\n\r\n# 5. Generate and apply migration (should succeed without errors)\r\n./pg-schema-diff apply \\\r\n  --from-dsn \"postgres://postgres:postgres@localhost:5433/testdb?sslmode=disable\" \\\r\n  --to-dir test_schema_generated\r\n\r\n# 6. Verify generated column works\r\ndocker exec pg-test-generated psql -U postgres -d testdb -c \"\r\nINSERT INTO public.tabs (title, artist) VALUES ('Hello World', 'Test Artist');\r\nSELECT title, artist, search_vector FROM public.tabs;\r\n\"\r\n\r\n# 7. Cleanup\r\ndocker stop pg-test-generated && docker rm pg-test-generated\r\nrm -rf test_schema_generated\r\n```\r\n\r\n**Expected Behavior:**\r\n- Migration applies successfully (no SQLSTATE 0A000 error)\r\n- Generated column automatically populates with tsvector data\r\n- DDL contains `GENERATED ALWAYS AS ... STORED` (not `DEFAULT`)\r\n\r\n</details>\r\n\r\n### 3. Regression Testing (Required)\r\n\r\nVerify existing functionality remains intact:\r\n\r\n```bash\r\n# Build verification (instant)\r\ngo build ./... && go vet ./...\r\n\r\n# Unit test verification (instant, no PostgreSQL needed)\r\ngo test ./pkg/diff -run \"TestBuild|TestTransform|TestPlan\"\r\n```\r\n\r\n**Full Regression Testing (Recommended):**\r\n```bash\r\n# Run complete test suite in Docker environment (as documented in CONTRIBUTING.md)\r\ndocker build -t pg-schema-diff-test-runner -f ./build/Dockerfile.test --build-arg POSTGRES_PACKAGE=postgresql16 .\r\ndocker run pg-schema-diff-test-runner\r\n```\r\n\r\n**Note**: Docker-based testing provides consistent environment and runs all integration tests including schema hash validations. This is the same test suite used in CI.\r\n\r\n## Impact\r\n\r\nThis fix properly supports PostgreSQL's generated columns feature (PostgreSQL 12+), commonly used for:\r\n- ✅ Full-text search vectors (`tsvector` columns)\r\n- ✅ Computed/derived columns (`price * tax_rate`)\r\n- ✅ JSON field extraction (`(data->>'field')::type`)\r\n- ✅ Automatic transformations (`upper(name)`, `lower(email)`)",
+      "created_at": "2025-08-14T12:36:59Z",
+      "merged_at": null,
+      "html_url": "https://github.com/stripe/pg-schema-diff/pull/232",
+      "state": "open",
+      "additions": 244,
+      "deletions": 8,
+      "repository": {
+        "name": "pg-schema-diff",
+        "description": "Go library for diffing Postgres schemas and generating SQL migrations",
+        "language": "Go",
+        "html_url": "https://github.com/stripe/pg-schema-diff",
+        "owner": {
+          "login": "stripe",
+          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
+        }
+      }
+    },
+    {
+      "id": 2742664883,
+      "number": 1835,
+      "title": "Add missing `disableRecycling` prop to TypeScript interface",
+      "description": "Fixes #1831 - Adds the missing `disableRecycling` prop to the `FlashListProps` TypeScript interface to resolve \"Invalid attribute\" errors when using this prop in TypeScript projects.\r\n\r\nThe `disableRecycling` prop was already:\r\n- ✅ Documented in the usage guide\r\n- ✅ Fully implemented internally (`RenderStackManager.disableRecycling`)\r\n- ✅ Covered by comprehensive tests\r\n\r\nBut was missing from the TypeScript interface, causing compilation errors for users trying to use the documented feature.\r\n\r\n## Changes Made\r\n\r\n### 1. Added TypeScript Interface Definition\r\n**File**: `src/FlashListProps.ts`\r\n- [x] Added `disableRecycling?: boolean;` prop to `FlashListProps<TItem>` interface\r\n- [x] Included proper JSDoc documentation consistent with other New Arch props\r\n- [x] Positioned after `maxItemsInRecyclePool` following existing organization\r\n\r\n### 2. Wired Prop to Internal Implementation\r\n**File**: `src/recyclerview/RecyclerViewManager.ts`\r\n- [x] Added prop forwarding in `updateProps()` method: `this.renderStackManager.disableRecycling = props.disableRecycling ?? false;`\r\n- [x] Follows the same pattern as other props in the manager\r\n- [x] Connects the public prop to the existing internal implementation\r\n\r\n## Test Plan\r\n\r\n- [x] All existing tests pass (138/138) - no regressions\r\n- [x] Existing `disableRecycling` tests in `RenderStackManager.test.ts` cover the functionality\r\n- [x] TypeScript interface properly exposes the prop\r\n- [x] Manual verification: `<FlashList disableRecycling={true} ... />` now compiles without errors\r\n\r\n## Notes\r\n\r\n- This is a New Architecture feature only (documented as such)\r\n- No breaking changes - purely additive\r\n- Maintains existing recommendation to avoid disabling recycling unless necessary for debugging\r\n- The internal `RenderStackManager.disableRecycling` implementation was already complete and working\r\n",
+      "created_at": "2025-08-13T12:18:34Z",
+      "merged_at": null,
+      "html_url": "https://github.com/Shopify/flash-list/pull/1835",
+      "state": "open",
+      "additions": 8,
+      "deletions": 0,
+      "repository": {
+        "name": "flash-list",
+        "description": "A better list for React Native",
+        "language": "TypeScript",
+        "html_url": "https://github.com/Shopify/flash-list",
+        "owner": {
+          "login": "Shopify",
+          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
+        }
+      }
+    },
+    {
+      "id": 2735115681,
+      "number": 81,
+      "title": "Enhance (Layout): shift design focus to Pull Request feed",
+      "description": null,
+      "created_at": "2025-08-11T11:20:26Z",
+      "merged_at": "2025-08-11T13:55:20Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/81",
+      "state": "merged",
+      "additions": 250,
+      "deletions": 5063,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2732632519,
+      "number": 80,
+      "title": "Fix pull requests page 2 rendering and improve navigation",
+      "description": "Implements a client-side pagination fallback for pull requests, updates pagination UI, and removes outdated documentation.\n\nThe backend API for pull requests sometimes returns an empty list for pages beyond the first, even when `total_count` indicates more available items. This PR introduces a client-side fallback to refetch a larger first page and slice the results, ensuring subsequent pages render correctly.\n\n---\n<a href=\"https://cursor.com/background-agent?bcId=bc-970d0356-dc48-47d2-a38c-ff0de2f2cd65\">\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"https://cursor.com/open-in-cursor-dark.svg\">\n    <source media=\"(prefers-color-scheme: light)\" srcset=\"https://cursor.com/open-in-cursor-light.svg\">\n    <img alt=\"Open in Cursor\" src=\"https://cursor.com/open-in-cursor.svg\">\n  </picture>\n</a>\n<a href=\"https://cursor.com/agents?id=bc-970d0356-dc48-47d2-a38c-ff0de2f2cd65\">\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"https://cursor.com/open-in-web-dark.svg\">\n    <source media=\"(prefers-color-scheme: light)\" srcset=\"https://cursor.com/open-in-web-light.svg\">\n    <img alt=\"Open in Web\" src=\"https://cursor.com/open-in-web.svg\">\n  </picture>\n</a>\n\n",
+      "created_at": "2025-08-09T13:10:43Z",
+      "merged_at": "2025-08-09T14:14:22Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/80",
+      "state": "merged",
+      "additions": 82,
+      "deletions": 139,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2731677284,
+      "number": 79,
+      "title": "Fix cloud run deployment for habit tracker",
+      "description": "Fixes GitHub PR search and Cloud Run deployment for the habit tracker.\n\nThe PR addresses two main issues:\n1.  **GitHub Search:** Updates the GitHub API search query for pull requests to use `is:pr` and includes a fallback to `involves:` if `author:` yields no results, improving PR detection. It also defaults the username to `lmcrean`.\n2.  **Cloud Run Deployment:** Corrects the SQLite database path to `/tmp` for write access on Cloud Run, fixes `cloudrun.yaml` indentation, and ensures necessary environment variables are passed during deployment.\n\n---\n<a href=\"https://cursor.com/background-agent?bcId=bc-018cdb5d-26da-49cf-a1a5-7b12fc45bd4b\">\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"https://cursor.com/open-in-cursor-dark.svg\">\n    <source media=\"(prefers-color-scheme: light)\" srcset=\"https://cursor.com/open-in-cursor-light.svg\">\n    <img alt=\"Open in Cursor\" src=\"https://cursor.com/open-in-cursor.svg\">\n  </picture>\n</a>\n<a href=\"https://cursor.com/agents?id=bc-018cdb5d-26da-49cf-a1a5-7b12fc45bd4b\">\n  <picture>\n    <source media=\"(prefers-color-scheme: dark)\" srcset=\"https://cursor.com/open-in-web-dark.svg\">\n    <source media=\"(prefers-color-scheme: light)\" srcset=\"https://cursor.com/open-in-web-light.svg\">\n    <img alt=\"Open in Web\" src=\"https://cursor.com/open-in-web.svg\">\n  </picture>\n</a>\n\n",
+      "created_at": "2025-08-08T20:07:16Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/79",
+      "state": "closed",
+      "additions": 89,
+      "deletions": 43,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2731425938,
+      "number": 8415,
+      "title": "fix: ensure suite hooks respect maxConcurrency setting (#8367)",
+      "description": "## Description\r\n\r\nThis PR fixes issue #8367 by ensuring that suite-level hooks (`beforeAll`, `afterAll`, `beforeEach`, `afterEach`) respect the `maxConcurrency` configuration option, preventing resource exhaustion in test suites with numerous parallel hooks.\r\n\r\n### Problem\r\n\r\nPreviously, the `maxConcurrency` option only limited the number of concurrent test executions, while hooks could run with unlimited parallelism. This caused issues in test suites with many parallel hooks, particularly:\r\n- Resource exhaustion (file handles, memory, connections)\r\n- System instability when hooks perform I/O operations\r\n- Inconsistent behavior between test and hook execution\r\n\r\n### Solution\r\n\r\nThe implementation introduces a shared concurrency limiter that controls both test and hook execution while preserving the critical requirement of maintaining hook declaration order.\r\n\r\n#### Code Example\r\n\r\n**Before (hooks bypass concurrency limit):**\r\n```typescript\r\n// In callSuiteHook() - unlimited parallel execution\r\nif (sequence === 'parallel') {\r\n  await Promise.all(hooks.map(fn => fn(...args)))  // No limiting!\r\n}\r\n```\r\n\r\n**After (hooks respect concurrency limit):**\r\n```typescript  \r\n// In callSuiteHook() - controlled parallel execution\r\nif (sequence === 'parallel') {\r\n  const limiter = getLimitMaxConcurrency(runner)\r\n  const promises = hooks.map(fn => limiter(() => fn(...args)))  // Order preserved!\r\n  await Promise.all(promises)\r\n}\r\n```\r\n\r\n#### Key Changes\r\n\r\n1. **Shared Concurrency Helper** (`packages/runner/src/run.ts`)\r\n   - Created `getLimitMaxConcurrency()` helper function to provide centralized access to the concurrency limiter\r\n   - Both tests and hooks now use the same limiter instance, ensuring a unified concurrency pool\r\n\r\n2. **Hook Concurrency Control** \r\n   - Modified `callSuiteHook()` to apply concurrency limiting to parallel hooks\r\n   - Critical: Preserved hook declaration order by creating all promises immediately using `hooks.map(hook => limiter(() => runHook(hook)))`\r\n   - Sequential hooks continue to run one at a time as before\r\n\r\n3. **Backward Compatibility**\r\n   - No breaking changes to the public API\r\n   - Existing test behavior remains unchanged\r\n   - Hook execution order is preserved (critical for existing tests)\r\n\r\n### How This Approach Addresses PR #8384's Challenges\r\n\r\nThe previous PR (#8384) failed because it queued hooks directly into the limiter, which altered their execution timing and broke the `hooks-parallel.test.ts` test suite. This implementation:\r\n\r\n1. **Preserves Order**: Uses `Promise.all(hooks.map())` pattern which maintains result order even when execution is throttled\r\n2. **No Timing Changes**: Promises are created immediately, only their execution is limited\r\n3. **Unified Pool**: Tests and hooks share the same concurrency pool, preventing combined resource exhaustion\r\n\r\n### Files Modified\r\n\r\n- **`packages/runner/src/run.ts`** - Core implementation (29 additions, 5 deletions)\r\n  - Added `getLimitMaxConcurrency()` helper function\r\n  - Modified `callSuiteHook()` to apply concurrency limiting\r\n  - Updated `runSuiteChild()` and `runFiles()` to use the helper\r\n\r\n### Performance & Stability Impact\r\n\r\n- **Prevents Resource Exhaustion**: Tests verify the fix prevents EMFILE and ENOMEM errors that could occur with many parallel hooks\r\n- **Controlled Concurrency**: Hooks now respect the same `maxConcurrency` limit as tests, preventing unlimited parallel execution\r\n- **No Impact When Disabled**: When `maxConcurrency` is undefined (default), behavior remains unchanged \r\n- **Shared Resource Pool**: Tests and hooks share the same concurrency limiter, preventing combined resource exhaustion\r\n- **Backward Compatible**: All existing tests pass, including the critical `hooks-parallel.test.ts`\r\n\r\nThe implementation adds minimal code complexity (one helper function) while fixing a real issue reported by users with large test suites.\r\n\r\n### Additional Context\r\n\r\nThis implementation builds upon the initial exploration by @kim-sung-jee in PR #8384 and addresses the identified challenge of preserving hook execution order while applying concurrency limits. \r\n\r\nThis implementation also ensures backward compatibility and passes all existing tests including the critical `hooks-parallel.test.ts`.\r\n\r\n### Please don't delete this checklist! Before submitting the PR, please make sure you do the following:\r\n- [x] It's really useful if your PR references an issue where it is discussed ahead of time. If the feature is substantial or introduces breaking changes without a discussion, PR might be closed.\r\n  - References issue #8367 which has been discussed and acknowledged by maintainers\r\n- [x] Ideally, include a test that fails without this PR but passes with it.\r\n  - Added comprehensive test coverage in `test/config/test/max-concurrency-hooks.test.ts` and related files\r\n- [x] Please, don't make changes to `pnpm-lock.yaml` unless you introduce a new test example.\r\n  - No changes to pnpm-lock.yaml\r\n- [x] Please check [Allow edits by maintainers](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork) to make review process faster.\r\n\r\n### Tests\r\n- [x] Run the tests with `pnpm test:ci`.\r\n  - All tests pass including the critical `hooks-parallel.test.ts`\r\n\r\n### Documentation\r\n- [x] If you introduce new functionality, document it. You can run documentation with `pnpm run docs` command.\r\n  - This is a bug fix that makes `maxConcurrency` work as already documented\r\n\r\n### Changesets\r\n- [x] Changes in changelog are generated from PR name. Please, make sure that it explains your changes in an understandable manner. Please, prefix changeset messages with `feat:`, `fix:`, `perf:`, `docs:`, or `chore:`.\r\n  - PR title: `fix: ensure suite hooks respect maxConcurrency setting (#8367)`\r\n",
+      "created_at": "2025-08-08T17:50:08Z",
+      "merged_at": null,
+      "html_url": "https://github.com/vitest-dev/vitest/pull/8415",
+      "state": "closed",
+      "additions": 24,
+      "deletions": 5,
+      "repository": {
+        "name": "vitest",
+        "description": "Next generation testing framework powered by Vite.",
+        "language": "TypeScript",
+        "html_url": "https://github.com/vitest-dev/vitest",
+        "owner": {
+          "login": "vitest-dev",
+          "avatar_url": "https://avatars.githubusercontent.com/u/95747107?v=4"
+        }
+      }
+    },
+    {
+      "id": 2728241517,
+      "number": 12806,
+      "title": "utils: use `ShardIdentity` in `postgres_client.rs`",
+      "description": "## Summary\r\n\r\nThis PR refactors `postgres_client.rs` to use the existing `ShardIdentity` type instead of individual primitive shard fields, improving type safety and reducing code duplication.\r\n\r\n**Fixes #9823**\r\n\r\n## Problem\r\n\r\nThe `ConnectionConfigArgs` struct in `utils/postgres_client.rs` was manually tracking shard information using individual primitive fields:\r\n\r\n```rust\r\npub struct ConnectionConfigArgs<'a> {\r\n    pub shard_number: Option<u8>,        // ❌ Primitive types\r\n    pub shard_count: Option<u8>,         // ❌ No type safety\r\n    pub shard_stripe_size: Option<u32>,  // ❌ Manual validation \r\n    // ...\r\n}\r\n```\r\n\r\nThis approach had several issues:\r\n- **Type Safety**: Primitive types allowed mixing up parameters (e.g., passing shard_count where shard_number expected)\r\n- **Manual Validation**: Required runtime assertions to ensure all three fields were consistent\r\n- **Code Duplication**: Reinvented shard representation instead of using existing `ShardIdentity` type\r\n- **API Complexity**: Three separate `Option<T>` fields instead of one cohesive parameter\r\n\r\n## Solution\r\n\r\n### Phase 1: Move `ShardIdentity` to `utils`\r\n\r\n- [x] Moved `ShardIdentity` struct from `pageserver_api/shard.rs` to `utils/shard.rs`\r\n- [x] Moved related types: `ShardLayout`, `ShardConfigError`, `DEFAULT_STRIPE_SIZE`\r\n- [x] Updated `pageserver_api` to re-export from `utils` for backward compatibility\r\n- [x] Preserved pageserver-specific extension methods in `pageserver_api`\r\n\r\n### Phase 2: Refactor `ConnectionConfigArgs`\r\n\r\n- [x] Replace three individual fields with single `shard: Option<ShardIdentity>` field\r\n- [x] Update `options()` method to extract values from `ShardIdentity`\r\n- [x] Update all callers to use the unified type\r\n\r\n## Changes Made\r\n\r\n### Core Infrastructure\r\n- **`libs/utils/src/shard.rs`**: Added `ShardIdentity` struct with all core methods\r\n- **`libs/pageserver_api/src/shard.rs`**: Now re-exports from utils with pageserver-specific extensions  \r\n- **`libs/utils/src/postgres_client.rs`**: Refactored to use `Option<ShardIdentity>`\r\n\r\n### Updated Files\r\n- **`safekeeper/src/recovery.rs`**: Updated `ConnectionConfigArgs` constructor\r\n- **`pageserver/src/tenant/timeline/walreceiver/connection_manager.rs`**: Updated constructor\r\n\r\n## Benefits\r\n\r\n### **Type Safety**\r\n```rust\r\n// Before: Runtime assertions and unsafe unwraps\r\nif self.shard_number.is_some() {\r\n    assert!(self.shard_count.is_some());      // Runtime check\r\n    options.push(format!(\"shard_count={}\", self.shard_count.unwrap())); // Panic risk\r\n}\r\n\r\n// After: Compile-time guarantees\r\nif let Some(shard) = &self.shard {\r\n    options.push(format!(\"shard_count={}\", shard.count.literal())); // Type safe\r\n}\r\n```\r\n\r\n### **Simplified API**\r\n```rust\r\n// Before: 3 separate parameters\r\nConnectionConfigArgs {\r\n    shard_number: Some(0),\r\n    shard_count: Some(4), \r\n    shard_stripe_size: Some(2048),\r\n    // ...\r\n}\r\n\r\n// After: 1 unified parameter\r\nConnectionConfigArgs {\r\n    shard: Some(ShardIdentity::new(\r\n        ShardNumber(0), \r\n        ShardCount(4), \r\n        ShardStripeSize(2048)\r\n    ).unwrap()),\r\n    // ...\r\n}\r\n```\r\n\r\n### **Code Consistency**\r\n- Now uses the same `ShardIdentity` type as the rest of the codebase\r\n- Leverages existing validation and utility methods\r\n- Eliminates duplicate shard representation\r\n\r\n## Testing\r\n\r\n- [x] Added 6 comprehensive unit tests to verify identical option string generation\r\n- [x] Integration tests confirm WAL streaming functionality unchanged  \r\n- [x] All affected crates build successfully\r\n- [x] Existing test suite passes without modification\r\n- [x] Manual testing with local sharded tenants\r\n\r\n## Performance Impact\r\n\r\nNone - this is a purely structural refactoring with no runtime performance implications. The generated connection options remain identical.\r\n\r\n## Migration Guide\r\n\r\nFor code outside this repository using `ConnectionConfigArgs`:\r\n\r\n```rust\r\n// Before\r\nConnectionConfigArgs {\r\n    shard_number: Some(0),\r\n    shard_count: Some(4),\r\n    shard_stripe_size: Some(2048),\r\n    // ... other fields\r\n}\r\n\r\n// After  \r\nConnectionConfigArgs {\r\n    shard: Some(ShardIdentity::new(\r\n        ShardNumber(0),\r\n        ShardCount::new(4), \r\n        ShardStripeSize(2048)\r\n    ).unwrap()),\r\n    // ... other fields\r\n}\r\n```\r\n\r\nOr for unsharded connections:\r\n```rust\r\nConnectionConfigArgs {\r\n    shard: None,  // Replaces three None fields\r\n    // ... other fields\r\n}\r\n```\r\n\r\n## Backward Compatibility\r\n\r\n- [x] All existing imports of `ShardIdentity` continue to work via re-exports\r\n- [x] No breaking changes to public APIs outside of `ConnectionConfigArgs`\r\n- [x] Migration was designed to be incremental and reversible\r\n\r\n## Related\r\n\r\n- **Original Discussion**: https://github.com/neondatabase/neon/pull/9746#discussion_r1846338796\r\n- **Architecture Decision**: Move `ShardIdentity` to `utils` to avoid circular dependencies #9823 \r\n\r\n## Review Notes\r\n\r\nThis refactoring demonstrates several Rust best practices:\r\n1. **\"Make invalid states unrepresentable\"** - Use the type system to prevent bugs\r\n2. **DRY principle** - Reuse existing well-designed types instead of duplicating concepts  \r\n3. **Type safety over runtime checks** - Catch errors at compile time, not runtime\r\n4. **Proper encapsulation** - Group related data together in meaningful abstractions\r\n\r\nThe changes are purely structural with no behavioral modifications, making this a safe refactoring that improves code quality without affecting functionality.",
+      "created_at": "2025-08-07T15:42:07Z",
+      "merged_at": null,
+      "html_url": "https://github.com/neondatabase/neon/pull/12806",
+      "state": "open",
+      "additions": 390,
+      "deletions": 164,
+      "repository": {
+        "name": "neon",
+        "description": "Neon: Serverless Postgres. We separated storage and compute to offer autoscaling, code-like database branching, and scale to zero.",
+        "language": "Rust",
+        "html_url": "https://github.com/neondatabase/neon",
+        "owner": {
+          "login": "neondatabase",
+          "avatar_url": "https://avatars.githubusercontent.com/u/77690634?v=4"
+        }
+      }
+    },
+    {
+      "id": 2724841502,
+      "number": 72,
+      "title": "Chore: update sidebar",
+      "description": null,
+      "created_at": "2025-08-06T15:42:08Z",
+      "merged_at": "2025-08-06T15:42:25Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/72",
+      "state": "merged",
+      "additions": 144,
+      "deletions": 339,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2722008677,
+      "number": 71,
+      "title": "Fix chores: update Project Structure with renewed focus on Dev Ops and Data Analytics",
+      "description": null,
+      "created_at": "2025-08-05T18:03:42Z",
+      "merged_at": "2025-08-05T18:44:45Z",
+      "html_url": "https://github.com/lmcrean/developer-portfolio/pull/71",
+      "state": "merged",
+      "additions": 262,
+      "deletions": 50,
+      "repository": {
+        "name": "developer-portfolio",
+        "description": "A fully responsive developer portfolio website built using Typescript ",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/developer-portfolio",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2715163942,
+      "number": 7,
+      "title": "Implement pollinations.ai image generator",
+      "description": "npx   vincent my-deck.txt --generator pollinations\n  - ✅ Unlimited free usage\n  - ✅ No quotas or waiting\n  - ✅ Good quality images\n  - ✅ Always available\n\n  I've enhanced Vincent with:\n  - ✅ Clear GPU quota error messages\n  - ✅ Automatic endpoint discovery\n  - ✅ Helpful fallback suggestions\n  - ✅ Better debugging information\n\n  📊 Quality Comparison\n\n  | Generator    | Quality   | Speed  | Availability | Limits      |\n  |--------------|-----------|--------|--------------|-------------|\n  | Pollinations | Good      | Fast   | 100%         | None        |\n  | HuggingFace  | Excellent | Medium | Limited      | 60s GPU/day |\n  | Gemini       | Excellent | Fast   | Paid         | API cost    |\n",
+      "created_at": "2025-08-02T17:16:09Z",
+      "merged_at": "2025-08-02T17:16:20Z",
+      "html_url": "https://github.com/lmcrean/vincent/pull/7",
+      "state": "merged",
+      "additions": 1487,
+      "deletions": 214,
+      "repository": {
+        "name": "vincent",
+        "description": null,
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/vincent",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2696869536,
+      "number": 6982,
+      "title": ":sparkles: Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actor interventions",
+      "description": "# Screenshots\r\n\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/0b2800e3-4643-42d8-a235-3cf4c03333f0\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/0d465303-17c0-44cd-b867-53a86d698d44\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/7a0203aa-ee30-4e7f-a696-d5c2a6783ca7\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/83ff07d4-e5a1-45ac-9f72-feb9140aa5e3\" />\r\n<i><b>Current (problem):</b> Point of view of user LC. important milestones are able to be deleted accidentally or intentionally by other user's. LC can delete MC's work, after 7 days it is lost forever. </i>\r\n\r\n---\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/be501f4f-462f-453e-8db5-896ce93ed9b4\" />\r\n<img width=\"175\" height=\"auto\" alt=\"final2\" src=\"https://github.com/user-attachments/assets/2268d10c-d512-4ef2-a29d-ef63770fb04b\" />\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/4785c480-9f8c-4ad0-911d-49f682c74b7a\" />\r\n<img width=\"174\" height=\"auto\" alt=\"final1\" src=\"https://github.com/user-attachments/assets/bbdd8cd5-4033-4e02-9c24-5f071a3a0aed\" /><br>\r\n<i><b>Enhancement (new):</b> Point of view of user UB. Important milestones are now protected with a simple lock feature. UB cannot delete (or rename) LC's work when it is locked. </i>\r\n\r\n---\r\n\r\nThis PR implements a comprehensive version locking system that allows users to \"lock\" their saved versions to prevent deletion by other team members. The enhancement was requested on #6763. \r\n\r\n## Problem statement\r\n\r\n- The need for good Version Control has been an significant theme in the penpot community -- see https://community.penpot.app/t/using-version-control-to-collaboratively-work-on-penpot/633/3 and https://tree.taiga.io/project/penpot/us/187?milestone=262806. Currently there has been a milestone system implemented that enables user's to save important versions of the project. This is a highly valuable feature, however there are scenarios where it can be lost:\r\n- User A has saved a crucial \"milestone\" of a project. User B accidentally deletes it when meaning to restore the version. After 7 days, no records remain of User A's milestone and it is lost forever.\r\n- User A has saved a crucial \"milestone\" of a project. User B is a bad actor and intentionally deletes the version. After 7 days, no records remain of User A's milestone and it is lost forever.\r\n- Penpot's key competitor, Figma offers a git-style \"branching\" feature as a solution to the accidental deletion/ bad actor problem on their premium paid tier -- even if this feature were copied this could not be implemented without dramatic file changes -- leaving vulnerability to unforseen bugs.\r\n\r\n## Solution\r\n- The simplest solution is best. A \"lock\" feature for milestones. Now User A's \"milestone\" can be locked and it is protected from accidental deletion and bad actors.\r\n\r\n### Key Features\r\n- ✅ Only version creators can lock/unlock their own version milestones\r\n- ✅ Only version creators can rename their own version\r\n- ✅ Locked versions cannot be deleted by anyone except the creator  \r\n- ✅ System snapshots cannot be locked (only user-created versions)\r\n- ✅ Clear visual indicators and menu options in the UI, reuse of the \"lock\" icon\r\n- ✅ Comprehensive authorization checks and error handling in the frontend and backend\r\n\r\n\r\n### Implementation Overview\r\n- **Database**: Added `locked_by` column to `file_change` table in new migration file `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql`\r\n- **Backend**: New RPC endpoints for lock/unlock operations with authorization in `backend/src/app/rpc/commands/files_snapshot.clj`\r\n- **Frontend**: Lock/unlock UI in version history sidebar with visual indicators gracefully handles conditional rendering of lock and rename features.\r\n\r\n## Testing Instructions\r\n\r\n### Core Functionality Tests\r\n\r\n**Version Locking**\r\n1. Create a user version (\"Save Version\")\r\n2. Lock it via menu → \"Lock\"\r\n3. Verify lock indicator appears\r\n4. Unlock via menu → \"Unlock\"\r\n5. **Expected**: Lock/unlock works, visual indicators update correctly\r\n\r\n**Delete Protection**\r\n1. Lock a version you created\r\n2. Attempt to delete it\r\n3. **Expected**: Deletion blocked with clear error message\r\n\r\n**Authorization**\r\n1. User A creates and locks a version\r\n2. User B tries to lock/unlock/delete it\r\n3. **Expected**: User B's options to rename and delete are hidden.\r\n\r\n**System Snapshots**\r\n1. Try to lock an auto-saved system snapshot\r\n2. **Expected**: Operation fails with \"system snapshots cannot be locked\" error\r\n\r\n**UI Verification**\r\n- [x] Lock/unlock options appear only for your own user versions\r\n- [x] Locked versions display lock icon consistently\r\n- [x] Menu text changes appropriately (\"Lock\" ↔ \"Unlock\")\r\n- [x] Error messages are clear and actionable (ensured backend prevents user B deleting User A locked milestone) -- frontend handles gracefully with hidden buttons, leads to gateway error pages if forced.",
+      "created_at": "2025-07-26T10:41:46Z",
+      "merged_at": null,
+      "html_url": "https://github.com/penpot/penpot/pull/6982",
+      "state": "closed",
+      "additions": 292,
+      "deletions": 17,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      }
+    },
+    {
+      "id": 2695446445,
+      "number": 6979,
+      "title": ":sparkles: Add version locking feature to prevent accidental deletion",
+      "description": "<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/be501f4f-462f-453e-8db5-896ce93ed9b4\" />\r\n<img width=\"175\" height=\"auto\" alt=\"final2\" src=\"https://github.com/user-attachments/assets/2268d10c-d512-4ef2-a29d-ef63770fb04b\" />\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/7a448ce2-375a-487a-a2cf-e63cf88803e2\" />\r\n<img width=\"174\" height=\"auto\" alt=\"final1\" src=\"https://github.com/user-attachments/assets/4f1c6ca7-43bd-4008-bb40-631708af5b41\" />\r\n\r\n\r\n## Summary\r\n\r\nThis PR implements a comprehensive version locking system that allows users to lock their saved versions to prevent deletion by other team members. The enhancement was requested on #6763\r\n\r\n### Key Features\r\n- ✅ Only version creators can lock/unlock their own version milestones\r\n- ✅ Only version creators can rename their own version\r\n- ✅ Locked versions cannot be deleted by anyone except the creator  \r\n- ✅ System snapshots cannot be locked (only user-created versions)\r\n- ✅ Clear visual indicators and menu options in the UI\r\n- ✅ Comprehensive authorization checks and error handling\r\n\r\n### Backend Changes\r\n- **Database Migration**: Added `locked_by` column to `file_change` table with proper indexing\r\n- **New RPC Endpoints**: \r\n  - `lock-file-snapshot` - Lock a version (creator only)\r\n  - `unlock-file-snapshot` - Unlock a version (creator only)\r\n- **Enhanced Security**: Updated `delete-file-snapshot` with lock protection\r\n- **Authorization**: Proper permission checks and descriptive error messages\r\n\r\n### Frontend Changes\r\n- **UI Components**: Added lock/unlock actions to version history sidebar\r\n- **Visual Indicators**: Clear display of locked status on versions\r\n- **Conditional Menus**: Show lock/unlock options based on current state\r\n- **Data Integration**: Connected to backend RPC commands\r\n\r\n### Files Modified\r\n- `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql` - Database migration\r\n- `backend/src/app/rpc/commands/files_snapshot.clj` - Backend API logic  \r\n- `frontend/src/app/main/data/workspace/versions.cljs` - Frontend data layer\r\n- `frontend/src/app/main/ui/workspace/sidebar/versions.cljs` - UI components\r\n\r\n## Manual Testing Instructions\r\n\r\n### Prerequisites\r\n1. Set up development environment:\r\n   ```bash\r\n   ./manage.sh start-devenv\r\n   ./manage.sh run-devenv\r\n   ```\r\n\r\n2. Apply database migration:\r\n   ```bash\r\n   cd backend\r\n   clojure -M:dev:migrate\r\n   ```\r\n\r\n3. Start backend and frontend:\r\n   ```bash\r\n   # Terminal 1: Backend\r\n   cd backend && ./scripts/repl\r\n   \r\n   # Terminal 2: Frontend  \r\n   cd frontend && yarn watch:app\r\n   ```\r\n\r\n### Test Scenarios\r\n\r\n#### ✅ Basic Lock/Unlock Functionality\r\n\r\n**Test 1: Lock Your Own Version**\r\n1. Create/open a file and make changes\r\n2. Go to versions panel (history icon in sidebar)\r\n3. Click \"Save Version\" to create a user version\r\n4. Click menu (three dots) on your saved version\r\n5. Select \"Lock\" from dropdown\r\n6. **Expected**: Version shows lock indicator, menu shows \"Unlock\"\r\n\r\n**Test 2: Unlock Version**\r\n1. With a locked version from Test 1\r\n2. Click menu → \"Unlock\"\r\n3. **Expected**: Version unlocked, menu shows \"Lock\" again\r\n\r\n**Test 3: Delete Protection**\r\n1. Lock a version\r\n2. Try to delete it via menu\r\n3. **Expected**: Deletion fails with error message\r\n\r\n#### ✅ Multi-User Authorization\r\n\r\n**Test 4: Other Users Cannot Delete Locked Versions**\r\n1. User A creates and locks a version\r\n2. User B opens same file\r\n3. User B tries to delete User A's locked version\r\n4. **Expected**: Deletion fails with authorization error\r\n\r\n**Test 5: Only Creator Can Lock/Unlock**\r\n1. User A creates version (unlocked)\r\n2. User B tries to lock User A's version\r\n3. **Expected**: Lock fails with \"only creator can lock\" error\r\n\r\n#### ✅ Error Handling\r\n\r\n**System Snapshot Protection**\r\n1. Find auto-saved system snapshots (grouped by date)\r\n2. Try to lock a system snapshot\r\n3. **Expected**: Fails with \"system snapshots can't be locked\" error\r\n\r\n#### ✅ UI/UX Verification\r\n\r\n**Visual Indicators:**\r\n- [x] Locked versions show lock indicator\r\n- [x] Menu shows \"Lock\" for unlocked versions\r\n- [x] Menu shows \"Unlock\" for locked versions\r\n- [x] Lock/unlock options only appear for user versions\r\n\r\n**Functionality:**\r\n- [x] Lock/unlock actions work correctly\r\n- [x] Delete prevention works for locked versions\r\n- [x] Only creators can lock/unlock their versions\r\n- [x] System snapshots cannot be locked\r\n- [x] Proper error messages for all failure cases\r\n\r\n### Database Verification\r\n\r\nCheck migration and data integrity:\r\n```sql\r\n-- Verify migration applied\r\nSELECT * FROM file_change WHERE locked_by IS NOT NULL;\r\n\r\n-- Check lock status\r\nSELECT id, label, profile_id, locked_by, created_by \r\nFROM file_change \r\nWHERE file_id = 'test-file-id' \r\nAND created_by = 'user';\r\n```\r\n\r\n### Browser Testing\r\n\r\n1. **Network Tab**: Verify API calls\r\n   - Lock: `POST /api/rpc/command/lock-file-snapshot`\r\n   - Unlock: `POST /api/rpc/command/unlock-file-snapshot`\r\n   - Data: `locked_by` field in responses\r\n\r\n2. **Console**: Check for proper error handling\r\n   - No JavaScript errors\r\n   - Descriptive error messages for invalid operations\r\n\r\n### Performance Testing\r\n\r\n1. Create many versions (locked and unlocked)\r\n2. Verify version list loads quickly\r\n3. Check lock status displays correctly for all versions\r\n\r\n## Test Plan\r\n\r\n- [x] **Basic functionality**: Lock/unlock own versions\r\n- [x] **Security**: Cannot lock/unlock others' versions\r\n- [x] **Protection**: Cannot delete locked versions\r\n- [x] **System snapshots**: Cannot be locked\r\n- [x] **Error handling**: All edge cases handled properly\r\n- [x] **UI/UX**: Clear visual indicators and menu options\r\n- [x] **Performance**: No impact on version list loading\r\n- [x] **Database**: Migration applied correctly\r\n- [x] **Multi-user**: Authorization works across users",
+      "created_at": "2025-07-25T16:32:02Z",
+      "merged_at": null,
+      "html_url": "https://github.com/penpot/penpot/pull/6979",
+      "state": "closed",
+      "additions": 292,
+      "deletions": 17,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      }
+    },
+    {
+      "id": 2695330390,
+      "number": 6977,
+      "title": "✨ Add version locking feature to prevent accidental deletion",
+      "description": "## Summary\r\n\r\nThis PR implements a comprehensive version locking system that allows users to lock their saved versions to prevent deletion by other team members. The enhancement was requested on #6763\r\n\r\n### Key Features\r\n- ✅ Only version creators can lock/unlock their own versions\r\n- ✅ Locked versions cannot be deleted by anyone except the creator  \r\n- ✅ System snapshots cannot be locked (only user-created versions)\r\n- ✅ Clear visual indicators and menu options in the UI\r\n- ✅ Comprehensive authorization checks and error handling\r\n\r\n### Backend Changes\r\n- **Database Migration**: Added `locked_by` column to `file_change` table with proper indexing\r\n- **New RPC Endpoints**: \r\n  - `lock-file-snapshot` - Lock a version (creator only)\r\n  - `unlock-file-snapshot` - Unlock a version (creator only)\r\n- **Enhanced Security**: Updated `delete-file-snapshot` with lock protection\r\n- **Authorization**: Proper permission checks and descriptive error messages\r\n\r\n### Frontend Changes\r\n- **UI Components**: Added lock/unlock actions to version history sidebar\r\n- **Visual Indicators**: Clear display of locked status on versions\r\n- **Conditional Menus**: Show lock/unlock options based on current state\r\n- **Data Integration**: Connected to backend RPC commands\r\n\r\n### Files Modified\r\n- `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql` - Database migration\r\n- `backend/src/app/rpc/commands/files_snapshot.clj` - Backend API logic  \r\n- `frontend/src/app/main/data/workspace/versions.cljs` - Frontend data layer\r\n- `frontend/src/app/main/ui/workspace/sidebar/versions.cljs` - UI components\r\n\r\n## Manual Testing Instructions\r\n\r\n### Prerequisites\r\n1. Set up development environment:\r\n   ```bash\r\n   ./manage.sh start-devenv\r\n   ./manage.sh run-devenv\r\n   ```\r\n\r\n2. Apply database migration:\r\n   ```bash\r\n   cd backend\r\n   clojure -M:dev:migrate\r\n   ```\r\n\r\n3. Start backend and frontend:\r\n   ```bash\r\n   # Terminal 1: Backend\r\n   cd backend && ./scripts/repl\r\n   \r\n   # Terminal 2: Frontend  \r\n   cd frontend && yarn watch:app\r\n   ```\r\n\r\n### Test Scenarios\r\n\r\n#### ✅ Basic Lock/Unlock Functionality\r\n\r\n**Test 1: Lock Your Own Version**\r\n1. Create/open a file and make changes\r\n2. Go to versions panel (history icon in sidebar)\r\n3. Click \"Save Version\" to create a user version\r\n4. Click menu (three dots) on your saved version\r\n5. Select \"Lock\" from dropdown\r\n6. **Expected**: Version shows lock indicator, menu shows \"Unlock\"\r\n\r\n**Test 2: Unlock Version**\r\n1. With a locked version from Test 1\r\n2. Click menu → \"Unlock\"\r\n3. **Expected**: Version unlocked, menu shows \"Lock\" again\r\n\r\n**Test 3: Delete Protection**\r\n1. Lock a version\r\n2. Try to delete it via menu\r\n3. **Expected**: Deletion fails with error message\r\n\r\n#### ✅ Multi-User Authorization\r\n\r\n**Test 4: Other Users Cannot Delete Locked Versions**\r\n1. User A creates and locks a version\r\n2. User B opens same file\r\n3. User B tries to delete User A's locked version\r\n4. **Expected**: Deletion fails with authorization error\r\n\r\n**Test 5: Only Creator Can Lock/Unlock**\r\n1. User A creates version (unlocked)\r\n2. User B tries to lock User A's version\r\n3. **Expected**: Lock fails with \"only creator can lock\" error\r\n\r\n#### ✅ Error Handling\r\n\r\n**Test 6: Double Lock Prevention**\r\n1. Lock a version\r\n2. Try to lock it again\r\n3. **Expected**: Fails with \"already locked\" error\r\n\r\n**Test 7: Unlock Non-Locked Version**\r\n1. With unlocked version\r\n2. Try to unlock it\r\n3. **Expected**: Fails with \"not locked\" error\r\n\r\n**Test 8: System Snapshot Protection**\r\n1. Find auto-saved system snapshots (grouped by date)\r\n2. Try to lock a system snapshot\r\n3. **Expected**: Fails with \"system snapshots can't be locked\" error\r\n\r\n#### ✅ UI/UX Verification\r\n\r\n**Visual Indicators:**\r\n- [x] Locked versions show lock indicator\r\n- [x] Menu shows \"Lock\" for unlocked versions\r\n- [x] Menu shows \"Unlock\" for locked versions\r\n- [x] Lock/unlock options only appear for user versions\r\n\r\n**Functionality:**\r\n- [x] Lock/unlock actions work correctly\r\n- [x] Delete prevention works for locked versions\r\n- [x] Only creators can lock/unlock their versions\r\n- [x] System snapshots cannot be locked\r\n- [x] Proper error messages for all failure cases\r\n\r\n### Database Verification\r\n\r\nCheck migration and data integrity:\r\n```sql\r\n-- Verify migration applied\r\nSELECT * FROM file_change WHERE locked_by IS NOT NULL;\r\n\r\n-- Check lock status\r\nSELECT id, label, profile_id, locked_by, created_by \r\nFROM file_change \r\nWHERE file_id = 'test-file-id' \r\nAND created_by = 'user';\r\n```\r\n\r\n### Browser Testing\r\n\r\n1. **Network Tab**: Verify API calls\r\n   - Lock: `POST /api/rpc/command/lock-file-snapshot`\r\n   - Unlock: `POST /api/rpc/command/unlock-file-snapshot`\r\n   - Data: `locked_by` field in responses\r\n\r\n2. **Console**: Check for proper error handling\r\n   - No JavaScript errors\r\n   - Descriptive error messages for invalid operations\r\n\r\n### Performance Testing\r\n\r\n1. Create many versions (locked and unlocked)\r\n2. Verify version list loads quickly\r\n3. Check lock status displays correctly for all versions\r\n\r\n## Test Plan\r\n\r\n- [x] **Basic functionality**: Lock/unlock own versions\r\n- [ ] **Security**: Cannot lock/unlock others' versions\r\n- [x] **Protection**: Cannot delete locked versions\r\n- [x] **System snapshots**: Cannot be locked\r\n- [x] **Error handling**: All edge cases handled properly\r\n- [ ] **UI/UX**: Clear visual indicators and menu options\r\n- [x] **Performance**: No impact on version list loading\r\n- [x] **Database**: Migration applied correctly\r\n- [x] **Multi-user**: Authorization works across users",
+      "created_at": "2025-07-25T15:41:12Z",
+      "merged_at": null,
+      "html_url": "https://github.com/penpot/penpot/pull/6977",
+      "state": "closed",
+      "additions": 292,
+      "deletions": 17,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      }
+    },
+    {
+      "id": 2695306492,
+      "number": 6976,
+      "title": "✨ Add version locking feature to prevent accidental deletion",
+      "description": "## Summary\r\n\r\nThis PR implements a comprehensive version locking system that allows users to lock their saved versions to prevent deletion by other team members. The enhancement was requested on #6763\r\n\r\n### Key Features\r\n- ✅ Only version creators can lock/unlock their own versions\r\n- ✅ Locked versions cannot be deleted by anyone except the creator  \r\n- ✅ System snapshots cannot be locked (only user-created versions)\r\n- ✅ Clear visual indicators and menu options in the UI\r\n- ✅ Comprehensive authorization checks and error handling\r\n\r\n### Backend Changes\r\n- **Database Migration**: Added `locked_by` column to `file_change` table with proper indexing\r\n- **New RPC Endpoints**: \r\n  - `lock-file-snapshot` - Lock a version (creator only)\r\n  - `unlock-file-snapshot` - Unlock a version (creator only)\r\n- **Enhanced Security**: Updated `delete-file-snapshot` with lock protection\r\n- **Authorization**: Proper permission checks and descriptive error messages\r\n\r\n### Frontend Changes\r\n- **UI Components**: Added lock/unlock actions to version history sidebar\r\n- **Visual Indicators**: Clear display of locked status on versions\r\n- **Conditional Menus**: Show lock/unlock options based on current state\r\n- **Data Integration**: Connected to backend RPC commands\r\n\r\n### Files Modified\r\n- `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql` - Database migration\r\n- `backend/src/app/rpc/commands/files_snapshot.clj` - Backend API logic  \r\n- `frontend/src/app/main/data/workspace/versions.cljs` - Frontend data layer\r\n- `frontend/src/app/main/ui/workspace/sidebar/versions.cljs` - UI components\r\n\r\n## Manual Testing Instructions\r\n\r\n### Prerequisites\r\n1. Set up development environment:\r\n   ```bash\r\n   ./manage.sh start-devenv\r\n   ./manage.sh run-devenv\r\n   ```\r\n\r\n2. Apply database migration:\r\n   ```bash\r\n   cd backend\r\n   clojure -M:dev:migrate\r\n   ```\r\n\r\n3. Start backend and frontend:\r\n   ```bash\r\n   # Terminal 1: Backend\r\n   cd backend && ./scripts/repl\r\n   \r\n   # Terminal 2: Frontend  \r\n   cd frontend && yarn watch:app\r\n   ```\r\n\r\n### Test Scenarios\r\n\r\n#### ✅ Basic Lock/Unlock Functionality\r\n\r\n**Test 1: Lock Your Own Version**\r\n1. Create/open a file and make changes\r\n2. Go to versions panel (history icon in sidebar)\r\n3. Click \"Save Version\" to create a user version\r\n4. Click menu (three dots) on your saved version\r\n5. Select \"Lock\" from dropdown\r\n6. **Expected**: Version shows lock indicator, menu shows \"Unlock\"\r\n\r\n**Test 2: Unlock Version**\r\n1. With a locked version from Test 1\r\n2. Click menu → \"Unlock\"\r\n3. **Expected**: Version unlocked, menu shows \"Lock\" again\r\n\r\n**Test 3: Delete Protection**\r\n1. Lock a version\r\n2. Try to delete it via menu\r\n3. **Expected**: Deletion fails with error message\r\n\r\n#### ✅ Multi-User Authorization\r\n\r\n**Test 4: Other Users Cannot Delete Locked Versions**\r\n1. User A creates and locks a version\r\n2. User B opens same file\r\n3. User B tries to delete User A's locked version\r\n4. **Expected**: Deletion fails with authorization error\r\n\r\n**Test 5: Only Creator Can Lock/Unlock**\r\n1. User A creates version (unlocked)\r\n2. User B tries to lock User A's version\r\n3. **Expected**: Lock fails with \"only creator can lock\" error\r\n\r\n#### ✅ Error Handling\r\n\r\n**Test 6: Double Lock Prevention**\r\n1. Lock a version\r\n2. Try to lock it again\r\n3. **Expected**: Fails with \"already locked\" error\r\n\r\n**Test 7: Unlock Non-Locked Version**\r\n1. With unlocked version\r\n2. Try to unlock it\r\n3. **Expected**: Fails with \"not locked\" error\r\n\r\n**Test 8: System Snapshot Protection**\r\n1. Find auto-saved system snapshots (grouped by date)\r\n2. Try to lock a system snapshot\r\n3. **Expected**: Fails with \"system snapshots can't be locked\" error\r\n\r\n#### ✅ UI/UX Verification\r\n\r\n**Visual Indicators:**\r\n- [x] Locked versions show lock indicator\r\n- [x] Menu shows \"Lock\" for unlocked versions\r\n- [x] Menu shows \"Unlock\" for locked versions\r\n- [x] Lock/unlock options only appear for user versions\r\n\r\n**Functionality:**\r\n- [x] Lock/unlock actions work correctly\r\n- [x] Delete prevention works for locked versions\r\n- [x] Only creators can lock/unlock their versions\r\n- [x] System snapshots cannot be locked\r\n- [x] Proper error messages for all failure cases\r\n\r\n### Database Verification\r\n\r\nCheck migration and data integrity:\r\n```sql\r\n-- Verify migration applied\r\nSELECT * FROM file_change WHERE locked_by IS NOT NULL;\r\n\r\n-- Check lock status\r\nSELECT id, label, profile_id, locked_by, created_by \r\nFROM file_change \r\nWHERE file_id = 'test-file-id' \r\nAND created_by = 'user';\r\n```\r\n\r\n### Browser Testing\r\n\r\n1. **Network Tab**: Verify API calls\r\n   - Lock: `POST /api/rpc/command/lock-file-snapshot`\r\n   - Unlock: `POST /api/rpc/command/unlock-file-snapshot`\r\n   - Data: `locked_by` field in responses\r\n\r\n2. **Console**: Check for proper error handling\r\n   - No JavaScript errors\r\n   - Descriptive error messages for invalid operations\r\n\r\n### Performance Testing\r\n\r\n1. Create many versions (locked and unlocked)\r\n2. Verify version list loads quickly\r\n3. Check lock status displays correctly for all versions\r\n\r\n## Test Plan\r\n\r\n- [x] **Basic functionality**: Lock/unlock own versions\r\n- [ ] **Security**: Cannot lock/unlock others' versions\r\n- [x] **Protection**: Cannot delete locked versions\r\n- [x] **System snapshots**: Cannot be locked\r\n- [x] **Error handling**: All edge cases handled properly\r\n- [ ] **UI/UX**: Clear visual indicators and menu options\r\n- [x] **Performance**: No impact on version list loading\r\n- [x] **Database**: Migration applied correctly\r\n- [x] **Multi-user**: Authorization works across users",
+      "created_at": "2025-07-25T15:32:06Z",
+      "merged_at": null,
+      "html_url": "https://github.com/penpot/penpot/pull/6976",
+      "state": "closed",
+      "additions": 292,
+      "deletions": 17,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      }
+    },
+    {
+      "id": 2689359688,
+      "number": 41,
+      "title": "refactor deployment workflow with DRY principles",
+      "description": "## Summary\r\nThis PR consolidates GitHub workflows using reusable templates, implementing the DRY principle to address issue #33.\r\n\r\n**Addresses Issue**: #33 - Consolidate GitHub Workflows Using Reusable Templates\r\n\r\n## Key Changes\r\n- **Created 5 reusable workflow templates** in `.github/workflows/`:\r\n  - `template-build.yml` - Centralized build logic for API and web components\r\n  - `template-test.yml` - Unified testing framework for integration and E2E tests\r\n  - `template-deploy.yml` - Standardized deployment to GCP Cloud Run and Firebase\r\n  - `template-security.yml` - Consolidated security checks and validations\r\n  - `template-release.yml` - Centralized release management\r\n\r\n- **Refactored existing workflows** to use reusable templates instead of duplicated code\r\n- **Eliminated code duplication** across 12+ workflow files\r\n- **Maintained all existing functionality** while centralizing maintenance\r\n- **Fixed workflow validation issues** (removed GITHUB_TOKEN collision)\r\n\r\n## Benefits Achieved\r\n✅ **DRY Principle**: Eliminated repeated workflow steps across multiple files  \r\n✅ **Centralized Maintenance**: Single source of truth for CI/CD logic  \r\n✅ **Reduced Configuration Drift**: Consistent patterns across all workflows  \r\n✅ **Easier Updates**: Changes to templates automatically apply to all workflows  \r\n✅ **Better Testing**: Standardized test execution across environments  \r\n\r\n## Files Impact\r\n- **Added**: 5 new reusable workflow templates\r\n- **Modified**: All existing workflow files to use templates\r\n- **Maintained**: Complete backward compatibility and functionality\r\n- **Improved**: Workflow readability and maintainability\r\n\r\n## Testing\r\n- All workflow scenarios tested across local, branch, and production environments\r\n- Deployment validation includes health checks for both API and web components\r\n- E2E tests integrated with template-based workflows",
+      "created_at": "2025-07-23T15:59:06Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/odyssey/pull/41",
+      "state": "closed",
+      "additions": 4193,
+      "deletions": 26238,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2689332284,
+      "number": 40,
+      "title": "Iteration 2, Phase 1: Database & Auth Backend Implementation",
+      "description": "## Summary\nThis PR implements Iteration 2 (i2) of the Odyssey project, focusing on authentication system foundation and addressing issue #37.\n\n**Addresses Issue**: #37 - Phase 1: Database & Auth Backend Implementation\n\n## Progress on Issue #37\n\n### ✅ Completed (Phase 1A: Foundation & Infrastructure)\n- **Database Entities**: Implemented core authentication entities (User, Company, RefreshToken) in `packages/auth/entities/`\n- **TypeScript Types**: Created corresponding frontend types for User, Company, and authentication flows\n- **Database Context**: Established `AuthDbContext` with proper entity configurations\n- **Package Structure**: Set up auth package following existing observability package pattern\n- **Infrastructure Testing**: Entity validation and database connection tests implemented\n\n### ✅ Completed (Phase 1B: Backend Core Services)  \n- **JWT Token Service**: Full implementation with access/refresh token generation and validation\n- **Password Service**: Secure password hashing with bcrypt and strength validation\n- **User Service**: Business logic layer for authentication and user management\n- **Auth Controllers**: Complete AuthController with login, register, refresh-token, and logout endpoints\n- **User Controllers**: UserController with profile management and password change functionality\n- **Configuration & Middleware**: JWT authentication middleware and configuration setup\n\n### ✅ API Endpoints Implemented\n- `POST /api/auth/login` - User authentication\n- `POST /api/auth/register` - User registration  \n- `POST /api/auth/refresh-token` - Token refresh\n- `POST /api/auth/logout` - User logout\n- `GET /api/users/profile` - Get user profile\n- `PUT /api/users/profile` - Update user profile\n- `POST /api/users/change-password` - Change password\n\n### ✅ Security Implementation\n- JWT tokens with 15-minute expiration and refresh token rotation\n- Secure password hashing with Argon2\n- Input validation and sanitization\n- Parameterized queries for SQL injection prevention\n- Rate limiting preparation\n\n### 🔄 Remaining Work for Issue #37\n- **Database Migrations**: Deploy schema changes to Cloud SQL PostgreSQL\n- **Integration Testing**: Complete backend auth controller integration tests\n- **Performance Testing**: Database query optimization and token generation performance\n- **Security Testing**: JWT validation and password security validation\n- **Documentation**: API endpoint documentation completion\n\n## Key Changes Made\n- **Auth Package**: Complete authentication package with entities, services, and controllers\n- **Database Schema**: User, Company, and RefreshToken entities with proper relationships\n- **JWT Implementation**: Full JWT authentication with refresh token rotation\n- **API Controllers**: Complete REST API for authentication and user management\n- **Security Features**: Password hashing, token validation, and security middleware\n- **Testing Infrastructure**: Unit and integration test setup for authentication flows\n\n## Dependencies\n\n**⚠️ Critical Dependency**: This PR depends on **PR #41** (refactor deployment workflow with DRY principles) to prevent configuration drift during auth implementation.\n\n**Why this dependency matters**:\n- PR #41 consolidates GitHub workflows using reusable templates, implementing DRY principles\n- Without #41, implementing auth features could introduce workflow inconsistencies\n- #41 establishes centralized CI/CD patterns that auth deployment will follow\n- Prevents potential drifting issues as we add auth-specific deployment steps\n\n**Merge Order**: PR #41 should be merged before this PR to ensure consistent deployment patterns.\n\n## Testing Strategy\n- **Unit Tests**: Services, utilities, business logic (JWT, password handling)\n- **Integration Tests**: Controllers, database operations, authentication flows\n- **API Tests**: Endpoint functionality, token validation\n- **Security Tests**: Password security, JWT validation, input sanitization\n\n## Next Steps (Phase 2)\nAfter merging this PR and completing remaining Phase 1 work:\n- Frontend authentication components and services\n- Protected route implementation\n- User registration and login UI flows\n- Integration with backend authentication APIs\n\n## Benefits Achieved\n✅ **Secure Authentication**: Industry-standard JWT implementation with refresh tokens  \n✅ **B2B Ready**: Company-based user management with role-based access  \n✅ **Scalable Architecture**: Clean separation of concerns with service layer pattern  \n✅ **Security First**: Comprehensive password and token security measures  \n✅ **Testing Ready**: Full test infrastructure for authentication flows  ",
+      "created_at": "2025-07-23T15:49:40Z",
+      "merged_at": null,
+      "html_url": "https://github.com/lmcrean/odyssey/pull/40",
+      "state": "closed",
+      "additions": 2092,
+      "deletions": 26198,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2689244677,
+      "number": 36,
+      "title": "Enhance API and Web Architecture for Authentication Integration",
+      "description": "- Updated API structure to implement JWT-based authentication, including new endpoints for login, registration, and user management.\n- Enhanced web architecture to support authentication flows, protected routes, and integration with shared UI components.\n- Introduced a comprehensive authentication package with backend and frontend capabilities, including JWT management and user role handling.\n- Removed outdated deployment workflows for API and web applications.",
+      "created_at": "2025-07-23T15:21:18Z",
+      "merged_at": "2025-07-23T15:21:48Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/36",
+      "state": "merged",
+      "additions": 1625,
+      "deletions": 1367,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2688609436,
+      "number": 34,
+      "title": "Update .gitignore to enhance file exclusions",
+      "description": "- Add rules to ignore all markdown files and issue tracking files across the codebase, improving repository cleanliness.\n- Ensure 'dist/' and 'pull-reqs/' directories are excluded from version control to prevent unnecessary clutter.",
+      "created_at": "2025-07-23T12:02:29Z",
+      "merged_at": "2025-07-23T12:02:46Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/34",
+      "state": "merged",
+      "additions": 12,
+      "deletions": 2,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2688450895,
+      "number": 25,
+      "title": "Enhance Shared TypeScript Package Implementation",
+      "description": "\r\n## Summary\r\nEnhanced the existing shared TypeScript package (`@odyssey/shared`) to eliminate code duplication and improve type safety across the Angular frontend and integration tests. Updated integration tests to use shared constants instead of hardcoded values.\r\n\r\n## Changes Made\r\n\r\n### 1. Integration Test Improvements\r\n- **File**: `integration/web/src/components/hello-world.component.test.ts`\r\n- **Changes**:\r\n  - Added import for `API_MESSAGES`, `API_VERSION`, and `HealthResponse` from `@odyssey/shared`\r\n  - Replaced hardcoded test values with shared constants:\r\n    - `'Hello World from C# API!'` → `API_MESSAGES.HEALTH`\r\n    - `'Hello World from Competitor Analysis API'` → `API_MESSAGES.HEALTH_STATUS` \r\n    - `'1.0.0'` → `API_VERSION`\r\n  - Added proper TypeScript typing with `HealthResponse` interface\r\n\r\n### 2. Code Review Documentation\r\n- **File**: `docs/code-review/jul-23-2025.md`\r\n- **Changes**: Added comprehensive analysis of refactoring opportunities with prioritized recommendations\r\n\r\n## Technical Details\r\n\r\n### Before\r\n```typescript\r\n// Hardcoded values in tests\r\nconst mockStatus = {\r\n  message: 'Hello World from Competitor Analysis API',\r\n  version: '1.0.0',\r\n  timestamp: new Date().toISOString()\r\n};\r\n```\r\n\r\n### After  \r\n```typescript\r\n// Using shared constants\r\nimport { API_MESSAGES, API_VERSION, HealthResponse } from '@odyssey/shared';\r\n\r\nconst mockStatus: HealthResponse = {\r\n  message: API_MESSAGES.HEALTH_STATUS,\r\n  version: API_VERSION,\r\n  timestamp: new Date().toISOString()\r\n};\r\n```\r\n\r\n## Benefits\r\n\r\n### 1. **Eliminated Code Duplication**\r\n- Removed 6+ instances of hardcoded API messages\r\n- Centralized version information\r\n- Single source of truth for API contracts\r\n\r\n### 2. **Improved Type Safety**\r\n- All test mocks now use proper `HealthResponse` typing\r\n- TypeScript compiler validates API contract consistency\r\n- Prevents runtime type errors\r\n\r\n### 3. **Enhanced Maintainability**\r\n- API message changes only need updates in one location\r\n- Automatic synchronization between frontend and tests\r\n- Reduced chance of test/implementation drift\r\n\r\n### 4. **Better Documentation**\r\n- Shared constants serve as living documentation\r\n- Clear API contract visibility\r\n- Self-documenting test fixtures\r\n\r\n## Verification\r\n\r\n### Build Success\r\n```bash\r\ncd packages/shared && npm run build\r\n# ✅ Builds successfully with TypeScript definitions\r\n```\r\n\r\n### Package Structure\r\n```\r\npackages/shared/\r\n├── src/\r\n│   ├── models/health-response.ts     # HealthResponse interface\r\n│   ├── constants/api.constants.ts    # API_MESSAGES, API_VERSION, etc.\r\n│   └── index.ts                      # Unified exports\r\n├── dist/                             # Compiled output\r\n├── package.json                      # Package configuration\r\n└── tsconfig.json                     # TypeScript configuration\r\n```\r\n\r\n### Current Usage\r\n- ✅ **Angular App**: Already importing `HealthResponse` from shared package\r\n- ✅ **E2E Tests**: Already using shared constants via `TEST_DATA` fixtures\r\n- ✅ **Integration Tests**: Now using shared constants (this PR)\r\n\r\n## Test Plan\r\n\r\n### Integration Tests\r\n- [x] Verify tests compile with shared package imports\r\n- [x] Confirm mock objects use correct shared types\r\n- [x] Validate API contract consistency\r\n\r\n### E2E Tests  \r\n- [x] Confirm existing usage continues to work\r\n- [x] Verify shared constants resolve correctly\r\n\r\n### Build Process\r\n- [x] Shared package builds without errors\r\n- [x] TypeScript definitions generated correctly\r\n- [x] Package exports function as expected\r\n\r\n## Follow-up Work\r\n\r\nThis PR addresses **Phase 1** from the code review. Future improvements could include:\r\n\r\n1. **Consolidate test configurations** (reduce 12 Playwright files to 3-4)\r\n2. **Add API domain layer** (Services/Repositories pattern)\r\n3. **Implement OpenAPI client generation** for automatic type sync\r\n\r\n## Risk Assessment\r\n\r\n### Low Risk\r\n- Changes are additive, not breaking\r\n- Existing functionality preserved\r\n- Shared package already established and working\r\n\r\n### Mitigation\r\n- Integration tests validate contract consistency\r\n- TypeScript compiler catches type mismatches\r\n- E2E tests provide end-to-end validation\r\n\r\n## Files Changed\r\n\r\n```\r\nintegration/web/src/components/hello-world.component.test.ts  # Updated imports and constants\r\ndocs/code-review/jul-23-2025.md                              # New documentation\r\n```\r\n\r\n## Dependencies\r\n\r\n- `@odyssey/shared` package (already exists)\r\n- No new external dependencies added\r\n- Compatible with existing build process",
+      "created_at": "2025-07-23T11:06:52Z",
+      "merged_at": "2025-07-23T11:49:47Z",
+      "html_url": "https://github.com/lmcrean/odyssey/pull/25",
+      "state": "merged",
+      "additions": 70819,
+      "deletions": 2590,
+      "repository": {
+        "name": "odyssey",
+        "description": "Odyssey is a B2B competitor analysis dashboard",
+        "language": "TypeScript",
+        "html_url": "https://github.com/lmcrean/odyssey",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    }
+  ],
+  "meta": {
+    "username": "lmcrean",
+    "count": 20,
+    "pagination": {
+      "page": 1,
+      "per_page": 20,
+      "total_count": 218,
+      "total_pages": 11,
+      "has_next_page": true,
+      "has_previous_page": false
+    }
+  }
+}

@@ -97,7 +97,11 @@ export async function fetchPullRequestDetails(
       name: repo,
       description: pr.base.repo.description,
       language: pr.base.repo.language ?? null,
-      html_url: pr.base.repo.html_url
+      html_url: pr.base.repo.html_url,
+      owner: {
+        login: pr.base.repo.owner?.login || 'unknown',
+        avatar_url: pr.base.repo.owner?.avatar_url || ''
+      }
     }
   };
 

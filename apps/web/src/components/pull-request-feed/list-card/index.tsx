@@ -5,7 +5,8 @@ import {
 } from '@shared/types/pull-requests';
 import {
   getRelativeTime,
-  getStatusDisplay
+  getStatusDisplay,
+  formatBytesChange
 } from '@shared/types/pull-requests/utilities';
 
 export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = ({
@@ -13,6 +14,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
   onClick
 }) => {
   const status = getStatusDisplay(pullRequest.state, pullRequest.merged_at);
+  const bytesChange = formatBytesChange(pullRequest.additions, pullRequest.deletions);
 
   // Add client-side only time calculation
   const [isClient, setIsClient] = useState(false);
@@ -26,7 +28,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
   return (
     <div 
-      className="grid grid-cols-12 gap-4 px-4 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/20 hover:shadow-sm"
+      className="flex gap-3 px-4 max-sm:px-2 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-900/20 light:hover:bg-blue-50 focus:outline-none focus:bg-blue-900/20 light:focus:bg-blue-50 hover:shadow-sm"
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -41,41 +43,73 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       data-pr-number={pullRequest.number}
       data-pr-title={pullRequest.title}
     >
-      {/* Repository Column */}
-      <div className="col-span-3 flex items-center">
-        <span className="text-gray-900 dark:text-white font-medium text-sm truncate">
-          {pullRequest.repository.name}
-        </span>
+      {/* Left: Organization Icon */}
+      <div className="flex-shrink-0 pt-1">
+        <img 
+          src={pullRequest.repository.owner.avatar_url}
+          alt={`${pullRequest.repository.owner.login} avatar`}
+          className="w-6 h-6 rounded-full"
+          onError={(e) => {
+            // Hide image on error
+            e.currentTarget.style.display = 'none';
+          }}
+        />
       </div>
 
-      {/* Title Column */}
-      <div className="col-span-5 flex items-center">
-        <span className="text-gray-900 dark:text-white text-sm truncate">
-          {pullRequest.title}
-        </span>
-      </div>
-
-      {/* Language Column */}
-      <div className="col-span-2 flex items-center">
-        {pullRequest.repository.language ? (
-          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-200 dark:bg-gray-600">
-            {pullRequest.repository.language}
+      {/* Right: Content */}
+      <div className="flex-1 min-w-0">
+        {/* Row 1: PR Title in Bold */}
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <span className="pr-text-primary font-bold text-sm leading-tight">
+            {pullRequest.title}
           </span>
-        ) : (
-          <span className="text-gray-400 dark:text-gray-500 text-xs">—</span>
-        )}
-      </div>
-
-      {/* Status Column */}
-      <div className="col-span-2 flex items-center justify-end">
-        <div className="flex items-center gap-2">
-          <div className={`flex items-center gap-1 ${status.color} text-sm font-medium`}>
-            <span>{status.emoji}</span>
-            <span>{status.text}</span>
+          <div className="flex-shrink-0 flex items-center gap-1">
+            <div className={`flex items-center gap-1 ${status.color} text-sm font-medium`}>
+              <span>{status.emoji}</span>
+              <span className="max-sm:hidden">{status.text}</span>
+            </div>
           </div>
-          <span className="text-gray-500 dark:text-gray-400 text-xs">
-            {relativeTime}
-          </span>
+        </div>
+
+        {/* Row 2: Left and Right sections */}
+        <div className="flex items-center justify-between text-sm pr-text-muted">
+          {/* Left: Organization and Repository */}
+          <div className="flex items-center gap-2">
+            <span className="pr-text-muted">
+              {pullRequest.repository.owner.login}:
+            </span>
+            <span className="font-medium pr-text-secondary">
+              {pullRequest.repository.name}
+            </span>
+          </div>
+          
+          {/* Right: Language, Changes, Time */}
+          <div className="flex items-center gap-3 flex-wrap max-sm:hidden">
+            {/* Language */}
+            {pullRequest.repository.language && (
+              <span className="italic">
+                {pullRequest.repository.language}
+              </span>
+            )}
+            
+            {/* Changes */}
+            {bytesChange.hasData && (
+              <span className="font-mono text-xs">
+                <span className="text-green-400 light:text-green-600">
+                  {bytesChange.formatted.split(' ')[0]}
+                </span>
+                {' '}
+                <span className="text-red-400 light:text-red-600">
+                  {bytesChange.formatted.split(' ')[1]}
+                </span>
+              </span>
+            )}
+            
+            {/* Time */}
+            <span className="text-xs">
+              {relativeTime}
+            </span>
+          </div>
         </div>
       </div>
     </div>

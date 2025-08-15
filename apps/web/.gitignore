@@ -8,6 +8,11 @@
 .docusaurus
 .cache-loader
 
+# Generated static data (copied from API during build)
+static/pull-requests/
+static/pr-*.json
+public/static/pull-requests/
+
 # Misc
 .DS_Store
 .env.local

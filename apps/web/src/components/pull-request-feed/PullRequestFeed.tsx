@@ -1,10 +1,9 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useMemo } from 'react';
 import { PullRequestFeedProps, PullRequestListData } from '@shared/types/pull-requests';
 import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
-import LoadingErrorStates from './components/LoadingErrorStates';
 import PullRequestList from './components/PullRequestList';
-import PullRequestPagination from './components/PullRequestPagination';
+import { applyManualOverrides, HIDDEN_REPOSITORIES, LIMITED_REPOSITORIES } from './config/manual-overrides';
 
 export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   username = 'lmcrean',
@@ -17,7 +16,8 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     username,
     onListSuccess: state.handleListSuccess,
     onListError: state.handleListError,
-    setLoading: state.setLoading
+    setLoading: state.setLoading,
+    setIsLoadingMore: state.setIsLoadingMore
   });
 
   // Track if initial fetch has been performed
@@ -30,18 +30,24 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     }
   }, []);
 
-  // Handle pagination
-  const handlePageChange = useCallback((newPage: number) => {
-    const validPage = state.handlePageChange(newPage);
-    if (validPage) {
-      api.fetchPullRequests(validPage);
+  // Handle loading more items for infinite scroll
+  const handleLoadMore = useCallback(async () => {
+    console.log('🔄 handleLoadMore called');
+    
+    // First try to load more from existing data
+    const newDisplayedCount = state.loadMoreItems();
+    
+    // Check if we need to fetch more data from API
+    if (state.shouldFetchMoreData()) {
+      console.log('📡 Fetching more data from API...');
+      await api.fetchMorePullRequests();
     }
   }, [state, api]);
 
   // Retry function
   const handleRetry = useCallback(() => {
     state.clearError();
-    api.fetchPullRequests(state.currentPage);
+    api.fetchPullRequests(1); // Always retry from first page
   }, [api, state]);
 
   // Hydration-safe effect to detect client-side rendering
@@ -75,43 +81,58 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     };
   }, [username, api.cleanup]); // Only depend on username and cleanup function
 
-  // Show loading state during SSR and initial client load
-  const shouldShowLoadingError = !state.isClient || 
-    (state.loading && state.pullRequests.length === 0) || 
-    (state.error && state.pullRequests.length === 0);
-
-  if (shouldShowLoadingError) {
-    return (
-      <LoadingErrorStates
-        loading={state.loading}
-        error={state.error}
-        pullRequestsLength={state.pullRequests.length}
-        username={username}
-        className={className}
-        isClient={state.isClient}
-        onRetry={handleRetry}
-      />
-    );
-  }
+  // Filter pull requests based on custom rules
+  const filteredPullRequests = useMemo(() => {
+    const displayedPRs = state.allPullRequests.slice(0, state.displayedCount);
+    
+    // Apply custom filtering
+    let filtered = displayedPRs.filter(pr => {
+      // Hide completely blacklisted repositories from config
+      if (HIDDEN_REPOSITORIES.includes(pr.repository.name)) {
+        return false;
+      }
+      
+      // Show only external repositories (not user's own repos)
+      return pr.repository.owner.login !== username;
+    });
+    
+    // Apply special filtering for limited repositories
+    Object.entries(LIMITED_REPOSITORIES).forEach(([repoName, filterType]) => {
+      if (filterType === 'keep-latest-only') {
+        const repoPRs = filtered.filter(pr => pr.repository.name === repoName);
+        if (repoPRs.length > 1) {
+          // Sort by created_at date (most recent first) and keep only the first one
+          const mostRecentPR = repoPRs.sort((a, b) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          )[0];
+          
+          // Remove all PRs from this repo and add back only the most recent one
+          filtered = filtered.filter(pr => pr.repository.name !== repoName);
+          filtered.push(mostRecentPR);
+        }
+      }
+    });
+    
+    // Apply manual overrides to fix incorrect data
+    const filteredWithOverrides = filtered.map(pr => applyManualOverrides(pr));
+    
+    return filteredWithOverrides;
+  }, [state.allPullRequests, state.displayedCount, username]);
 
   return (
-    <>
-      <PullRequestList
-        pullRequests={state.pullRequests}
-        pagination={state.pagination}
-        username={username}
-        className={className}
-        onCardClick={handleCardClick}
-      />
-
-      <PullRequestPagination
-        pagination={state.pagination}
-        currentPage={state.currentPage}
-        loading={state.loading}
-        onPageChange={handlePageChange}
-      />
-
-    </>
+    <PullRequestList
+      pullRequests={filteredPullRequests}
+      hasMoreItems={state.hasMoreItems}
+      isLoadingMore={state.isLoadingMore}
+      username={username}
+      className={className}
+      loading={state.loading}
+      error={state.error}
+      isClient={state.isClient}
+      onCardClick={handleCardClick}
+      onRetry={handleRetry}
+      onLoadMore={handleLoadMore}
+    />
   );
 };
 

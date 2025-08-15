@@ -13,7 +13,7 @@ import TitleSection from './sections/TitleSection';
  */
 const DeveloperBusinessCard: React.FC = () => {
   return (
-    <div className="flex w-full h-48 md:h-64 bg-black rounded-lg shadow-lg overflow-hidden mb-10">
+    <div className="flex w-full h-48 md:h-64 bg-black rounded-lg shadow-lg overflow-hidden">
       <TitleSection />
       <MidSection />
       <EndSection />

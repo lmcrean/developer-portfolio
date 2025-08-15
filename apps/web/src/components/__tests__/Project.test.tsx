@@ -4,17 +4,9 @@
 
 import React from 'react';
 import { render, RenderResult } from '@testing-library/react';
-import Project from '../Project';
+import Project from '../archive/Project';
 import { ProjectData, ProjectVersion, ButtonData, TestResult, GitHubInfo } from '../../data/projects';
 
-// Type declaration for Jest globals (if needed)
-declare global {
-  var jest: any;
-  var describe: any;
-  var it: any;
-  var beforeEach: any;
-  var expect: any;
-}
 
 // Mock ProjectCarousel component with proper typing
 jest.mock('../ProjectCarousel', () => {
@@ -22,7 +14,7 @@ jest.mock('../ProjectCarousel', () => {
     projectKey: string;
   }
   
-  return function MockProjectCarousel({ projectKey }: MockProjectCarouselProps): JSX.Element {
+  return function MockProjectCarousel({ projectKey }: MockProjectCarouselProps): React.ReactElement {
     return <div data-testid={`mocked-carousel-${projectKey}`}></div>;
   };
 });

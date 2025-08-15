@@ -1,0 +1,456 @@
+{
+  "data": [
+    {
+      "id": 2427611067,
+      "number": 53,
+      "title": "refactor: update import paths for core API modules and adjust Vite configuration for improved modularity and maintainability",
+      "description": null,
+      "created_at": "2025-03-30T15:43:44Z",
+      "merged_at": "2025-03-30T15:43:50Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/53",
+      "state": "merged",
+      "additions": 271,
+      "deletions": 20,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427599643,
+      "number": 52,
+      "title": "Refactoring in progress",
+      "description": null,
+      "created_at": "2025-03-30T15:12:55Z",
+      "merged_at": "2025-03-30T15:13:06Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/52",
+      "state": "merged",
+      "additions": 3115,
+      "deletions": 1084,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427563611,
+      "number": 51,
+      "title": "API Modular Refactoring ",
+      "description": "\nThis PR refactors the entire API layer from monolithic files into a modular structure with one endpoint per file, following REST naming conventions.\n\n## Changes\n1. **Directory Structure Reorganization**\n   - Moved code from large files (auth.ts, assessment.ts) into proper subdirectories\n   - Created a core/ directory for shared utilities like apiClient\n\n2. **One File Per Endpoint**\n   - Split each API function into its own file following the naming convention: `{httpMethod}{Endpoint}.ts`\n   - Examples: `getList.ts`, `postLogin.ts`, `putUpdate.ts`, `deleteAssessment.ts`\n\n3. **Clear Type Organization**\n   - Separated types and schemas into dedicated files (`types.ts`, `schemas.ts`)\n   - Improved imports between modules\n\n4. **Consistent Error Handling**\n   - Standardized error handling patterns across all API calls\n\n## Benefits\n- **Improved Maintainability**: Single responsibility files make it easier to understand and modify endpoints\n- **Better Organization**: Naming convention clearly communicates HTTP methods used\n- **Code Reuse**: Shared utilities properly isolated in core/ directory\n- **Type Safety**: Proper type exports throughout the codebase\n- **Backward Compatibility**: Maintained old API objects for gradual migration\n\n## Migration Notes\nThe refactoring maintains backward compatibility, so existing code using the API modules will continue to work. For new code, we recommend using the individual exports for better tree-shaking:\n\n```typescript\n// Before \nimport { authApi } from '../api';\nauthApi.login(credentials);\n\n// After (recommended)\nimport { login } from '../api';\nlogin(credentials);\n```\n\n## Testing\nAll tests have been confirmed to pass, and the build process completes successfully with no errors.\n",
+      "created_at": "2025-03-30T13:43:35Z",
+      "merged_at": "2025-03-30T13:44:07Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/51",
+      "state": "merged",
+      "additions": 956,
+      "deletions": 865,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427514659,
+      "number": 50,
+      "title": "Auth buttons in test page are working",
+      "description": "this EM remains in Logout process, however can be investigated later and main routes now enabled\n\n```\n[Logout Debug] Current tokens: {authTokenExists: false, refreshTokenExists: false, authToken: 'undefined...', refreshToken: 'undefined...'}authToken: \"undefined...\"authTokenExists: falserefreshToken: \"undefined...\"refreshTokenExists: false[[Prototype]]: Object\nEndpointRow.tsx:115 [Logout Debug] Making API call with: {headers: {…}, refreshToken: false, endpoint: '/api/auth/logout'}endpoint: \"/api/auth/logout\"headers: {}refreshToken: false[[Prototype]]: Object\nEndpointRow.tsx:122 \n            \n            \n            POST http://localhost:3000/api/auth/logout 401 (Unauthorized)\nhandleApiCall @ EndpointRow.tsx:122\nhandleButtonClick @ EndpointRow.tsx:190\ncallCallback2 @ react-dom.development.js:4164\ninvokeGuardedCallbackDev @ react-dom.development.js:4213\ninvokeGuardedCallback @ react-dom.development.js:4277\ninvokeGuardedCallbackAndCatchFirstError @ react-dom.development.js:4291\nexecuteDispatch @ react-dom.development.js:9041\nprocessDispatchQueueItemsInOrder @ react-dom.development.js:9073\nprocessDispatchQueue @ react-dom.development.js:9086\ndispatchEventsForPlugins @ react-dom.development.js:9097\n(anonymous) @ react-dom.development.js:9288\nbatchedUpdates$1 @ react-dom.development.js:26179\nbatchedUpdates @ react-dom.development.js:3991\ndispatchEventForPluginEventSystem @ react-dom.development.js:9287\ndispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ react-dom.development.js:6465\ndispatchEvent @ react-dom.development.js:6457\ndispatchDiscreteEvent @ react-dom.development.js:6430\nEndpointRow.tsx:131 [Logout Debug] API response: {status: 401, statusText: 'Unauthorized'}status: 401statusText: \"Unauthorized\"[[Prototype]]: Object\nEndpointRow.tsx:140 [Logout Debug] API error data: {error: 'Authentication required'}error: \"Authentication required\"[[Prototype]]: Object\nEndpointRow.tsx:147 [Logout Debug] Clearing local storage tokens\n\n```",
+      "created_at": "2025-03-30T11:41:40Z",
+      "merged_at": "2025-03-30T11:41:52Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/50",
+      "state": "merged",
+      "additions": 668,
+      "deletions": 101,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427490549,
+      "number": 49,
+      "title": "Setup endpoints passing in Development",
+      "description": null,
+      "created_at": "2025-03-30T10:37:53Z",
+      "merged_at": "2025-03-30T10:38:05Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/49",
+      "state": "merged",
+      "additions": 967,
+      "deletions": 175,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427477018,
+      "number": 48,
+      "title": "Refactor: rename test_page to __tests__ and seperate tablerow concerns",
+      "description": null,
+      "created_at": "2025-03-30T09:58:48Z",
+      "merged_at": "2025-03-30T09:58:54Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/48",
+      "state": "merged",
+      "additions": 991,
+      "deletions": 3034,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427454280,
+      "number": 47,
+      "title": "Reactor: Move api to src folder; move user components to pages",
+      "description": " refactored the API layer with a more organized, domain-driven structure. Here's a summary of what we've accomplished:\n\nCreated a clean, domain-driven structure for the API in dottie-app/src/api/:\ncore/: Shared utilities (apiClient, db)\nauth/: Authentication with separated schemas, types, and API functions\nassessment/, message/, user/: Domain-specific API modules\nA main barrel file for easy imports\n",
+      "created_at": "2025-03-30T08:51:01Z",
+      "merged_at": "2025-03-30T08:51:13Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/47",
+      "state": "merged",
+      "additions": 2907,
+      "deletions": 246,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427415765,
+      "number": 46,
+      "title": "refactor: remove unused ChatModal and ThemeProvider components, update import paths in assessment results page",
+      "description": null,
+      "created_at": "2025-03-30T06:48:06Z",
+      "merged_at": "2025-03-30T06:48:13Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/46",
+      "state": "merged",
+      "additions": 3,
+      "deletions": 14,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2427414550,
+      "number": 45,
+      "title": "refactor: migrate UI components to new structure under !to-migrate directory, updating imports in relevant files",
+      "description": null,
+      "created_at": "2025-03-30T06:44:09Z",
+      "merged_at": "2025-03-30T06:44:32Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/45",
+      "state": "merged",
+      "additions": 59,
+      "deletions": 90,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2426955421,
+      "number": 44,
+      "title": "Update README.md",
+      "description": null,
+      "created_at": "2025-03-29T14:43:14Z",
+      "merged_at": "2025-03-29T14:43:20Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/44",
+      "state": "merged",
+      "additions": 4,
+      "deletions": 7,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2426890839,
+      "number": 43,
+      "title": "Refactor: Clarify scope of endpoints in backend; Establish file structure in backend; Draft all endpoints in Test Page; Ensured essential npm commands working in `dottie-app`",
+      "description": null,
+      "created_at": "2025-03-29T12:14:43Z",
+      "merged_at": "2025-03-29T12:18:07Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/43",
+      "state": "merged",
+      "additions": 5363,
+      "deletions": 566,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2424486573,
+      "number": 36,
+      "title": "User Feature in frontend; master integration files appear to be working",
+      "description": "![image](https://github.com/user-attachments/assets/d94cd88c-e439-4ae2-8020-d81047551169)\r\n\r\n![image](https://github.com/user-attachments/assets/57ffaa44-7e46-4df8-9c4b-5d7caae7c364)\r\n",
+      "created_at": "2025-03-28T07:24:26Z",
+      "merged_at": "2025-03-28T07:25:22Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/36",
+      "state": "merged",
+      "additions": 3213,
+      "deletions": 410,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2424406178,
+      "number": 35,
+      "title": "Delete frontend/src/__tests__ directory",
+      "description": null,
+      "created_at": "2025-03-28T06:28:22Z",
+      "merged_at": "2025-03-28T06:28:28Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/35",
+      "state": "merged",
+      "additions": 0,
+      "deletions": 31,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2423473991,
+      "number": 32,
+      "title": "Verify mock dev tests in vitest",
+      "description": null,
+      "created_at": "2025-03-27T18:48:17Z",
+      "merged_at": "2025-03-27T18:48:35Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/32",
+      "state": "merged",
+      "additions": 2132,
+      "deletions": 771,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2423255370,
+      "number": 31,
+      "title": "Refactor Routing architecture for seperation of concerns;",
+      "description": "Passing Tests:\r\n\r\n- Authentication routes (login, signup, refresh, verify) error handling tests\r\n- Setup health/database error routes\r\n- User API basic endpoint tests\r\n- Assessment error tests for missing tokens and invalid requests\r\n\r\n\r\n```\r\ncd backend; npm test\r\n```",
+      "created_at": "2025-03-27T17:18:26Z",
+      "merged_at": "2025-03-27T17:18:33Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/31",
+      "state": "merged",
+      "additions": 2812,
+      "deletions": 3513,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2419886428,
+      "number": 27,
+      "title": "Clarify test structure and priorities",
+      "description": "prod layer is not ready, as Azure SQL was in fact a false pass\r\n\r\ndevelopment layer should be fully completed before moving on to prod layer\r\n\r\norder of tests to complete established in backend/package.json",
+      "created_at": "2025-03-26T15:59:54Z",
+      "merged_at": "2025-03-26T16:00:01Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/27",
+      "state": "merged",
+      "additions": 1758,
+      "deletions": 777,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2419705851,
+      "number": 26,
+      "title": "Authentication Success Endpoints pass in localhost; Testing Improvements and Consistency Fixes",
+      "description": "\r\nThis PR enhances the authentication system's test reliability and consistency by fixing several issues in the authentication flow tests, improving mock database functionality, and standardizing response messages.\r\n\r\n## Changes\r\n- Updated logout response messages for consistency across the application\r\n- Added delay to logout success test to ensure proper state handling\r\n- Removed unnecessary user deletion verification in user management tests\r\n- Enhanced mock database functionality with improved user data handling and query responses\r\n- Fixed import path issues in refresh success test\r\n- Updated JWT secret fallback for better consistency\r\n- Modified login route to support \"login_verify_\" email format in test mode without requiring database checks\r\n- Fixed authentication lifecycle tests\r\n\r\n## Testing\r\nAll authentication tests are now passing in both development and production test environments. The changes improve test reliability and better simulate real-world usage patterns.\r\n\r\n```\r\ncd backend; npm run test:auth:dev:success\r\n```\r\n\r\nthis should return 100% pass",
+      "created_at": "2025-03-26T14:53:40Z",
+      "merged_at": "2025-03-26T14:53:48Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/26",
+      "state": "merged",
+      "additions": 36,
+      "deletions": 27,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2418544996,
+      "number": 25,
+      "title": "Testing Authentication: passing in unit; failing in development",
+      "description": null,
+      "created_at": "2025-03-26T07:25:49Z",
+      "merged_at": "2025-03-26T07:25:55Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/25",
+      "state": "merged",
+      "additions": 734,
+      "deletions": 439,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2415765976,
+      "number": 21,
+      "title": "imrpove tests-setup config in API",
+      "description": null,
+      "created_at": "2025-03-25T07:06:30Z",
+      "merged_at": "2025-03-25T07:06:41Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/21",
+      "state": "merged",
+      "additions": 671,
+      "deletions": 502,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    },
+    {
+      "id": 2415711038,
+      "number": 20,
+      "title": "Add tags for API tests",
+      "description": null,
+      "created_at": "2025-03-25T06:44:35Z",
+      "merged_at": "2025-03-25T06:44:42Z",
+      "html_url": "https://github.com/lmcrean/dottie/pull/20",
+      "state": "merged",
+      "additions": 1839,
+      "deletions": 2330,
+      "repository": {
+        "name": "dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "language": "JavaScript",
+        "html_url": "https://github.com/lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        }
+      }
+    }
+  ],
+  "meta": {
+    "username": "lmcrean",
+    "count": 20,
+    "pagination": {
+      "page": 8,
+      "per_page": 20,
+      "total_count": 218,
+      "total_pages": 11,
+      "has_next_page": true,
+      "has_previous_page": true
+    }
+  }
+}

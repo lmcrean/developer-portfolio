@@ -28,6 +28,40 @@ jobs:
         cd apps/web
         npm ci
         
+    - name: Install API dependencies for static data generation
+      run: |
+        cd apps/api/github
+        npm ci
+        
+    - name: Generate static data
+      env:
+        GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+        GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+      run: |
+        cd apps/api/github
+        npm run build
+        npm run generate-static-data
+        
+    - name: Copy static data to web app (flattened structure)
+      run: |
+        cd apps/api/github/static/pull-requests
+        
+        # Copy metadata with flattened naming
+        cp metadata.json ../../../web/static/pr-metadata.json
+        
+        # Copy all page files with flattened naming  
+        for file in page-*.json; do
+          if [ -f "$file" ]; then
+            page_num=$(echo "$file" | sed 's/page-\([0-9]*\)\.json/\1/')
+            cp "$file" "../../../web/static/pr-page-${page_num}.json"
+            echo "Copied $file to pr-page-${page_num}.json"
+          fi
+        done
+        
+        # Verify files were copied
+        echo "📁 Static data files copied to web app:"
+        ls -la ../../../web/static/pr-*.json
+        
     - name: Build web app
       run: |
         cd apps/web

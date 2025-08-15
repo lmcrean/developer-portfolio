@@ -63,6 +63,10 @@ const config: Config = {
   plugins: [
     // Add any Tailwind plugins here
     // For example: require('@tailwindcss/typography'),
+    // Custom plugin to add light mode variant
+    function({ addVariant }) {
+      addVariant('light', ':not(.dark) &')
+    }
   ],
   // Enable dark mode support
   darkMode: 'class',

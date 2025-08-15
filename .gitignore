@@ -45,3 +45,5 @@ test-results/
 CLAUDE.md
 */settings.local.json
 .notes/
+*/CLAUDE.md
+*.log

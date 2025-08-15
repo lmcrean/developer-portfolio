@@ -36,11 +36,11 @@ export const formatAbsoluteDate = (dateString: string | null | undefined): strin
 };
 
 export const getStatusDisplay = (state: string | null | undefined, mergedAt: string | null, draft?: boolean) => {
-  if (draft) return { emoji: '•', text: 'draft', color: 'text-gray-400 dark:text-gray-500' };
-  // Light mode: monochrome; Dark mode: colorful
-  if (mergedAt) return { emoji: '•', text: 'merged', color: 'text-teal-600' };
-  if (state === 'open') return { emoji: '○', text: 'open', color: '!text-yellow-300' };
-  return { emoji: '×', text: 'closed', color: 'text-pink-600' };
+  // Dark-first design: dark mode colors are primary, light mode is the exception
+  if (draft) return { emoji: '•', text: 'draft', color: 'text-gray-500 light:text-gray-400' };
+  if (mergedAt) return { emoji: '•', text: 'merged', color: 'text-teal-400 light:text-teal-600' };
+  if (state === 'open') return { emoji: '○', text: 'open', color: 'text-yellow-400 light:text-yellow-600' };
+  return { emoji: '×', text: 'closed', color: 'text-pink-400 light:text-pink-600' };
 };
 
 export const getTitleIcon = (title: string | null | undefined): string => {
@@ -76,6 +76,30 @@ export const truncateText = (text: string | null, maxLength: number): string => 
   if (!text) return '';
   if (text.length <= maxLength) return text;
   return text.substring(0, maxLength) + '...';
+};
+
+export const formatBytesChange = (additions?: number, deletions?: number): { 
+  formatted: string; 
+  hasData: boolean;
+} => {
+  if (additions === undefined && deletions === undefined) {
+    return { formatted: '—', hasData: false };
+  }
+  
+  // Format large numbers (1000+ becomes 1k+, etc.)
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
+    return num.toString();
+  };
+  
+  const addStr = additions !== undefined ? `+${formatNumber(additions)}` : '+0';
+  const delStr = deletions !== undefined ? `-${formatNumber(deletions)}` : '-0';
+  
+  return { 
+    formatted: `${addStr} ${delStr}`,
+    hasData: true
+  };
 };
 
 // copyToClipboard moved to detail-utilities.ts to avoid duplication

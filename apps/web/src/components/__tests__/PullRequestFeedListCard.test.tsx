@@ -7,16 +7,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PullRequestFeedListCard from '../pull-request-feed/list-card/index';
 
-// Type declaration for Jest globals
-declare global {
-  var jest: any;
-  var describe: any;
-  var it: any;
-  var test: any;
-  var beforeEach: any;
-  var afterEach: any;
-  var expect: any;
-}
 
 // Mock data
 const mockPullRequest = {
@@ -32,7 +22,11 @@ const mockPullRequest = {
     name: 'test-repo',
     description: 'A test repository for testing purposes',
     language: 'TypeScript',
-    html_url: 'https://github.com/lmcrean/test-repo'
+    html_url: 'https://github.com/lmcrean/test-repo',
+    owner: {
+      login: 'lmcrean',
+      avatar_url: 'https://avatars.githubusercontent.com/u/123456?v=4'
+    }
   }
 };
 
@@ -70,10 +64,6 @@ describe('PullRequestFeedListCard', () => {
       expect(screen.getByText('TypeScript')).toBeInTheDocument();
     });
 
-    it('displays external link icon', () => {
-      render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
-      expect(screen.getByText('🔗')).toBeInTheDocument();
-    });
 
     it('displays status', () => {
       render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
@@ -132,11 +122,6 @@ describe('PullRequestFeedListCard', () => {
       expect(screen.getByRole('button')).toBeInTheDocument();
     });
 
-    it('has external link icon with proper aria-hidden', () => {
-      render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
-      const linkIcon = screen.getByText('🔗');
-      expect(linkIcon).toHaveAttribute('aria-hidden', 'true');
-    });
   });
 
   describe('Data Attributes', () => {
@@ -160,6 +145,101 @@ describe('PullRequestFeedListCard', () => {
       };
       render(<PullRequestFeedListCard pullRequest={noLangPR} onClick={mockOnClick} />);
       expect(screen.getByText('—')).toBeInTheDocument();
+    });
+  });
+
+  describe('Organization Avatar', () => {
+    it('renders organization avatar with correct src and alt attributes', () => {
+      render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
+      const avatar = screen.getByRole('img');
+      expect(avatar).toBeInTheDocument();
+      expect(avatar).toHaveAttribute('src', 'https://avatars.githubusercontent.com/u/123456?v=4');
+      expect(avatar).toHaveAttribute('alt', 'lmcrean avatar');
+    });
+
+    it('applies correct CSS classes to avatar', () => {
+      render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
+      const avatar = screen.getByRole('img');
+      expect(avatar).toHaveClass('w-5', 'h-5', 'rounded-full', 'flex-shrink-0');
+    });
+
+    it('handles avatar error by hiding the image', () => {
+      render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
+      const avatar = screen.getByRole('img');
+      
+      // Simulate image load error
+      fireEvent.error(avatar);
+      
+      // Check that display style is set to 'none'
+      expect(avatar.style.display).toBe('none');
+    });
+
+    it('displays avatar for different organizations', () => {
+      const orgPR = {
+        ...mockPullRequest,
+        repository: {
+          ...mockPullRequest.repository,
+          owner: {
+            login: 'facebook',
+            avatar_url: 'https://avatars.githubusercontent.com/u/69631?v=4'
+          }
+        }
+      };
+      render(<PullRequestFeedListCard pullRequest={orgPR} onClick={mockOnClick} />);
+      const avatar = screen.getByRole('img');
+      expect(avatar).toHaveAttribute('src', 'https://avatars.githubusercontent.com/u/69631?v=4');
+      expect(avatar).toHaveAttribute('alt', 'facebook avatar');
+    });
+
+    it('displays avatar alongside repository name in same container', () => {
+      render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
+      const repositoryColumn = screen.getByText('test-repo').closest('div');
+      const avatar = screen.getByRole('img');
+      
+      // Avatar should be in the same container as repository name
+      expect(repositoryColumn).toContainElement(avatar);
+      expect(repositoryColumn).toHaveClass('flex', 'items-center', 'gap-2');
+    });
+
+    it('maintains repository name visibility with avatar present', () => {
+      render(<PullRequestFeedListCard pullRequest={mockPullRequest} onClick={mockOnClick} />);
+      
+      // Both avatar and repository name should be visible
+      expect(screen.getByRole('img')).toBeInTheDocument();
+      expect(screen.getByText('test-repo')).toBeInTheDocument();
+    });
+
+    it('handles organization with empty avatar_url gracefully', () => {
+      const emptyAvatarPR = {
+        ...mockPullRequest,
+        repository: {
+          ...mockPullRequest.repository,
+          owner: {
+            login: 'test-org',
+            avatar_url: ''
+          }
+        }
+      };
+      render(<PullRequestFeedListCard pullRequest={emptyAvatarPR} onClick={mockOnClick} />);
+      const avatar = screen.getByRole('img');
+      expect(avatar).toHaveAttribute('src', '');
+      expect(avatar).toHaveAttribute('alt', 'test-org avatar');
+    });
+
+    it('works with special characters in organization login', () => {
+      const specialCharPR = {
+        ...mockPullRequest,
+        repository: {
+          ...mockPullRequest.repository,
+          owner: {
+            login: 'org-with-dashes',
+            avatar_url: 'https://avatars.githubusercontent.com/u/999999?v=4'
+          }
+        }
+      };
+      render(<PullRequestFeedListCard pullRequest={specialCharPR} onClick={mockOnClick} />);
+      const avatar = screen.getByRole('img');
+      expect(avatar).toHaveAttribute('alt', 'org-with-dashes avatar');
     });
   });
 });

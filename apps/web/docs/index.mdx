@@ -12,50 +12,12 @@ import DeveloperBusinessCard from '@site/src/components/banner/banner';
 
 <DeveloperBusinessCard />
 
-<div className="live-badge-container mb-4">
-  <span className="live-badge">🔴 LIVE</span>
-  <span className="live-description">Real-time data from GitHub API</span>
+<div className="pt-22 md:pt-8 m-auto">
+  <div className="live-badge-container mb-4 m-auto d-flex justify-center">
+    <span className="live-description !text-gray-300"></span>
+  </div>
+
+  <PullRequestFeed username="lmcrean" className="mb-8" />
 </div>
 
-<PullRequestFeed username="lmcrean" className="mb-8" />
-
 ---
-
-<style>
-{`
-.live-badge-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.live-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: linear-gradient(45deg, #ef4444, #dc2626);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  animation: pulse 2s infinite;
-}
-
-.live-description {
-  color: #6b7280;
-  font-size: 14px;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-`}
-</style>

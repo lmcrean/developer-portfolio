@@ -9,11 +9,17 @@ export interface PullRequestResponse {
   merged_at: string | null;
   html_url: string;
   state: 'open' | 'closed' | 'merged';
+  additions?: number;
+  deletions?: number;
   repository: {
     name: string;
     description: string | null;
     language: string | null;
     html_url: string;
+    owner: {
+      login: string;
+      avatar_url: string;
+    };
   };
 }
 

@@ -72,11 +72,17 @@ export async function fetchDetailedPRData(
     merged_at: pr.merged_at,
     html_url: pr.html_url,
     state: pr.merged_at ? 'merged' as const : pr.state as 'open' | 'closed',
+    additions: pr.additions,
+    deletions: pr.deletions,
     repository: {
       name: repo,
       description: repoData.description,
       language: repoData.language ?? null,
-      html_url: repoData.html_url
+      html_url: repoData.html_url,
+      owner: {
+        login: repoData.owner.login,
+        avatar_url: repoData.owner.avatar_url
+      }
     }
   };
 } 

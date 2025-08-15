@@ -41,7 +41,6 @@
     "wait-on": "^8.0.1"
   },
   "dependencies": {
-    "@lauriecrean/observability": "file:../packages/observability"
   },
   "engines": {
     "node": ">=18.0"

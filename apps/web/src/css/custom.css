@@ -75,10 +75,27 @@ html {
   }
 }
 
-/* Adjust main content margin to accommodate TOC */
-@media (min-width: 1101px) {
-  .main-wrapper {
-    max-width: calc(100% - 280px);
+/* Center main content properly */
+.main-wrapper {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* Center the docs container */
+.docs-wrapper article,
+main[class*="docMainContainer"] .container,
+.container.padding-top--md.padding-bottom--lg {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Ensure proper centering on larger screens */
+@media (min-width: 997px) {
+  .docs-wrapper article,
+  main[class*="docMainContainer"] .container,
+  .container.padding-top--md.padding-bottom--lg {
+    padding: 0 3rem;
   }
 }
 
@@ -258,6 +275,43 @@ html {
 .menu__link[href*="pull-request-feed"] .menu__link-text {
   flex: 1;
   margin-right: 8px;
+}
+
+/* Pull Request Feed Text Color Utilities */
+/* Primary text in pull request components */
+.pr-text-primary {
+  color: var(--ifm-font-color-base); /* Default/light mode */
+}
+
+[data-theme='dark'] .pr-text-primary {
+  color: #e2e8f0; /* gray-200 for better readability in dark mode */
+}
+
+/* Secondary text in pull request components */
+.pr-text-secondary {
+  color: var(--ifm-font-color-base); /* Default/light mode */
+}
+
+[data-theme='dark'] .pr-text-secondary {
+  color: #cbd5e1; /* gray-300 for secondary text in dark mode */
+}
+
+/* Muted text in pull request components */
+.pr-text-muted {
+  color: var(--ifm-font-color-base); /* Default/light mode */
+}
+
+[data-theme='dark'] .pr-text-muted {
+  color: #e2e8f0; /* gray-200 for better visibility in dark mode */
+}
+
+/* Table header text */
+.pr-text-header {
+  color: var(--ifm-font-color-base); /* Default/light mode */
+}
+
+[data-theme='dark'] .pr-text-header {
+  color: #9ca3af; /* gray-400 for headers in dark mode */
 }
 
 

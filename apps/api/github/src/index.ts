@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import path from 'path';
 import { GitHubService } from './github';
 import { findAvailablePort } from './utils/portUtils';
 import { setupMiddleware } from './config/middleware';
@@ -31,6 +32,20 @@ setupMiddleware(app);
 setupHealthRoutes(app);
 setupGitHubRoutes(app, githubService);
 setupValidationRoutes(app, githubService);
+
+// Serve static files (for pre-generated JSON data)
+const staticPath = path.join(__dirname, '..', 'static');
+app.use('/static', express.static(staticPath, {
+  setHeaders: (res, path) => {
+    // Set cache headers for static JSON files
+    if (path.endsWith('.json')) {
+      res.setHeader('Cache-Control', 'public, max-age=300'); // 5 minutes
+      res.setHeader('Content-Type', 'application/json');
+    }
+  }
+}));
+
+console.log(`📁 Static files served from: ${staticPath}`);
 
 // Setup error handling (must be last)
 setup404Handler(app);

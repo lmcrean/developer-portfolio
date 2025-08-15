@@ -5,13 +5,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-// Type declaration for Jest globals
-declare global {
-  var describe: any;
-  var beforeAll: any;
-  var test: any;
-  var expect: any;
-}
 
 describe('Buttons CSS', (): void => {
   let cssContent: string;

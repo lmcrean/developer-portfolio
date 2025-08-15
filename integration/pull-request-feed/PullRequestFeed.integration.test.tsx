@@ -29,7 +29,11 @@ const mockPullRequests = [
       name: 'developer-portfolio',
       description: 'Portfolio website v3',
       language: 'TypeScript',
-      html_url: 'https://github.com/lmcrean/developer-portfolio'
+      html_url: 'https://github.com/lmcrean/developer-portfolio',
+      owner: {
+        login: 'lmcrean',
+        avatar_url: 'https://avatars.githubusercontent.com/u/123456?v=4'
+      }
     }
   },
   {
@@ -45,7 +49,11 @@ const mockPullRequests = [
       name: 'developer-portfolio',
       description: 'Portfolio website v3',
       language: 'JavaScript',
-      html_url: 'https://github.com/lmcrean/developer-portfolio'
+      html_url: 'https://github.com/lmcrean/developer-portfolio',
+      owner: {
+        login: 'lmcrean',
+        avatar_url: 'https://avatars.githubusercontent.com/u/123456?v=4'
+      }
     }
   }
 ];
@@ -349,6 +357,110 @@ describe('PullRequestFeed Integration Tests', () => {
       await waitFor(() => {
         expect(screen.getByRole('dialog')).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('Organization Avatar Integration', () => {
+    beforeEach(async () => {
+      mockGet.mockResolvedValueOnce({ data: mockApiResponse });
+      render(<PullRequestFeed username="lmcrean" />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('refactor frontend dir to apps/web')).toBeInTheDocument();
+      });
+    });
+
+    it('should display organization avatars from API data', () => {
+      // Check that organization avatars are rendered
+      const avatars = screen.getAllByRole('img');
+      expect(avatars.length).toBeGreaterThan(0);
+      
+      // Verify avatar sources match API data
+      const avatar = avatars.find(img => 
+        img.getAttribute('src') === 'https://avatars.githubusercontent.com/u/123456?v=4'
+      );
+      expect(avatar).toBeInTheDocument();
+      expect(avatar).toHaveAttribute('alt', 'lmcrean avatar');
+    });
+
+    it('should handle different organization avatars', async () => {
+      const multiOrgResponse = {
+        ...mockApiResponse,
+        data: [
+          {
+            ...mockPullRequests[0],
+            repository: {
+              ...mockPullRequests[0].repository,
+              owner: {
+                login: 'facebook',
+                avatar_url: 'https://avatars.githubusercontent.com/u/69631?v=4'
+              }
+            }
+          },
+          {
+            ...mockPullRequests[1],
+            repository: {
+              ...mockPullRequests[1].repository,
+              owner: {
+                login: 'google',
+                avatar_url: 'https://avatars.githubusercontent.com/u/1342004?v=4'
+              }
+            }
+          }
+        ]
+      };
+
+      // Clear previous render and render with multi-org data
+      mockGet.mockClear();
+      mockGet.mockResolvedValueOnce({ data: multiOrgResponse });
+      
+      render(<PullRequestFeed username="testuser" />);
+      
+      await waitFor(() => {
+        expect(screen.getByText('refactor frontend dir to apps/web')).toBeInTheDocument();
+      });
+
+      // Should have different organization avatars
+      expect(screen.getByAltText('facebook avatar')).toBeInTheDocument();
+      expect(screen.getByAltText('google avatar')).toBeInTheDocument();
+    });
+
+    it('should display avatar alongside repository name', () => {
+      // Find repository name and check its container has avatar
+      const repoName = screen.getByText('developer-portfolio');
+      const container = repoName.closest('div');
+      
+      expect(container).toContainElement(screen.getByAltText('lmcrean avatar'));
+      expect(container).toHaveClass('flex', 'items-center', 'gap-2');
+    });
+
+    it('should handle API data with organization owner field', () => {
+      // Verify the API was called and we have the expected structure
+      expect(mockGet).toHaveBeenCalledWith(
+        '/api/github/pull-requests',
+        {
+          params: {
+            username: 'lmcrean',
+            page: 1,
+            per_page: 20
+          }
+        }
+      );
+
+      // Verify that the avatar is properly rendered from the API response
+      const avatar = screen.getByAltText('lmcrean avatar');
+      expect(avatar).toHaveAttribute('src', 'https://avatars.githubusercontent.com/u/123456?v=4');
+      expect(avatar).toHaveClass('w-5', 'h-5', 'rounded-full', 'flex-shrink-0');
+    });
+
+    it('should handle broken avatar images gracefully', () => {
+      const avatar = screen.getByAltText('lmcrean avatar');
+      
+      // Simulate image error
+      fireEvent.error(avatar);
+      
+      // Avatar should be hidden on error
+      expect(avatar.style.display).toBe('none');
     });
   });
 }); 

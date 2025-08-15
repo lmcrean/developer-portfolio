@@ -1,0 +1,107 @@
+# Pull Request Table Design
+
+## Overview
+
+The Pull Request Table (prtable) is the main component displaying GitHub pull request activity on the homepage. It features a clean, dark-mode-first design with a new **Changes** column showing code additions and deletions.
+
+## Table Structure
+
+### Desktop View
+
+| Repository | Changes | Title | Language | Status |
+|------------|---------|-------|----------|--------|
+| vitest-dev | <span style={{color: '#4ade80'}}>+234</span> <span style={{color: '#f87171'}}>-23</span> | Fix memory leak in test runner | TypeScript | • merged |
+| react | <span style={{color: '#4ade80'}}>+1.2k</span> <span style={{color: '#f87171'}}>-567</span> | Add Server Components support | JavaScript | ○ open |
+| next.js | <span style={{color: '#4ade80'}}>+45</span> <span style={{color: '#f87171'}}>-12</span> | Update documentation for app router | TypeScript | • merged |
+| vue | <span style={{color: '#4ade80'}}>+892</span> <span style={{color: '#f87171'}}>-1.1k</span> | Refactor reactivity system | JavaScript | × closed |
+| svelte | <span style={{color: '#4ade80'}}>+0</span> <span style={{color: '#f87171'}}>-156</span> | Remove deprecated APIs | JavaScript | • merged |
+| angular | — | RFC: Signals implementation | TypeScript | • draft |
+
+### Mobile View (Responsive)
+
+On mobile devices (< 1024px), the table shows only:
+- Repository (3 columns)
+- Title (9 columns)
+
+The Changes, Language, and Status columns are hidden to maintain readability.
+
+## Column Details
+
+### Repository (2 cols on desktop, 3 on mobile)
+- Shows repository name with owner avatar
+- Truncates long names with ellipsis
+- Avatar size: 20x20px
+
+### Changes (2 cols, desktop only)
+- **NEW COLUMN**
+- Format: `+{additions} -{deletions}`
+- Colors:
+  - Additions: Green (#4ade80 dark, #16a34a light)
+  - Deletions: Red (#f87171 dark, #dc2626 light)
+- Font: Monospace for better alignment
+- Large numbers formatted: 1000+ → 1k, 1000000+ → 1M
+- Shows "—" when data unavailable
+
+### Title (4 cols on desktop, 9 on mobile)
+- Primary content column
+- Truncates with ellipsis for long titles
+- Left-aligned
+
+### Language (2 cols, desktop only)
+- Shows primary programming language
+- Displayed as a badge/pill
+- Shows "—" if no language detected
+
+### Status (2 cols, desktop only)
+- Right-aligned
+- Format: `{emoji} {status} {time}`
+- Status types:
+  - • merged (teal)
+  - ○ open (yellow)
+  - × closed (pink)
+  - • draft (gray)
+
+## Implementation Notes
+
+### Data Source
+- Changes data comes from GitHub API's `additions` and `deletions` fields
+- Available in the `pulls.get()` endpoint
+- Cached in static JSON for performance
+
+### Performance
+- No additional API calls required
+- Data already available in PR details
+- Minimal rendering overhead
+
+### Accessibility
+- Proper ARIA labels for screen readers
+- Keyboard navigation support
+- Color contrast meets WCAG standards
+
+## Color Palette
+
+### Dark Mode (Primary)
+```css
+--green-additions: #4ade80;
+--red-deletions: #f87171;
+--text-primary: #e5e7eb;
+--text-muted: #9ca3af;
+```
+
+### Light Mode
+```css
+--green-additions: #16a34a;
+--red-deletions: #dc2626;
+--text-primary: #1f2937;
+--text-muted: #6b7280;
+```
+
+## Example Component Usage
+
+The PR table is rendered by the `PullRequestFeed` component:
+
+```tsx
+<PullRequestFeed username="github-username" />
+```
+
+The Changes column enhances the feed by providing immediate visual feedback about the size and nature of code changes in each pull request.

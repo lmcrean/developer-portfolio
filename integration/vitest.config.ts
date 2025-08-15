@@ -21,6 +21,7 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, '../apps/web/src'),
       '@site': resolve(__dirname, '../apps/web'),
+      '@shared': resolve(__dirname, '../shared'),
       'react': resolve(__dirname, 'node_modules/react'),
       'react-dom': resolve(__dirname, 'node_modules/react-dom'),
     },

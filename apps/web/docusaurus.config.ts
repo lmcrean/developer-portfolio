@@ -32,11 +32,6 @@ const config: Config = {
 
   // Add splide scripts directly to the head
   scripts: [
-    // Runtime configuration (generated during build)
-    {
-      src: '/config.js',
-      async: false, // Load synchronously to ensure APP_CONFIG is available early
-    },
     {
       src: 'https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js',
       async: true,
@@ -91,7 +86,7 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts',
+          sidebarPath: false, // Disable sidebar entirely
           // Set routeBasePath to '/' to make docs the landing page
           routeBasePath: '/',
           // Remove the edit URL
@@ -101,7 +96,7 @@ const config: Config = {
           showLastUpdateAuthor: false,
         },
         theme: {
-          customCss: ['./src/css/tailwind.css', './src/css/custom.css', './src/css/splide-custom.css', './src/css/buttons.css', './src/css/typefaces.css'],
+          customCss: ['./src/css/tailwind.css', './src/css/custom.css', './src/css/splide-custom.css', './src/css/buttons.css', './src/css/typefaces.css', './src/css/live-badge.css'],
         },
       } satisfies Preset.Options,
     ],
@@ -142,21 +137,14 @@ const config: Config = {
     // Add colorMode configuration
     colorMode: {
       defaultMode: 'dark',
-      disableSwitch: false,
-      respectPrefersColorScheme: true,
-    },
-    docs: {
-      sidebar: {
-        hideable: false,
-        autoCollapseCategories: false,
-      },
+      disableSwitch: true,
+      respectPrefersColorScheme: false,
     },
     tableOfContents: {
       minHeadingLevel: 2,
       maxHeadingLevel: 3,
     },
     navbar: {
-      title: 'Laurie Crean',
       logo: {
         alt: 'Laurie Crean Portfolio Logo',
         src: 'img/logo.svg',
@@ -233,7 +221,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Laurie Crean. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Laurie Crean`,
     },
     prism: {
       theme: prismThemes.github,

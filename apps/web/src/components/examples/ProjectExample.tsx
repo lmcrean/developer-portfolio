@@ -1,7 +1,7 @@
 import React from 'react';
-import Project from '../Project';
+import Project from '../archive/Project';
 import projects from '../../data/projects';
-import SplideInit from '../SplideInit';
+import SplideInit from '../archive/SplideInit';
 
 /**
  * Example component showing how to use the Project component

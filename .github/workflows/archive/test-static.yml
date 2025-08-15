@@ -1,0 +1,188 @@
+name: Test Static Data Generation and Serving
+
+on:
+  workflow_call:
+    inputs:
+      web_url:
+        required: true
+        type: string
+        description: 'Web app URL to test static data serving'
+
+jobs:
+  test-static-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 🛒 Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/api/github/package-lock.json
+      
+      - name: 🔍 Environment Validation
+        run: |
+          echo "🧪 Testing Static Data for Web App: ${{ inputs.web_url }}"
+          
+          if [[ ! "${{ inputs.web_url }}" =~ ^https?:// ]]; then
+            echo "❌ Invalid web URL format"
+            exit 1
+          fi
+      
+      - name: 📥 Install API Dependencies for Static Generation
+        run: |
+          echo "📦 Installing API dependencies for static data generation..."
+          cd apps/api/github
+          npm ci
+      
+      - name: 🔧 Generate Static Data for Testing
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+        run: |
+          echo "⚡ Generating static data for validation..."
+          cd apps/api/github
+          npm run build
+          npm run generate-static-data
+          
+          echo "📋 Validating generated static data files..."
+          ls -la static/pull-requests/
+          
+          # Verify metadata file exists and has expected structure
+          if [ ! -f "static/pull-requests/metadata.json" ]; then
+            echo "❌ metadata.json not found"
+            exit 1
+          fi
+          
+          # Check metadata structure
+          if ! jq -e '.total_count and .total_pages and .last_generated' static/pull-requests/metadata.json > /dev/null; then
+            echo "❌ metadata.json missing required fields"
+            exit 1
+          fi
+          
+          total_pages=$(jq -r '.total_pages' static/pull-requests/metadata.json)
+          echo "✅ Found metadata with $total_pages pages"
+          
+          # Verify all page files exist
+          for ((i=1; i<=total_pages; i++)); do
+            if [ ! -f "static/pull-requests/page-$i.json" ]; then
+              echo "❌ page-$i.json not found"
+              exit 1
+            fi
+            
+            # Validate page structure
+            if ! jq -e '.data and .meta' "static/pull-requests/page-$i.json" > /dev/null; then
+              echo "❌ page-$i.json missing required fields"
+              exit 1
+            fi
+          done
+          
+          echo "✅ All static data files validated successfully"
+      
+      - name: 🌐 Test Static Data Serving from Web App
+        run: |
+          echo "🔍 Testing static data endpoints from web app..."
+          
+          # Test metadata endpoint
+          echo "📋 Testing metadata endpoint..."
+          metadata_response=$(curl -s -w "%{http_code}" "${{ inputs.web_url }}/pr-metadata.json" -o /tmp/metadata.json)
+          
+          if [ "$metadata_response" != "200" ]; then
+            echo "❌ Metadata endpoint failed with status: $metadata_response"
+            exit 1
+          fi
+          
+          # Validate metadata content
+          if ! jq -e '.total_count and .total_pages' /tmp/metadata.json > /dev/null; then
+            echo "❌ Served metadata missing required fields"
+            exit 1
+          fi
+          
+          total_pages=$(jq -r '.total_pages' /tmp/metadata.json)
+          total_count=$(jq -r '.total_count' /tmp/metadata.json)
+          echo "✅ Metadata endpoint working: $total_count PRs across $total_pages pages"
+          
+          # Test first page endpoint
+          echo "📄 Testing page endpoints..."
+          page_response=$(curl -s -w "%{http_code}" "${{ inputs.web_url }}/pr-page-1.json" -o /tmp/page-1.json)
+          
+          if [ "$page_response" != "200" ]; then
+            echo "❌ Page 1 endpoint failed with status: $page_response"
+            exit 1
+          fi
+          
+          # Validate page content
+          if ! jq -e '.data and .meta' /tmp/page-1.json > /dev/null; then
+            echo "❌ Served page data missing required fields"
+            exit 1
+          fi
+          
+          page_items=$(jq -r '.data | length' /tmp/page-1.json)
+          echo "✅ Page 1 endpoint working: $page_items pull requests"
+          
+          # Test a few more random pages
+          for page_num in 2 $(($total_pages/2)) $total_pages; do
+            if [ $page_num -le $total_pages ]; then
+              echo "📄 Testing page $page_num..."
+              page_response=$(curl -s -w "%{http_code}" "${{ inputs.web_url }}/pr-page-$page_num.json" -o /dev/null)
+              
+              if [ "$page_response" != "200" ]; then
+                echo "❌ Page $page_num endpoint failed with status: $page_response"
+                exit 1
+              fi
+              
+              echo "✅ Page $page_num endpoint working"
+            fi
+          done
+      
+      - name: 📦 Setup Node.js for E2E Testing
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: e2e/package-lock.json
+      
+      - name: 📥 Install E2E Dependencies
+        run: |
+          echo "📦 Installing e2e dependencies..."
+          cd e2e
+          npm ci
+      
+      - name: 🎭 Install Playwright Browsers
+        run: |
+          cd e2e
+          npx playwright install webkit
+      
+      - name: 🧪 Run Single-Server Static Data E2E Test
+        run: |
+          echo "🚀 Running single-server static data validation..."
+          cd e2e
+          
+          # Run the specific single-server test
+          npx playwright test tests/features/pull-request/single-server-quick-test.web.spec.ts --reporter=line
+        env:
+          WEB_URL: ${{ inputs.web_url }}
+        continue-on-error: false
+      
+      - name: 📊 Upload E2E Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: static-test-results
+          path: |
+            e2e/test-results/
+            e2e/playwright-report/
+          retention-days: 30
+      
+      - name: 🎯 Static Data Test Summary
+        run: |
+          echo "🎯 Static Data Testing Complete!"
+          echo "📍 Web URL: ${{ inputs.web_url }}"
+          echo "✅ Static data generation validated"
+          echo "✅ Static data file structure validated"
+          echo "✅ Web app static data serving validated"
+          echo "✅ Single-server E2E tests passed"
+          echo "🚀 Single-server architecture is working correctly!"
