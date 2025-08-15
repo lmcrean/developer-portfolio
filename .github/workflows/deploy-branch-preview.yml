@@ -41,6 +41,11 @@ jobs:
           chmod +x .github/workflows/scripts/deploy-web.sh
           ./.github/workflows/scripts/deploy-web.sh branch ${{ github.event.number }}
       
+      - name: 📁 Copy Static Data to Web App
+        run: |
+          chmod +x .github/workflows/scripts/copy-static-data.sh
+          ./.github/workflows/scripts/copy-static-data.sh
+      
       - name: 🔐 Deploy to Firebase (Branch Preview)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:

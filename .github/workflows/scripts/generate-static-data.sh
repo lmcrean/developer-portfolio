@@ -19,65 +19,68 @@ npm run build
 echo "🔧 Running static data generation with compiled JavaScript..."
 node dist/scripts/generateStaticData.js
 
-# Copy static data to web app (flattened structure)
-echo "📁 Copying static data to web app..."
+# Prepare static data in temp location for later copying
+echo "📁 Preparing static data in temp location..."
 cd static/pull-requests
 
-# Ensure web app static directory exists
-echo "🔧 Ensuring static directory exists..."
-mkdir -p ../../../../web/static
+# Create temp directory for static data
+TEMP_STATIC_DIR="/tmp/pr-static-data"
+echo "🔧 Creating temp directory: $TEMP_STATIC_DIR"
+mkdir -p "$TEMP_STATIC_DIR"
 
-# Copy metadata with flattened naming
-echo "📋 Copying metadata file..."
-cp metadata.json ../../../../web/static/pr-metadata.json
-if [ ! -f "../../../../web/static/pr-metadata.json" ]; then
-  echo "❌ Failed to copy metadata file"
+# Copy metadata with flattened naming to temp location
+echo "📋 Copying metadata to temp location..."
+cp metadata.json "$TEMP_STATIC_DIR/pr-metadata.json"
+if [ ! -f "$TEMP_STATIC_DIR/pr-metadata.json" ]; then
+  echo "❌ Failed to copy metadata to temp location"
   exit 1
 fi
 
-# Copy all page files with flattened naming  
-echo "📄 Copying page files..."
+# Copy all page files with flattened naming to temp location
+echo "📄 Copying page files to temp location..."
 page_count=0
 for file in page-*.json; do
   if [ -f "$file" ]; then
     page_num=$(echo "$file" | sed 's/page-\([0-9]*\)\.json/\1/')
-    target_file="../../../../web/static/pr-page-${page_num}.json"
+    target_file="$TEMP_STATIC_DIR/pr-page-${page_num}.json"
     cp "$file" "$target_file"
     if [ ! -f "$target_file" ]; then
-      echo "❌ Failed to copy $file to pr-page-${page_num}.json"
+      echo "❌ Failed to copy $file to temp location"
       exit 1
     fi
-    echo "✅ Copied $file to pr-page-${page_num}.json"
+    echo "✅ Copied $file to temp as pr-page-${page_num}.json"
     ((page_count++))
   fi
 done
-echo "📊 Successfully copied $page_count page files"
+echo "📊 Successfully copied $page_count page files to temp location"
 
-# Verify files were copied
-echo "📋 Verifying static data files..."
-if ls ../../../../web/static/pr-*.json 1> /dev/null 2>&1; then
-  file_count=$(ls ../../../../web/static/pr-*.json | wc -l)
-  echo "📊 Found $file_count static data files in web app"
-  ls -la ../../../../web/static/pr-*.json
+# Verify temp files
+echo "📋 Verifying temp static data files..."
+if ls "$TEMP_STATIC_DIR"/pr-*.json 1> /dev/null 2>&1; then
+  file_count=$(ls "$TEMP_STATIC_DIR"/pr-*.json | wc -l)
+  echo "📊 Found $file_count static data files in temp location"
+  ls -la "$TEMP_STATIC_DIR"/pr-*.json
 else
-  echo "❌ No static data files found in web app"
+  echo "❌ No static data files found in temp location"
   exit 1
 fi
 
-# Validate file structure
-echo "🔍 Validating generated static data..."
-if [ ! -f "../../../../web/static/pr-metadata.json" ]; then
-  echo "❌ Metadata file not found"
+# Final validation of temp files
+echo "🔍 Validating temp static data..."
+if [ ! -f "$TEMP_STATIC_DIR/pr-metadata.json" ]; then
+  echo "❌ Metadata file not found in temp location"
   exit 1
 fi
 
-# Final validation
+# Final count validation
 expected_files=$((page_count + 1))  # pages + metadata
-actual_files=$(ls ../../../../web/static/pr-*.json | wc -l)
+actual_files=$(ls "$TEMP_STATIC_DIR"/pr-*.json | wc -l)
 if [ "$actual_files" -ne "$expected_files" ]; then
-  echo "❌ File count mismatch: expected $expected_files, found $actual_files"
+  echo "❌ File count mismatch in temp: expected $expected_files, found $actual_files"
   exit 1
 fi
+
+echo "🎯 Static data successfully prepared in temp location: $TEMP_STATIC_DIR"
 
 echo "✅ Static data generation complete!"
 echo "📁 Generated $page_count page files + 1 metadata file = $expected_files total files"
