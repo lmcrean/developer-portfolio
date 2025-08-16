@@ -1,5 +1,4 @@
 import { useCallback, useRef, useMemo } from 'react';
-import apiClient from '../../api/Core';
 import staticClient from '../../api/client/staticClient';
 import {
   PullRequestListData,
@@ -65,36 +64,23 @@ export const usePullRequestApi = ({
       
       console.log(`🔄 Fetching pull requests page ${page} for ${username}...`);
       
-      // Determine which client to use
+      // Always use static client in single-server architecture
       const useStatic = await shouldUseStatic();
-      let response;
-
-      if (useStatic) {
-        console.log('📁 Using static data client');
-        response = await staticClient.getPullRequests({
-          username,
-          page,
-          per_page: 20
-        });
-      } else {
-        console.log('🌐 Using live API client');
-        response = await apiClient.get<ApiResponse>(
-          '/api/github/pull-requests',
-          {
-            params: {
-              username,
-              page,
-              per_page: 20
-            },
-            signal: listAbortControllerRef.current.signal
-          }
-        );
+      
+      if (!useStatic) {
+        throw new Error('Static data not available. Please ensure the application is properly deployed with static JSON files.');
       }
+      
+      console.log('📁 Using static data client');
+      const response = await staticClient.getPullRequests({
+        username,
+        page,
+        per_page: 20
+      });
 
       // Only update state if component is still mounted
       if (isMountedRef.current && !listAbortControllerRef.current.signal.aborted) {
-        const dataSource = useStatic ? 'static data' : 'live API';
-        console.log(`✅ Successfully fetched ${response.data.data.length} pull requests from ${dataSource}`);
+        console.log(`✅ Successfully fetched ${response.data.data.length} pull requests from static data`);
         
         // Update pagination refs
         currentPageRef.current = response.data.meta.pagination.page;
@@ -129,35 +115,23 @@ export const usePullRequestApi = ({
       
       console.log(`🔄 Fetching more pull requests page ${nextPage} for ${username}...`);
       
-      // Determine which client to use
+      // Always use static client in single-server architecture
       const useStatic = await shouldUseStatic();
-      let response;
-
-      if (useStatic) {
-        console.log('📁 Using static data client for more items');
-        response = await staticClient.getPullRequests({
-          username,
-          page: nextPage,
-          per_page: 20
-        });
-      } else {
-        console.log('🌐 Using live API client for more items');
-        response = await apiClient.get<ApiResponse>(
-          '/api/github/pull-requests',
-          {
-            params: {
-              username,
-              page: nextPage,
-              per_page: 20
-            }
-          }
-        );
+      
+      if (!useStatic) {
+        throw new Error('Static data not available. Please ensure the application is properly deployed with static JSON files.');
       }
+      
+      console.log('📁 Using static data client for more items');
+      const response = await staticClient.getPullRequests({
+        username,
+        page: nextPage,
+        per_page: 20
+      });
 
       // Only update state if component is still mounted
       if (isMountedRef.current) {
-        const dataSource = useStatic ? 'static data' : 'live API';
-        console.log(`✅ Successfully fetched ${response.data.data.length} more pull requests from ${dataSource}`);
+        console.log(`✅ Successfully fetched ${response.data.data.length} more pull requests from static data`);
         
         // Update pagination refs
         currentPageRef.current = response.data.meta.pagination.page;

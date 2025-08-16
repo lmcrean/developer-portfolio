@@ -40,6 +40,11 @@ jobs:
           chmod +x .github/workflows/scripts/copy-static-data.sh
           ./.github/workflows/scripts/copy-static-data.sh
       
+      - name: ✅ Validate Static JSON Files
+        run: |
+          chmod +x .github/workflows/scripts/validate-static-json.sh
+          ./.github/workflows/scripts/validate-static-json.sh
+      
       - name: 🏗️ Prepare Web App
         run: |
           chmod +x .github/workflows/scripts/deploy-web.sh
@@ -80,12 +85,8 @@ jobs:
         run: |
           chmod +x .github/workflows/scripts/run-e2e-tests.sh
           echo "🎯 Starting E2E tests for production deployment..."
-          if ./.github/workflows/scripts/run-e2e-tests.sh "${{ steps.set_url.outputs.deployment_url }}"; then
-            echo "✅ E2E tests passed successfully"
-          else
-            echo "⚠️ E2E tests failed - deployment succeeded but tests need attention"
-            exit 0  # Don't fail the deployment
-          fi
+          ./.github/workflows/scripts/run-e2e-tests.sh "${{ steps.set_url.outputs.deployment_url }}"
+          echo "✅ E2E tests passed successfully"
         timeout-minutes: 20
       
       - name: 📊 Upload Test Results
