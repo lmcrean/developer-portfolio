@@ -7,8 +7,7 @@ Streamlined CI/CD workflows for single-server architecture using reusable workfl
 ### Directory Structure
 ```
 .github/workflows/
-├── shared/
-│   └── deploy.yml              # Reusable workflow with all deployment logic
+├── reusable-deploy.yml          # Reusable workflow with all deployment logic
 ├── deploy-main-production.yml  # Trigger: push to main (35 lines)
 ├── deploy-branch-preview.yml   # Trigger: PR events (25 lines)  
 ├── scheduled-data-update.yml   # Trigger: schedule (delegates to main)
@@ -16,14 +15,14 @@ Streamlined CI/CD workflows for single-server architecture using reusable workfl
 ```
 
 ### Design Principles
-- **Zero Drift**: Single source of truth in `shared/deploy.yml`
+- **Zero Drift**: Single source of truth in `reusable-deploy.yml`
 - **Consistent Quality**: Same validation and E2E tests for all deployments
 - **Simplified Maintenance**: Change once, apply everywhere
 - **Modular Scripts**: Common functionality extracted to `scripts/`
 
 ## Workflow Pipelines
 
-### shared/deploy.yml (Reusable Workflow)
+### reusable-deploy.yml (Reusable Workflow)
 Contains ALL deployment logic to ensure consistency.
 
 **Input Parameters:**
@@ -45,12 +44,12 @@ Contains ALL deployment logic to ensure consistency.
 
 ### deploy-main-production.yml
 **Triggers:** Push to main, manual dispatch  
-**Action:** Calls `shared/deploy.yml` with `channel: live`  
+**Action:** Calls `reusable-deploy.yml` with `channel: live`  
 **Result:** Production at https://lauriecrean-free-38256.web.app
 
 ### deploy-branch-preview.yml  
 **Triggers:** PR opened/synchronized/reopened, manual dispatch  
-**Action:** Calls `shared/deploy.yml` with `channel: branch-{pr_number}`  
+**Action:** Calls `reusable-deploy.yml` with `channel: branch-{pr_number}`  
 **Result:** Preview deployment with unique URL
 
 ### scheduled-data-update.yml
@@ -159,7 +158,7 @@ PORT=3023 npm start
 ## Contributing
 
 When modifying workflows:
-1. Update shared/deploy.yml for deployment logic changes
+1. Update reusable-deploy.yml for deployment logic changes
 2. Keep trigger workflows minimal (<50 lines)
 3. Extract common functionality to scripts/
 4. Test scripts locally before committing

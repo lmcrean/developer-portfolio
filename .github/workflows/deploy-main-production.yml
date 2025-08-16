@@ -23,7 +23,7 @@ permissions:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/shared/deploy.yml
+    uses: ./.github/workflows/reusable-deploy.yml
     with:
       deployment_channel: 'live'
       deployment_type: 'main'
