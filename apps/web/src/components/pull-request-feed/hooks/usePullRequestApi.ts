@@ -50,7 +50,6 @@ export const usePullRequestApi = ({
 
   // Fetch pull requests list with static/live API selection
   const fetchPullRequests = useCallback(async (page: number = 1) => {
-    console.log(`🚀 Starting fetchPullRequests (page: ${page}, isMounted: ${isMountedRef.current})`);
     try {
       // Cancel any existing request
       if (listAbortControllerRef.current) {
@@ -88,11 +87,6 @@ export const usePullRequestApi = ({
         hasMorePagesRef.current = response.data.meta.pagination.has_next_page;
         
         onListSuccess(response.data.data, response.data.meta.pagination, false);
-      } else {
-        console.log(`⚠️ Component unmounted or request aborted - not updating state`, {
-          isMounted: isMountedRef.current,
-          isAborted: listAbortControllerRef.current?.signal.aborted
-        });
       }
     } catch (err: any) {
       // Only handle errors if component is still mounted and request wasn't cancelled
@@ -102,7 +96,6 @@ export const usePullRequestApi = ({
       }
     } finally {
       // Always reset loading state to prevent stuck loading skeleton
-      console.log(`🔄 Setting loading to false (isMounted: ${isMountedRef.current})`);
       setLoading(false);
     }
   }, [username, onListSuccess, onListError, setLoading, shouldUseStatic]);
@@ -182,7 +175,6 @@ export const usePullRequestApi = ({
 
   // Reset mounted flag and pagination refs
   const resetMountedFlag = useCallback(() => {
-    console.log('🔄 Resetting mounted flag to true');
     isMountedRef.current = true;
     currentPageRef.current = 1;
     hasMorePagesRef.current = true;

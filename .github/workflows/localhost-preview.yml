@@ -1,0 +1,166 @@
+name: 🏠 Localhost Preview & Debug
+
+on:
+  workflow_dispatch:
+    inputs:
+      debug_mode:
+        description: 'Enable debug logging'
+        required: false
+        default: 'false'
+        type: boolean
+      test_only:
+        description: 'Skip data generation, only test existing data'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+
+jobs:
+  localhost-preview:
+    name: 🏠 Setup Local Environment
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 🛒 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: |
+            apps/web/package-lock.json
+            apps/api/github/package-lock.json
+            e2e/package-lock.json
+
+      - name: 📊 Generate Fresh Static Data
+        if: inputs.test_only != 'true'
+        run: |
+          echo "🔄 Generating fresh GitHub data..."
+          chmod +x ./.github/workflows/scripts/generate-static-data.sh
+          ./.github/workflows/scripts/generate-static-data.sh
+
+      - name: 📁 Copy Static Data to Web App
+        run: |
+          echo "📁 Copying static data for single-server mode..."
+          chmod +x ./.github/workflows/scripts/copy-static-data.sh
+          ./.github/workflows/scripts/copy-static-data.sh
+
+      - name: 🔧 Build Web Application
+        run: |
+          echo "🔧 Building web application..."
+          chmod +x ./.github/workflows/scripts/deploy-web.sh
+          ./.github/workflows/scripts/deploy-web.sh
+
+      - name: 🚀 Start Web Server (Background)
+        run: |
+          echo "🚀 Starting web server on port 3023..."
+          cd apps/web
+          PORT=3023 npm start &
+          echo "⏰ Waiting for server to start..."
+          sleep 10
+
+      - name: 🌐 Validate Web Server
+        run: |
+          echo "🌐 Checking web server accessibility..."
+          for i in {1..6}; do
+            echo "Web server check $i/6..."
+            if curl -f "http://localhost:3023" -m 10 > /dev/null 2>&1; then
+              echo "✅ Web server is running"
+              break
+            fi
+            
+            if [ $i -eq 6 ]; then
+              echo "❌ Web server failed to start"
+              echo "📋 Server logs:"
+              jobs
+              exit 1
+            fi
+            
+            sleep 5
+          done
+
+      - name: 📊 Test Static Data Endpoints
+        run: |
+          echo "📊 Testing static data endpoints..."
+          chmod +x ./.github/workflows/scripts/test-static-data.sh
+          ./.github/workflows/scripts/test-static-data.sh http://localhost:3023
+
+      - name: 🧪 Run E2E Tests with Debug Logging
+        run: |
+          echo "🧪 Running E2E tests with enhanced logging..."
+          
+          # Enable debug mode if requested
+          if [ "${{ inputs.debug_mode }}" = "true" ]; then
+            echo "🔍 Debug mode enabled"
+            export DEBUG=pw:api,pw:browser
+          fi
+          
+          chmod +x ./.github/workflows/scripts/run-e2e-tests.sh
+          ./.github/workflows/scripts/run-e2e-tests.sh http://localhost:3023
+
+      - name: 🧪 Run Additional E2E Tests for Loading Skeleton Debug
+        run: |
+          echo "🔍 Running specific E2E test to debug loading skeleton issue..."
+          cd e2e
+          WEB_URL=http://localhost:3023 npx playwright test tests/features/pull-request/single-server-quick-test.web.spec.ts --reporter=line --timeout=60000
+
+      - name: 📸 Upload Test Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: localhost-preview-artifacts
+          path: |
+            e2e/test-results/
+            e2e/playwright-report/
+            apps/web/static/pr-*.json
+          retention-days: 7
+
+      - name: 🎯 Debug Information
+        if: always()
+        run: |
+          echo "🎯 Debug Information:"
+          echo "📊 Generated static files:"
+          ls -la apps/web/static/pr-*.json 2>/dev/null || echo "No static files found"
+          
+          echo "📋 Process status:"
+          jobs || echo "No background jobs"
+          
+          echo "🌐 Network test:"
+          curl -I http://localhost:3023 2>/dev/null || echo "Server not accessible"
+          
+          echo "📁 Web app build status:"
+          ls -la apps/web/build/ 2>/dev/null || echo "No build directory found"
+
+      - name: 📋 Summary
+        if: always()
+        run: |
+          echo "## 🏠 Localhost Preview Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📊 Static Data" >> $GITHUB_STEP_SUMMARY
+          if [ -f "apps/web/static/pr-metadata.json" ]; then
+            file_count=$(ls apps/web/static/pr-*.json 2>/dev/null | wc -l)
+            echo "✅ Generated $file_count static files" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Static data generation failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Build Status" >> $GITHUB_STEP_SUMMARY
+          if [ -d "apps/web/build" ]; then
+            echo "✅ Web application built successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Web application build failed" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📋 Instructions for Local Setup" >> $GITHUB_STEP_SUMMARY
+          echo "1. Download artifacts from this workflow run" >> $GITHUB_STEP_SUMMARY
+          echo "2. Extract static JSON files to \`apps/web/static/\`" >> $GITHUB_STEP_SUMMARY
+          echo "3. Run \`cd apps/web && PORT=3023 npm start\`" >> $GITHUB_STEP_SUMMARY
+          echo "4. Test at \`http://localhost:3023\`" >> $GITHUB_STEP_SUMMARY
