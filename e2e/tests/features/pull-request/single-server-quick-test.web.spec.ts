@@ -50,11 +50,35 @@ test.describe('Single Server Quick Test', () => {
     console.log(`⏱️ Waiting ${waitTime}ms for full page load...`);
     await page.waitForTimeout(waitTime);
     
-    // Check if pull request content appeared
-    const pullRequestContent = page.locator('[data-testid="pull-request-feed"], .pull-request, [class*="pull-request"]').first();
+    // Check for pull request feed container
+    const pullRequestFeed = page.locator('[data-testid="pull-request-feed"]');
+    await expect(pullRequestFeed).toBeVisible({ timeout: 15000 });
+    console.log('✅ Pull request feed container is visible');
     
-    if (await pullRequestContent.isVisible()) {
-      console.log('✅ Pull request content is visible');
+    // Critical check: Ensure loading skeleton is NOT present (indicates stuck loading state)
+    const loadingSkeleton = page.locator('[data-testid="loading-skeleton"]');
+    const isSkeletonVisible = await loadingSkeleton.isVisible();
+    
+    if (isSkeletonVisible) {
+      console.log('❌ FAILURE: Loading skeleton is still visible - UI stuck in loading state!');
+      console.log('📋 Console logs for debugging:');
+      consoleMessages.forEach(msg => console.log(`  ${msg}`));
+      expect(loadingSkeleton).not.toBeVisible(); // Fail the test - skeleton should not be visible
+    } else {
+      console.log('✅ Loading skeleton is not visible - good!');
+    }
+    
+    // Positive check: Ensure actual PR cards are present
+    const pullRequestCards = page.locator('[data-testid="pull-request-card"]');
+    const cardCount = await pullRequestCards.count();
+    
+    if (cardCount === 0) {
+      console.log('❌ FAILURE: No pull request cards found - no actual content displayed');
+      console.log('📋 Console logs for debugging:');
+      consoleMessages.forEach(msg => console.log(`  ${msg}`));
+      expect(cardCount).toBeGreaterThan(0); // Fail the test - must have actual PR cards
+    } else {
+      console.log(`✅ Found ${cardCount} pull request cards - actual content is displayed`);
       
       // Check which data source was used
       if (staticDataRequested && !apiServerRequested) {
@@ -68,9 +92,6 @@ test.describe('Single Server Quick Test', () => {
         console.log('❌ FAILURE: No data source detected - static data not loading');
         expect(staticDataRequested).toBe(true); // Fail - static data should always load
       }
-    } else {
-      console.log('❌ FAILURE: Pull request content not visible');
-      expect(pullRequestContent).toBeVisible(); // Fail the test - content must be visible
     }
     
     // Log network requests for debugging

@@ -6,7 +6,7 @@ interface LoadingRowsProps {
 
 export const LoadingRows: React.FC<LoadingRowsProps> = ({ rowCount = 20 }) => {
   return (
-    <>
+    <div data-testid="loading-skeleton">
       {Array.from({ length: rowCount }, (_, index) => (
         <div 
           key={index} 
@@ -37,7 +37,7 @@ export const LoadingRows: React.FC<LoadingRowsProps> = ({ rowCount = 20 }) => {
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 };
 

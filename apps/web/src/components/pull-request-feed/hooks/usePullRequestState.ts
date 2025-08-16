@@ -21,6 +21,7 @@ export const usePullRequestState = () => {
 
   // Handlers for list operations
   const handleListSuccess = useCallback((data: PullRequestListData[], paginationData: PaginationMeta, isAppending = false) => {
+    console.log(`📊 handleListSuccess called: ${data.length} items, isAppending: ${isAppending}`);
     if (isAppending) {
       // Append new data to existing data
       setAllPullRequests(prev => [...prev, ...data]);
@@ -31,6 +32,7 @@ export const usePullRequestState = () => {
     }
     setTotalItemsAvailable(paginationData.total_count);
     setHasMoreItems(paginationData.has_next_page || data.length > displayedCount);
+    console.log(`📊 State updated: ${data.length} PRs, displayedCount: ${Math.min(5, data.length)}`);
   }, [displayedCount]);
 
   const handleListError = useCallback((errorMessage: string) => {
