@@ -172,55 +172,55 @@ const config: Config = {
     },
     footer: {
       style: 'dark',
-      links: [
-        {
-          title: 'Contact',
-          items: [
-            {
-              label: 'Email',
-              href: 'mailto:lmcrean@gmail.com',
-            },
-          ],
-        },
-        {
-          title: 'Connect',
-          items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/lmcrean',
-            },
-            {
-              label: 'LinkedIn',
-              href: 'http://linkedin.com/in/lcrean',
-            },
-          ],
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'LeetCode',
-              href: 'https://leetcode.com/lmcrean',
-            },
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/users/21992930/laurie-crean?tab=topactivity',
-            },
-            {
-              label: 'HackerRank',
-              href: 'https://www.hackerrank.com/profile/mrcrean92',
-            },
-            {
-              label: 'Devpost',
-              href: 'https://devpost.com/lauriecrean',
-            },
-            {
-              label: 'Codepen',
-              href: 'https://codepen.io/lauriecrean',
-            },
-          ],
-        },
-      ],
+      // links: [
+      //   {
+      //     title: 'Contact',
+      //     items: [
+      //       {
+      //         label: 'Email',
+      //         href: 'mailto:lmcrean@gmail.com',
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: 'Connect',
+      //     items: [
+      //       {
+      //         label: 'GitHub',
+      //         href: 'https://github.com/lmcrean',
+      //       },
+      //       {
+      //         label: 'LinkedIn',
+      //         href: 'http://linkedin.com/in/lcrean',
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     title: 'More',
+      //     items: [
+      //       {
+      //         label: 'LeetCode',
+      //         href: 'https://leetcode.com/lmcrean',
+      //       },
+      //       {
+      //         label: 'Stack Overflow',
+      //         href: 'https://stackoverflow.com/users/21992930/laurie-crean?tab=topactivity',
+      //       },
+      //       {
+      //         label: 'HackerRank',
+      //         href: 'https://www.hackerrank.com/profile/mrcrean92',
+      //       },
+      //       {
+      //         label: 'Devpost',
+      //         href: 'https://devpost.com/lauriecrean',
+      //       },
+      //       {
+      //         label: 'Codepen',
+      //         href: 'https://codepen.io/lauriecrean',
+      //       },
+      //     ],
+      //   },
+      // ],
       copyright: `Copyright © ${new Date().getFullYear()} Laurie Crean`,
     },
     prism: {

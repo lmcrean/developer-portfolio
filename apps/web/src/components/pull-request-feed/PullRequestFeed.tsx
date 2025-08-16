@@ -85,16 +85,27 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   const filteredPullRequests = useMemo(() => {
     const displayedPRs = state.allPullRequests.slice(0, state.displayedCount);
     
+    console.log(`🔍 [FILTER DEBUG] Starting filter with ${displayedPRs.length} PRs, displayedCount: ${state.displayedCount}`);
+    console.log(`🔍 [FILTER DEBUG] Username for filtering: "${username}"`);
+    
     // Apply custom filtering
-    let filtered = displayedPRs.filter(pr => {
+    let filtered = displayedPRs.filter((pr, index) => {
+      const repoName = pr.repository.name;
+      const ownerLogin = pr.repository.owner.login;
+      
       // Hide completely blacklisted repositories from config
-      if (HIDDEN_REPOSITORIES.includes(pr.repository.name)) {
+      if (HIDDEN_REPOSITORIES.includes(repoName)) {
+        console.log(`🚫 [FILTER DEBUG] PR ${index}: HIDDEN - ${ownerLogin}/${repoName}`);
         return false;
       }
       
       // Show only external repositories (not user's own repos)
-      return pr.repository.owner.login !== username;
+      const isExternal = ownerLogin !== username;
+      console.log(`${isExternal ? '✅' : '❌'} [FILTER DEBUG] PR ${index}: ${ownerLogin}/${repoName} - ${isExternal ? 'EXTERNAL (keep)' : 'OWN REPO (filter out)'}`);
+      return isExternal;
     });
+    
+    console.log(`🔍 [FILTER DEBUG] After basic filtering: ${filtered.length} PRs remaining`);
     
     // Apply special filtering for limited repositories
     Object.entries(LIMITED_REPOSITORIES).forEach(([repoName, filterType]) => {
@@ -115,6 +126,11 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
     
     // Apply manual overrides to fix incorrect data
     const filteredWithOverrides = filtered.map(pr => applyManualOverrides(pr));
+    
+    console.log(`🔍 [FILTER DEBUG] Final result: ${filteredWithOverrides.length} PRs after all filtering`);
+    if (filteredWithOverrides.length === 0) {
+      console.log(`❌ [FILTER DEBUG] NO PRs REMAINING! This will cause loading skeleton to show.`);
+    }
     
     return filteredWithOverrides;
   }, [state.allPullRequests, state.displayedCount, username]);

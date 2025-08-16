@@ -50,27 +50,48 @@ test.describe('Single Server Quick Test', () => {
     console.log(`⏱️ Waiting ${waitTime}ms for full page load...`);
     await page.waitForTimeout(waitTime);
     
-    // Check if pull request content appeared
-    const pullRequestContent = page.locator('[data-testid="pull-request-feed"], .pull-request, [class*="pull-request"]').first();
+    // Check for pull request feed container
+    const pullRequestFeed = page.locator('[data-testid="pull-request-feed"]');
+    await expect(pullRequestFeed).toBeVisible({ timeout: 15000 });
+    console.log('✅ Pull request feed container is visible');
     
-    if (await pullRequestContent.isVisible()) {
-      console.log('✅ Pull request content is visible');
+    // Critical check: Ensure loading skeleton is NOT present (indicates stuck loading state)
+    const loadingSkeleton = page.locator('[data-testid="loading-skeleton"]');
+    const isSkeletonVisible = await loadingSkeleton.isVisible();
+    
+    if (isSkeletonVisible) {
+      console.log('❌ FAILURE: Loading skeleton is still visible - UI stuck in loading state!');
+      console.log('📋 Console logs for debugging:');
+      consoleMessages.forEach(msg => console.log(`  ${msg}`));
+      expect(loadingSkeleton).not.toBeVisible(); // Fail the test - skeleton should not be visible
+    } else {
+      console.log('✅ Loading skeleton is not visible - good!');
+    }
+    
+    // Positive check: Ensure actual PR cards are present
+    const pullRequestCards = page.locator('[data-testid="pull-request-card"]');
+    const cardCount = await pullRequestCards.count();
+    
+    if (cardCount === 0) {
+      console.log('❌ FAILURE: No pull request cards found - no actual content displayed');
+      console.log('📋 Console logs for debugging:');
+      consoleMessages.forEach(msg => console.log(`  ${msg}`));
+      expect(cardCount).toBeGreaterThan(0); // Fail the test - must have actual PR cards
+    } else {
+      console.log(`✅ Found ${cardCount} pull request cards - actual content is displayed`);
       
       // Check which data source was used
       if (staticDataRequested && !apiServerRequested) {
         console.log('🎉 SUCCESS: Single server with static data working!');
-        expect(true).toBe(true);
+        expect(staticDataRequested).toBe(true);
+        expect(apiServerRequested).toBe(false);
       } else if (apiServerRequested) {
-        console.log('⚠️ Used live API fallback - static data may not be working correctly');
-        expect(true).toBe(true); // Still pass, but log the issue
+        console.log('❌ FAILURE: Attempted to use live API fallback - this should not happen!');
+        expect(apiServerRequested).toBe(false); // Fail the test - no API fallback should occur
       } else {
-        console.log('❓ No clear data source detected');
-        expect(true).toBe(true);
+        console.log('❌ FAILURE: No data source detected - static data not loading');
+        expect(staticDataRequested).toBe(true); // Fail - static data should always load
       }
-    } else {
-      console.log('❌ Pull request content not visible');
-      // Don't fail the test - just log the issue
-      expect(true).toBe(true);
     }
     
     // Log network requests for debugging
@@ -114,5 +135,17 @@ test.describe('Single Server Quick Test', () => {
     expect(Array.isArray(page1Data.data)).toBe(true);
     
     console.log(`✅ Page 1: ${page1Data.data.length} pull requests`);
+    
+    // Additional validation: Ensure no API fallback occurs
+    expect(page1Data.data.length).toBeGreaterThan(0);
+    
+    // Verify each PR has required fields (checking repository.owner specifically)
+    for (const pr of page1Data.data.slice(0, 3)) { // Check first 3 PRs
+      expect(pr).toHaveProperty('repository');
+      expect(pr.repository).toHaveProperty('owner');
+      expect(pr.repository.owner).toHaveProperty('login');
+      expect(pr.repository.owner.login).toBeTruthy();
+    }
+    console.log('✅ All PRs have valid repository.owner structure');
   });
 });

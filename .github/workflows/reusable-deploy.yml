@@ -1,0 +1,221 @@
+name: Shared Deployment Workflow
+
+on:
+  workflow_call:
+    inputs:
+      deployment_channel:
+        description: 'Firebase channel to deploy to (live or branch-{number})'
+        required: true
+        type: string
+      deployment_type:
+        description: 'Type of deployment (main or branch)'
+        required: true
+        type: string
+      pr_number:
+        description: 'PR number for branch deployments'
+        required: false
+        type: string
+      trigger_source:
+        description: 'Source that triggered this deployment'
+        required: false
+        default: 'manual'
+        type: string
+      update_reason:
+        description: 'Reason for update (from scheduled workflow)'
+        required: false
+        type: string
+    secrets:
+      API_GITHUB_TOKEN:
+        required: true
+      FIREBASE_SERVICE_ACCOUNT:
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      deployment_url: ${{ steps.set_url.outputs.deployment_url }}
+    
+    steps:
+      - name: 🛒 Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/web/package-lock.json
+      
+      - name: 🔧 Generate Static Data
+        env:
+          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
+          GITHUB_USERNAME: lmcrean
+        run: |
+          chmod +x .github/workflows/scripts/generate-static-data.sh
+          ./.github/workflows/scripts/generate-static-data.sh
+      
+      - name: 📁 Copy Static Data to Web App
+        run: |
+          chmod +x .github/workflows/scripts/copy-static-data.sh
+          ./.github/workflows/scripts/copy-static-data.sh
+      
+      - name: ✅ Validate Static JSON Files
+        run: |
+          chmod +x .github/workflows/scripts/validate-static-json.sh
+          ./.github/workflows/scripts/validate-static-json.sh
+      
+      - name: 🏗️ Prepare Web App
+        run: |
+          chmod +x .github/workflows/scripts/deploy-web.sh
+          ./.github/workflows/scripts/deploy-web.sh ${{ inputs.deployment_type }} ${{ inputs.pr_number }}
+      
+      - name: 🔐 Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: lauriecrean-free-38256
+          channelId: ${{ inputs.deployment_channel }}
+          entryPoint: apps/web
+        id: deploy
+        timeout-minutes: 15
+      
+      - name: 🔗 Set Deployment URL
+        id: set_url
+        run: |
+          # Standardized URL resolution for all deployments
+          if [ -n "${{ steps.deploy.outputs.url }}" ] && [ "${{ steps.deploy.outputs.url }}" != "null" ]; then
+            DEPLOYMENT_URL="${{ steps.deploy.outputs.url }}"
+            echo "🌐 Using Firebase app URL: $DEPLOYMENT_URL"
+          elif [ -n "${{ steps.deploy.outputs.details_url }}" ] && [ "${{ steps.deploy.outputs.details_url }}" != "null" ]; then
+            DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
+            echo "🌐 Using fallback details URL: $DEPLOYMENT_URL"
+          else
+            # Construct URL based on deployment type
+            if [ "${{ inputs.deployment_type }}" = "main" ]; then
+              DEPLOYMENT_URL="https://lauriecrean-free-38256.web.app"
+              echo "🌐 Using production URL: $DEPLOYMENT_URL"
+            else
+              # Construct preview URL for branch deployments
+              DEPLOYMENT_URL="https://lauriecrean-free-38256--${{ inputs.deployment_channel }}.web.app"
+              echo "⚠️ Constructing preview URL: $DEPLOYMENT_URL"
+            fi
+          fi
+          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+      
+      - name: ⏳ Wait for Firebase Deployment
+        run: |
+          echo "⏳ Waiting for Firebase to fully provision the deployment..."
+          sleep 45
+          echo "✅ Deployment wait complete"
+      
+      - name: 🌐 Test Static Data
+        run: |
+          chmod +x .github/workflows/scripts/test-static-data.sh
+          echo "🔍 Testing static data availability..."
+          ./.github/workflows/scripts/test-static-data.sh "${{ steps.set_url.outputs.deployment_url }}"
+        timeout-minutes: 10
+      
+      - name: 🧪 Run E2E Tests
+        run: |
+          chmod +x .github/workflows/scripts/run-e2e-tests.sh
+          echo "🎯 Starting E2E tests..."
+          ./.github/workflows/scripts/run-e2e-tests.sh "${{ steps.set_url.outputs.deployment_url }}"
+          echo "✅ E2E tests passed successfully"
+        timeout-minutes: 20
+        # CRITICAL FIX: No continue-on-error - both main and branch must pass E2E tests
+      
+      - name: 📊 Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results-${{ inputs.deployment_type }}-${{ inputs.pr_number || 'main' }}
+          path: |
+            e2e/test-results/
+            e2e/playwright-report/
+          retention-days: 30
+      
+      - name: 💬 Update PR Comment
+        if: inputs.deployment_type == 'branch'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const webUrl = '${{ steps.set_url.outputs.deployment_url }}';
+            const webStatus = '${{ job.status }}';
+            
+            const statusEmoji = webStatus === 'success' ? '✅' : '❌';
+            const statusText = webStatus === 'success' ? 'Deployment successful!' : 'Deployment failed';
+            
+            const commentBody = `## 🚀 SINGLE-SERVER DEPLOYMENT
+
+            ### 🌐 Web App with Embedded Static Data
+            **Live Preview:** [${webUrl}](${webUrl})
+
+            ### 🧪 Quick Test Links
+            - [📱 Web App](${webUrl}) - Test the user interface
+            - [📊 Static Data](${webUrl}/pr-metadata.json) - Verify static data serving
+            - [🔗 Click here to test!](${webUrl})
+
+            ### ⚡ Performance Features
+            - **Sub-second loading** with embedded static data
+            - **No API server dependency** - single-server architecture
+            - **Same-origin requests** for optimal performance
+            - **Automatic fallback** to live GitHub API if needed
+
+            ${statusEmoji} ${statusText}
+
+            ---
+            *🔄 Last updated: ${new Date().toLocaleString()} UTC*
+            
+            <!-- BRANCH_DEPLOYMENT_COMMENT -->`;
+
+            const comments = await github.rest.issues.listComments({
+              issue_number: ${{ inputs.pr_number }},
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+            const existingComment = comments.data.find(comment => 
+              comment.body.includes('<!-- BRANCH_DEPLOYMENT_COMMENT -->')
+            );
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                comment_id: existingComment.id,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: ${{ inputs.pr_number }},
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: commentBody
+              });
+            }
+      
+      - name: 🎯 Deployment Summary
+        run: |
+          echo "🎯 Single-Server Deployment Complete!"
+          echo "📍 Web URL: ${{ steps.set_url.outputs.deployment_url }}"
+          echo "📦 Deployment Channel: ${{ inputs.deployment_channel }}"
+          echo "🔄 Deployment Type: ${{ inputs.deployment_type }}"
+          
+          # Show trigger source if provided
+          if [ "${{ inputs.trigger_source }}" = "scheduled" ]; then
+            echo "🕐 Triggered by: Scheduled Update"
+            echo "💡 Update Reason: ${{ inputs.update_reason }}"
+          elif [ "${{ inputs.trigger_source }}" = "push" ]; then
+            echo "🔄 Triggered by: Push to main branch"
+          elif [ "${{ inputs.trigger_source }}" = "pr" ]; then
+            echo "🔀 Triggered by: Pull Request #${{ inputs.pr_number }}"
+          else
+            echo "👤 Triggered by: Manual workflow dispatch"
+          fi
+          
+          echo "✅ Static data generation validated"
+          echo "✅ Static data serving validated" 
+          echo "✅ E2E tests executed and passed"
+          echo "🚀 Single-server architecture validated!"
