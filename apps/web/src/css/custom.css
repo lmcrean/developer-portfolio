@@ -87,7 +87,7 @@ main[class*="docMainContainer"] .container,
 .container.padding-top--md.padding-bottom--lg {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem;
+  padding: 0 .5rem;
 }
 
 /* Ensure proper centering on larger screens */
@@ -95,7 +95,7 @@ main[class*="docMainContainer"] .container,
   .docs-wrapper article,
   main[class*="docMainContainer"] .container,
   .container.padding-top--md.padding-bottom--lg {
-    padding: 0 3rem;
+    padding: 0 .5rem;
   }
 }
 
@@ -314,4 +314,21 @@ main[class*="docMainContainer"] .container,
   color: #9ca3af; /* gray-400 for headers in dark mode */
 }
 
+/* banner title */
+@media screen and (max-width: 430px) {
+  .banner-title span {
+    text-align: center;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+  }
+}
 
+@media screen and (max-width: 320px) {
+  body {
+    font-size: 30px !important;
+  }
+}
+
+.animate-code-2 {
+  --line-width: 7rem;
+}

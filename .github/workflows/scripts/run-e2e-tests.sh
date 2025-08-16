@@ -28,6 +28,10 @@ npm ci
 echo "🎭 Installing Playwright browsers..."
 npx playwright install
 
+# Install system dependencies for browsers (required for WebKit/Safari on Linux)
+echo "📦 Installing Playwright system dependencies..."
+npx playwright install-deps
+
 # Pre-test validation
 echo "🌐 Pre-test validation..."
 for i in {1..3}; do
@@ -49,7 +53,14 @@ done
 echo "🚀 Running E2E tests..."
 export WEB_URL="$WEB_URL"
 
-npx playwright test tests/features/pull-request/${TEST_NAME}.web.spec.ts --reporter=line
+# Use production config for deployed environments
+if [[ "$WEB_URL" == *"web.app"* || "$WEB_URL" == *"firebase"* ]]; then
+  echo "🌐 Using production configuration for deployed environment"
+  npx playwright test tests/features/pull-request/${TEST_NAME}.web.spec.ts --config=playwright.prod.web.main.config.ts --reporter=line
+else
+  echo "🏠 Using default configuration for local environment"
+  npx playwright test tests/features/pull-request/${TEST_NAME}.web.spec.ts --reporter=line
+fi
 
 echo "✅ E2E tests completed successfully!"
 echo "🎯 Single-server architecture validated!"

@@ -4,6 +4,16 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      trigger_source:
+        description: 'Source that triggered this deployment'
+        required: false
+        default: 'manual'
+        type: string
+      update_reason:
+        description: 'Reason for update (from scheduled workflow)'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -103,6 +113,17 @@ jobs:
         run: |
           echo "🎯 Single-Server Production Deployment Complete!"
           echo "📍 Web URL: ${{ steps.set_url.outputs.deployment_url }}"
+          
+          # Show trigger source if provided
+          if [ "${{ github.event.inputs.trigger_source }}" = "scheduled" ]; then
+            echo "🕐 Triggered by: Scheduled Update"
+            echo "💡 Update Reason: ${{ github.event.inputs.update_reason }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            echo "🔄 Triggered by: Push to main branch"
+          else
+            echo "👤 Triggered by: Manual workflow dispatch"
+          fi
+          
           echo "✅ Static data generation validated"
           echo "✅ Static data serving validated" 
           echo "✅ E2E tests executed"
