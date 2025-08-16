@@ -22,4 +22,3 @@ jobs:
     secrets:
       API_GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
       FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LAURIECREAN_FREE_38256 }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

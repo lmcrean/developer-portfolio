@@ -29,8 +29,6 @@ on:
         required: true
       FIREBASE_SERVICE_ACCOUNT:
         required: true
-      GITHUB_TOKEN:
-        required: true
 
 jobs:
   deploy:
