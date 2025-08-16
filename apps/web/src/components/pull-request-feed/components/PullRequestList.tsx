@@ -103,11 +103,6 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
 
   // Determine what to render in the table body
   const renderTableBody = () => {
-    // Show loading state during SSR and initial client load
-    if (!isClient || (loading && pullRequests.length === 0)) {
-      return <LoadingRows />;
-    }
-
     // Show error state if error exists and no pull requests
     if (error && pullRequests.length === 0) {
       return <ErrorRow error={error} onRetry={onRetry} />;
@@ -144,8 +139,20 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
       );
     }
 
-    // Fallback to loading state
-    return <LoadingRows />;
+    // No loading skeleton - this app is designed for lightning-fast static data loading
+    // If no PRs are available, show empty state message
+    if (isClient && !loading) {
+      return (
+        <div className="px-4 py-12 text-center">
+          <span className="text-sm text-gray-400 light:text-gray-200 font-medium">
+            No pull requests available after filtering
+          </span>
+        </div>
+      );
+    }
+
+    // Only show loading during actual loading (very brief for static data)
+    return loading ? <LoadingRows /> : null;
   };
 
   return (

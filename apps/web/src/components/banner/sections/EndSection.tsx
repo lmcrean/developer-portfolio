@@ -35,14 +35,14 @@ const MiddleSection: React.FC = () => {
           .animate-dot-12 { animation: fadeInDot 0.3s ease-out 3.9s both; }
           
           .animate-code-1 { animation: expandCodeLine 0.6s ease-out 2.4s both; --line-width: 6rem; }
-          .animate-code-2 { animation: expandCodeLine 0.6s ease-out 2.5s both; --line-width: 9rem; }
+          .animate-code-2 { animation: expandCodeLine 0.6s ease-out 2.5s both; --line-width: 7rem; }
           .animate-code-3 { animation: expandCodeLine 0.6s ease-out 2.6s both; --line-width: 4rem; }
           .animate-code-4 { animation: expandCodeLine 0.6s ease-out 2.7s both; --line-width: 6rem; }
           .animate-code-5 { animation: expandCodeLine 0.6s ease-out 2.8s both; --line-width: 8rem; }
           .animate-code-6 { animation: expandCodeLine 0.6s ease-out 2.9s both; --line-width: 5rem; }
           .animate-code-7 { animation: expandCodeLine 0.6s ease-out 3s both; --line-width: 7rem; }
           .animate-code-8 { animation: expandCodeLine 0.6s ease-out 3.1s both; --line-width: 6rem; }
-          .animate-code-9 { animation: expandCodeLine 0.6s ease-out 3.2s both; --line-width: 8rem; }
+          .animate-code-9 { animation: expandCodeLine 0.6s ease-out 3.2s both; --line-width: 7rem; }
           .animate-code-10 { animation: expandCodeLine 0.6s ease-out 3.3s both; --line-width: 4rem; }
           .animate-code-11 { animation: expandCodeLine 0.6s ease-out 3.4s both; --line-width: 8rem; }
         `}

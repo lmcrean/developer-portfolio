@@ -95,10 +95,8 @@ export const usePullRequestApi = ({
         onListError(err.message || 'Failed to load pull requests.');
       }
     } finally {
-      // Only update loading state if component is still mounted
-      if (isMountedRef.current) {
-        setLoading(false);
-      }
+      // Always reset loading state to prevent stuck loading skeleton
+      setLoading(false);
     }
   }, [username, onListSuccess, onListError, setLoading, shouldUseStatic]);
 
