@@ -314,4 +314,10 @@ main[class*="docMainContainer"] .container,
   color: #9ca3af; /* gray-400 for headers in dark mode */
 }
 
+/* banner title */
 
+.banner-title span {
+  text-align: center;
+  overflow: visible !important;
+  white-space: pre-wrap !important;
+}

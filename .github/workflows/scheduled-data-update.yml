@@ -14,15 +14,15 @@ on:
 
 permissions:
   contents: read
-  deployments: write
-  checks: write
+  actions: write  # Required to trigger other workflows
 
 jobs:
-  update-data:
+  check-and-trigger:
     runs-on: ubuntu-latest
     outputs:
-      deployment_url: ${{ steps.set_url.outputs.deployment_url }}
-      data_updated: ${{ steps.staleness_check.outputs.needs_update }}
+      needs_update: ${{ steps.staleness_check.outputs.needs_update }}
+      update_reason: ${{ steps.staleness_check.outputs.reason }}
+      workflow_run_url: ${{ steps.trigger_deploy.outputs.workflow_url }}
     
     steps:
       - name: 🛒 Checkout Repository
@@ -60,65 +60,63 @@ jobs:
             esac
           done
       
-      - name: 🔧 Generate Static Data
+      - name: 🚀 Trigger Main Production Deployment
         if: steps.staleness_check.outputs.needs_update == 'true'
+        id: trigger_deploy
         env:
-          GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
-          GITHUB_USERNAME: lmcrean
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          chmod +x .github/workflows/scripts/generate-static-data.sh
-          ./.github/workflows/scripts/generate-static-data.sh
-      
-      - name: 📁 Copy Static Data to Web App
-        if: steps.staleness_check.outputs.needs_update == 'true'
-        run: |
-          chmod +x .github/workflows/scripts/copy-static-data.sh
-          ./.github/workflows/scripts/copy-static-data.sh
-      
-      - name: 🏗️ Prepare Web App
-        if: steps.staleness_check.outputs.needs_update == 'true'
-        run: |
-          chmod +x .github/workflows/scripts/deploy-web.sh
-          ./.github/workflows/scripts/deploy-web.sh main
-      
-      - name: 🔐 Deploy to Firebase (Production Data Update)
-        if: steps.staleness_check.outputs.needs_update == 'true'
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LAURIECREAN_FREE_38256 }}
-          projectId: lauriecrean-free-38256
-          channelId: live
-          entryPoint: apps/web
-        id: deploy
-        timeout-minutes: 10
-      
-      - name: 🔗 Set Deployment URL
-        if: steps.staleness_check.outputs.needs_update == 'true'
-        id: set_url
-        run: |
-          DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
+          echo "📋 Triggering main production deployment..."
           
-          # Fallback to default production URL if deploy output is empty
-          if [[ -z "$DEPLOYMENT_URL" || "$DEPLOYMENT_URL" == "null" ]]; then
-            DEPLOYMENT_URL="https://lauriecrean-free-38256.web.app"
+          # Map the update reason to a user-friendly message
+          REASON="${{ steps.staleness_check.outputs.reason }}"
+          case "$REASON" in
+            "new_external_activity")
+              UPDATE_MSG="New external pull request activity detected"
+              ;;
+            "very_stale")
+              UPDATE_MSG="Data is very stale (24+ hours old)"
+              ;;
+            "moderately_stale_no_external")
+              UPDATE_MSG="Data is moderately stale with no external activity"
+              ;;
+            "force_requested")
+              UPDATE_MSG="Force update requested via manual trigger"
+              ;;
+            *)
+              UPDATE_MSG="Scheduled staleness check triggered update"
+              ;;
+          esac
+          
+          # Trigger the main production deployment workflow
+          RESPONSE=$(curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/deploy-main-production.yml/dispatches \
+            -d "{\"ref\":\"main\",\"inputs\":{\"trigger_source\":\"scheduled\",\"update_reason\":\"$UPDATE_MSG\"}}" \
+            -w "\n%{http_code}" \
+            -s)
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
+          
+          if [ "$HTTP_CODE" = "204" ]; then
+            echo "✅ Successfully triggered main production deployment"
+            echo "🔗 Check the Actions tab for the deployment progress"
+            
+            # Generate the workflow URL (approximate, as we can't get the exact run ID immediately)
+            WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/workflows/deploy-main-production.yml"
+            echo "workflow_url=$WORKFLOW_URL" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Failed to trigger deployment. HTTP status: $HTTP_CODE"
+            echo "Response: $RESPONSE"
+            exit 1
           fi
-          
-          echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
-          echo "🌐 Updated Production URL: $DEPLOYMENT_URL"
-      
-      - name: 🌐 Validate Static Data
-        if: steps.staleness_check.outputs.needs_update == 'true'
-        run: |
-          chmod +x .github/workflows/scripts/test-static-data.sh
-          echo "🔍 Validating static data on updated deployment..."
-          ./.github/workflows/scripts/test-static-data.sh "${{ steps.set_url.outputs.deployment_url }}"
-        timeout-minutes: 5
       
       - name: 📊 Update Summary
         run: |
           echo "=== 🕐 SCHEDULED DATA UPDATE SUMMARY ==="
-          echo "🕒 Update Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "🕒 Check Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
           echo "🔄 Trigger: ${{ github.event_name }}"
           echo "📋 Update Needed: ${{ steps.staleness_check.outputs.needs_update }}"
           echo "💡 Reason: ${{ steps.staleness_check.outputs.reason }}"
@@ -129,24 +127,24 @@ jobs:
           fi
           
           if [ "${{ steps.staleness_check.outputs.needs_update }}" = "true" ]; then
-            echo "✅ Data successfully updated and deployed"
-            echo "🌐 Production URL: ${{ steps.set_url.outputs.deployment_url }}"
+            echo "✅ Update required - triggered main production deployment"
+            echo "🚀 Deployment workflow: ${{ steps.trigger_deploy.outputs.workflow_url }}"
             
             case "${{ steps.staleness_check.outputs.reason }}" in
               "new_external_activity")
-                echo "🎯 Updated due to new external pull request activity"
+                echo "🎯 Updating due to new external pull request activity"
                 ;;
               "very_stale")
-                echo "🔄 Updated due to very stale data (24+ hours)"
+                echo "🔄 Updating due to very stale data (24+ hours)"
                 ;;
               "moderately_stale_no_external")
-                echo "⏰ Updated due to moderately stale data with no external activity"
+                echo "⏰ Updating due to moderately stale data with no external activity"
                 ;;
               "force_requested")
-                echo "🔧 Updated due to manual force request"
+                echo "🔧 Updating due to manual force request"
                 ;;
               *)
-                echo "🔄 Updated due to other staleness conditions"
+                echo "🔄 Updating due to other staleness conditions"
                 ;;
             esac
           else
@@ -161,6 +159,7 @@ jobs:
                 echo "⏭️  Skipped - data is still fresh"
                 ;;
             esac
+            echo "🎯 No deployment needed - data is current"
           fi
           
-          echo "🚀 Smart scheduled update process completed!"
+          echo "🚀 Smart scheduled update check completed!"
