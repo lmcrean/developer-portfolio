@@ -59,18 +59,18 @@ test.describe('Single Server Quick Test', () => {
       // Check which data source was used
       if (staticDataRequested && !apiServerRequested) {
         console.log('🎉 SUCCESS: Single server with static data working!');
-        expect(true).toBe(true);
+        expect(staticDataRequested).toBe(true);
+        expect(apiServerRequested).toBe(false);
       } else if (apiServerRequested) {
-        console.log('⚠️ Used live API fallback - static data may not be working correctly');
-        expect(true).toBe(true); // Still pass, but log the issue
+        console.log('❌ FAILURE: Attempted to use live API fallback - this should not happen!');
+        expect(apiServerRequested).toBe(false); // Fail the test - no API fallback should occur
       } else {
-        console.log('❓ No clear data source detected');
-        expect(true).toBe(true);
+        console.log('❌ FAILURE: No data source detected - static data not loading');
+        expect(staticDataRequested).toBe(true); // Fail - static data should always load
       }
     } else {
-      console.log('❌ Pull request content not visible');
-      // Don't fail the test - just log the issue
-      expect(true).toBe(true);
+      console.log('❌ FAILURE: Pull request content not visible');
+      expect(pullRequestContent).toBeVisible(); // Fail the test - content must be visible
     }
     
     // Log network requests for debugging
@@ -114,5 +114,17 @@ test.describe('Single Server Quick Test', () => {
     expect(Array.isArray(page1Data.data)).toBe(true);
     
     console.log(`✅ Page 1: ${page1Data.data.length} pull requests`);
+    
+    // Additional validation: Ensure no API fallback occurs
+    expect(page1Data.data.length).toBeGreaterThan(0);
+    
+    // Verify each PR has required fields (checking repository.owner specifically)
+    for (const pr of page1Data.data.slice(0, 3)) { // Check first 3 PRs
+      expect(pr).toHaveProperty('repository');
+      expect(pr.repository).toHaveProperty('owner');
+      expect(pr.repository.owner).toHaveProperty('login');
+      expect(pr.repository.owner.login).toBeTruthy();
+    }
+    console.log('✅ All PRs have valid repository.owner structure');
   });
 });

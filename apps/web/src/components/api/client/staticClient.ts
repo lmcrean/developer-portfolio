@@ -164,23 +164,23 @@ class StaticClient {
   }
 
   /**
-   * Check if static data is available and fresh
+   * Check if static data is available (no freshness check - always use if present)
    */
   async isStaticDataAvailable(): Promise<boolean> {
     try {
       const metadata = await this.getMetadata();
       
-      // Check if data is reasonably fresh (within 8 hours)
+      // Log data age for monitoring but always use it if available
       const lastGenerated = new Date(metadata.last_generated);
       const now = new Date();
       const hoursOld = (now.getTime() - lastGenerated.getTime()) / (1000 * 60 * 60);
       
-      const isValid = hoursOld < 8;
-      console.log(`🕒 Static data is ${hoursOld.toFixed(1)} hours old, valid: ${isValid}`);
+      console.log(`📊 Static data is ${hoursOld.toFixed(1)} hours old, using cached data`);
       
-      return isValid;
+      // Always return true if metadata loads successfully
+      return true;
     } catch (error) {
-      console.log('⚠️ Static data availability check failed:', error);
+      console.log('⚠️ Static data not available:', error);
       return false;
     }
   }
