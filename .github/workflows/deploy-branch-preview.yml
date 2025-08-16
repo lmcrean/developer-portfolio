@@ -41,6 +41,34 @@ jobs:
           chmod +x .github/workflows/scripts/copy-static-data.sh
           ./.github/workflows/scripts/copy-static-data.sh
       
+      - name: ✅ Validate Static Data Files
+        run: |
+          echo "🔍 Validating static data files in web app..."
+          
+          # Check for metadata file
+          if [ ! -f "apps/web/static/pr-metadata.json" ]; then
+            echo "❌ Missing pr-metadata.json in web app"
+            exit 1
+          fi
+          
+          # Check for page 1 file
+          if [ ! -f "apps/web/static/pr-page-1.json" ]; then
+            echo "❌ Missing pr-page-1.json in web app"
+            exit 1
+          fi
+          
+          # Count total static files
+          STATIC_FILES=$(ls apps/web/static/pr-*.json 2>/dev/null | wc -l)
+          echo "✅ Found $STATIC_FILES static data files"
+          
+          # Validate JSON format of metadata
+          if ! jq . apps/web/static/pr-metadata.json > /dev/null 2>&1; then
+            echo "❌ Invalid JSON format in pr-metadata.json"
+            exit 1
+          fi
+          
+          echo "✅ Static data validation complete"
+      
       - name: 🏗️ Prepare Web App
         run: |
           chmod +x .github/workflows/scripts/deploy-web.sh
@@ -59,9 +87,25 @@ jobs:
       - name: 🔗 Set Deployment URL
         id: set_url
         run: |
-          DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
+          # Try to get the actual Firebase app URL instead of GitHub's details page
+          if [ -n "${{ steps.deploy.outputs.url }}" ]; then
+            DEPLOYMENT_URL="${{ steps.deploy.outputs.url }}"
+            echo "🌐 Using Firebase app URL: $DEPLOYMENT_URL"
+          elif [ -n "${{ steps.deploy.outputs.details_url }}" ]; then
+            DEPLOYMENT_URL="${{ steps.deploy.outputs.details_url }}"
+            echo "🌐 Using fallback details URL: $DEPLOYMENT_URL"
+          else
+            # Construct Firebase preview URL as last resort
+            DEPLOYMENT_URL="https://lauriecrean-free-38256--branch-${{ github.event.number }}-$(date +%s | tail -c 6).web.app"
+            echo "⚠️ Constructing Firebase URL: $DEPLOYMENT_URL"
+          fi
           echo "deployment_url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
-          echo "🌐 Branch Preview URL: $DEPLOYMENT_URL"
+      
+      - name: ⏳ Wait for Firebase Deployment
+        run: |
+          echo "⏳ Waiting for Firebase to fully provision the preview deployment..."
+          sleep 45
+          echo "✅ Deployment wait complete"
       
       - name: 🌐 Test Static Data
         run: |
