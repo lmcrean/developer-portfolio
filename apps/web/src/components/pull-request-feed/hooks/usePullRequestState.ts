@@ -10,7 +10,7 @@ export const usePullRequestState = () => {
   
   // Infinite scroll state
   const [allPullRequests, setAllPullRequests] = useState<PullRequestListData[]>([]);
-  const [displayedCount, setDisplayedCount] = useState(20); // Start by showing 20 items to account for filtering
+  const [displayedCount, setDisplayedCount] = useState(5); // Start by showing 5 items (data is pre-filtered)
   const [loading, setLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +27,8 @@ export const usePullRequestState = () => {
     } else {
       // Replace existing data (initial load)
       setAllPullRequests(data);
-      // Show more items initially to account for filtering out user's own repos
-      // Since we filter to external repos only, we need more items to ensure visibility
-      setDisplayedCount(Math.min(20, data.length)); // Show first 20 items to account for filtering
+      // Data is pre-filtered at API level, so we can show fewer items initially
+      setDisplayedCount(Math.min(5, data.length)); // Show first 5 items (data is pre-filtered)
     }
     setTotalItemsAvailable(paginationData.total_count);
     setHasMoreItems(paginationData.has_next_page || data.length > displayedCount);
