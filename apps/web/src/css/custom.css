@@ -323,6 +323,21 @@ main[class*="docMainContainer"] .container,
   }
 }
 
+/* Disable typewriter animation below 400px */
+@media screen and (max-width: 400px) {
+  .banner-title span {
+    animation: none !important;
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+  
+  .banner-subtitle {
+    animation: none !important;
+    border-right: none !important;
+    padding-right: 0 !important;
+  }
+}
+
 @media screen and (max-width: 320px) {
   body {
     font-size: 30px !important;
