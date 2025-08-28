@@ -3,6 +3,9 @@ name: Deploy Main Production (Single-Server)
 on:
   push:
     branches: [main]
+  schedule:
+    # Run every 6 hours at 00:00, 06:00, 12:00, 18:00 UTC
+    - cron: '0 */6 * * *'
   workflow_dispatch:
     inputs:
       trigger_source:
@@ -27,7 +30,7 @@ jobs:
     with:
       deployment_channel: 'live'
       deployment_type: 'main'
-      trigger_source: ${{ github.event.inputs.trigger_source || (github.event_name == 'push' && 'push') || 'manual' }}
+      trigger_source: ${{ github.event.inputs.trigger_source || (github.event_name == 'push' && 'push') || (github.event_name == 'schedule' && 'scheduled') || 'manual' }}
       update_reason: ${{ github.event.inputs.update_reason }}
     secrets:
       API_GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
