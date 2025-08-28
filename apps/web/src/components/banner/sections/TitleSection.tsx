@@ -57,11 +57,19 @@ const RightSection: React.FC = () => {
             from { border-color: transparent; }
             to { border-color: #fde047; }
           }
+          
+          /* Override animation for viewports less than 400px */
+          @media (max-width: 399px) {
+            .typewriter-name-container {
+              animation: blink-white-caret 0.75s step-end 0.5s 2, hide-white-caret 0.1s 2s both !important;
+              width: 100% !important;
+            }
+          }
         `}
       </style>
       <div className="w-full md:w-3/6 lg:w-1/2 md:flex-shrink-0 md:min-w-130 bg-teal-800 p-6 flex flex-col justify-center">
         <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white banner-title">
-          <span className="inline-block" style={typewriterStyle}>
+          <span className="inline-block typewriter-name-container" style={typewriterStyle}>
             Laurie Crean
           </span>
         </div>
