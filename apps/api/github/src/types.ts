@@ -11,6 +11,7 @@ export interface PullRequestResponse {
   state: 'open' | 'closed' | 'merged';
   additions?: number;
   deletions?: number;
+  comments?: number;
   repository: {
     name: string;
     description: string | null;
