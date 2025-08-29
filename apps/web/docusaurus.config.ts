@@ -151,7 +151,7 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/lauriecrean',
+          href: 'https://github.com/lmcrean',
           html: '<i class="fab fa-github fa-lg" title="GitHub"></i> <b class="navbar__text">GitHub</b>',
           className: 'navbar-icon-item',
           position: 'right',
