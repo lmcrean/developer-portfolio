@@ -12,6 +12,7 @@ export interface PullRequestListData {
   html_url: string;
   additions?: number;
   deletions?: number;
+  comments?: number;
   repository: {
     name: string;
     description: string | null;

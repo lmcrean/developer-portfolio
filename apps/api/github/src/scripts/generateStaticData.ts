@@ -63,6 +63,7 @@ interface PullRequestListData {
   html_url: string;
   additions?: number;
   deletions?: number;
+  comments?: number;
   repository: {
     name: string;
     description: string | null;
@@ -269,10 +270,11 @@ class StaticDataGenerator {
           enhancedPRs[prIndex] = {
             ...enhancedPRs[prIndex],
             additions: prDetail.additions,
-            deletions: prDetail.deletions
+            deletions: prDetail.deletions,
+            comments: prDetail.comments
           };
           enhancedCount++;
-          console.log(`✅ Enhanced ${owner}/${repo}#${pr.number} with +${prDetail.additions} -${prDetail.deletions}`);
+          console.log(`✅ Enhanced ${owner}/${repo}#${pr.number} with +${prDetail.additions} -${prDetail.deletions} comments:${prDetail.comments}`);
         }
 
         // Add delay between API calls to be respectful
@@ -330,10 +332,11 @@ class StaticDataGenerator {
           enhancedPRs[prIndex] = {
             ...enhancedPRs[prIndex],
             additions: prDetail.additions,
-            deletions: prDetail.deletions
+            deletions: prDetail.deletions,
+            comments: prDetail.comments
           };
           enhancedCount++;
-          console.log(`✅ Enhanced ${owner}/${repo}#${pr.number} with +${prDetail.additions} -${prDetail.deletions}`);
+          console.log(`✅ Enhanced ${owner}/${repo}#${pr.number} with +${prDetail.additions} -${prDetail.deletions} comments:${prDetail.comments}`);
         }
 
         // Add delay between API calls to be respectful
