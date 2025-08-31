@@ -182,7 +182,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
 
       {/* Table Header - Always visible */}
       <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
-        Enterprise Solutions: Pull Requests
+        Enterprise Solutions
       </div>
 
       {/* Table Body - Dynamic content based on state */}

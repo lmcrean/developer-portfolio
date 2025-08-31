@@ -1,0 +1,66 @@
+{
+  "count": 6,
+  "issues": [
+    {
+      "id": 3369295026,
+      "number": 8,
+      "title": "Aggressive Goroutine Termination in Flush Loop",
+      "url": "https://github.com/rropen/terraform-provider-cscdm/issues/8",
+      "state": "open",
+      "date_opened": "2025-08-30T16:47:02Z",
+      "date_closed": null,
+      "repository": "rropen/terraform-provider-cscdm"
+    },
+    {
+      "id": 3369276320,
+      "number": 16,
+      "title": "Feat request: Add Code Coverage Reporting for better macro-understanding of test status",
+      "url": "https://github.com/GSK-Biostatistics/docorator/issues/16",
+      "state": "open",
+      "date_opened": "2025-08-30T16:24:08Z",
+      "date_closed": null,
+      "repository": "GSK-Biostatistics/docorator"
+    },
+    {
+      "id": 3366738470,
+      "number": 2,
+      "title": "Enabled README png to work in github dark mode with gray on black text",
+      "url": "https://github.com/AstraZeneca/cellatria/issues/2",
+      "state": "closed",
+      "date_opened": "2025-08-29T12:35:36Z",
+      "date_closed": "2025-08-29T22:44:28Z",
+      "repository": "AstraZeneca/cellatria"
+    },
+    {
+      "id": 3246270558,
+      "number": 6919,
+      "title": "issue: Frontend yarn permission error prevents localhost testing via Docker Desktop GUI. Expecting to preview application on local machine",
+      "url": "https://github.com/penpot/penpot/issues/6919",
+      "state": "closed",
+      "date_opened": "2025-07-20T11:11:32Z",
+      "date_closed": "2025-07-24T20:55:32Z",
+      "repository": "penpot/penpot"
+    },
+    {
+      "id": 3168922154,
+      "number": 6763,
+      "title": "feature: Saved version histories should be protected from external user interferance",
+      "url": "https://github.com/penpot/penpot/issues/6763",
+      "state": "open",
+      "date_opened": "2025-06-23T17:30:58Z",
+      "date_closed": null,
+      "repository": "penpot/penpot"
+    },
+    {
+      "id": 3154558714,
+      "number": 6709,
+      "title": "feature request: Design Branching System for Parallel Design Workflows",
+      "url": "https://github.com/penpot/penpot/issues/6709",
+      "state": "open",
+      "date_opened": "2025-06-17T19:32:22Z",
+      "date_closed": null,
+      "repository": "penpot/penpot"
+    }
+  ],
+  "generated_at": "2025-08-31T22:12:53.476Z"
+}

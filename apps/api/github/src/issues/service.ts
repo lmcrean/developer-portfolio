@@ -187,7 +187,8 @@ export class GitHubIssuesService {
           },
           issues: [],
           openCount: 0,
-          closedCount: 0
+          closedCount: 0,
+          lastActivityDate: ''
         });
       }
       
@@ -201,9 +202,28 @@ export class GitHubIssuesService {
       }
     }
     
-    // Sort groups by total issue count
-    return Array.from(groups.values())
-      .sort((a, b) => b.issues.length - a.issues.length);
+    // Calculate lastActivityDate for each group and sort by it
+    const groupsArray = Array.from(groups.values());
+    
+    for (const group of groupsArray) {
+      // Find the most recent activity date from all issues in the group
+      if (group.issues.length > 0) {
+        const dates = group.issues.map(issue => 
+          new Date(issue.updated_at || issue.created_at).getTime()
+        );
+        const mostRecentDate = new Date(Math.max(...dates));
+        group.lastActivityDate = mostRecentDate.toISOString();
+      } else {
+        group.lastActivityDate = new Date(0).toISOString();
+      }
+    }
+    
+    // Sort groups by most recent activity first
+    return groupsArray.sort((a, b) => {
+      const dateA = new Date(a.lastActivityDate).getTime();
+      const dateB = new Date(b.lastActivityDate).getTime();
+      return dateB - dateA; // Descending order (most recent first)
+    });
   }
 
   private async fetchRepositoryDetails(owner: string, repo: string): Promise<any> {

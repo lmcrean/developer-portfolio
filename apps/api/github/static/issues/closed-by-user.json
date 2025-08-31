@@ -1,0 +1,106 @@
+{
+  "count": 10,
+  "issues": [
+    {
+      "id": 3006342540,
+      "number": 218,
+      "title": "CORS Issue in production -- can't connect to backend",
+      "url": "https://github.com/lmcrean/dottie/issues/218",
+      "state": "closed",
+      "date_opened": "2025-04-19T10:08:16Z",
+      "date_closed": "2025-04-21T14:35:21Z",
+      "repository": "lmcrean/dottie"
+    },
+    {
+      "id": 3002027664,
+      "number": 170,
+      "title": "Production: update Supabase tables to accomodate new Json format for assessment",
+      "url": "https://github.com/lmcrean/dottie/issues/170",
+      "state": "closed",
+      "date_opened": "2025-04-17T10:01:17Z",
+      "date_closed": "2025-04-19T13:19:32Z",
+      "repository": "lmcrean/dottie"
+    },
+    {
+      "id": 2974088862,
+      "number": 76,
+      "title": "Frontend (Decision tree): Assignment logic in assessment result needs confirming - false assigns \"Developing Pattern\"",
+      "url": "https://github.com/lmcrean/dottie/issues/76",
+      "state": "closed",
+      "date_opened": "2025-04-05T09:42:35Z",
+      "date_closed": "2025-04-14T12:18:56Z",
+      "repository": "lmcrean/dottie"
+    },
+    {
+      "id": 2092096499,
+      "number": 25,
+      "title": "tooltips inside modal is displaying aggressively narrow",
+      "url": "https://github.com/lmcrean/Wealth-Quest/issues/25",
+      "state": "closed",
+      "date_opened": "2024-01-20T15:34:16Z",
+      "date_closed": "2024-01-22T12:35:13Z",
+      "repository": "lmcrean/Wealth-Quest"
+    },
+    {
+      "id": 2092005146,
+      "number": 18,
+      "title": "As a player, I need to view card modals that will result from the board",
+      "url": "https://github.com/lmcrean/Wealth-Quest/issues/18",
+      "state": "closed",
+      "date_opened": "2024-01-20T10:41:06Z",
+      "date_closed": "2024-01-22T12:35:12Z",
+      "repository": "lmcrean/Wealth-Quest"
+    },
+    {
+      "id": 2092005559,
+      "number": 19,
+      "title": "As a user I need to view the readme file",
+      "url": "https://github.com/lmcrean/Wealth-Quest/issues/19",
+      "state": "closed",
+      "date_opened": "2024-01-20T10:42:38Z",
+      "date_closed": "2024-01-22T12:35:12Z",
+      "repository": "lmcrean/Wealth-Quest"
+    },
+    {
+      "id": 2092004537,
+      "number": 17,
+      "title": "As a player, I need to view tool tip modals that will help me with the game",
+      "url": "https://github.com/lmcrean/Wealth-Quest/issues/17",
+      "state": "closed",
+      "date_opened": "2024-01-20T10:39:05Z",
+      "date_closed": "2024-01-22T12:35:11Z",
+      "repository": "lmcrean/Wealth-Quest"
+    },
+    {
+      "id": 2092000577,
+      "number": 13,
+      "title": "As a player, I need instructions at the beginning that are easy to understand",
+      "url": "https://github.com/lmcrean/Wealth-Quest/issues/13",
+      "state": "closed",
+      "date_opened": "2024-01-20T10:25:43Z",
+      "date_closed": "2024-01-22T12:35:10Z",
+      "repository": "lmcrean/Wealth-Quest"
+    },
+    {
+      "id": 1855589712,
+      "number": 3,
+      "title": "deploy project on Github pages",
+      "url": "https://github.com/lmcrean/RetrOlympics-Rush/issues/3",
+      "state": "closed",
+      "date_opened": "2023-08-17T19:36:35Z",
+      "date_closed": "2023-08-18T17:53:56Z",
+      "repository": "lmcrean/RetrOlympics-Rush"
+    },
+    {
+      "id": 1789975247,
+      "number": 44,
+      "title": "Features card disappears into grid - switch elements",
+      "url": "https://github.com/lmcrean/hoverboard-vanilla-stack/issues/44",
+      "state": "closed",
+      "date_opened": "2023-07-05T17:17:55Z",
+      "date_closed": "2023-07-08T11:23:32Z",
+      "repository": "lmcrean/hoverboard-vanilla-stack"
+    }
+  ],
+  "generated_at": "2025-08-31T22:12:53.476Z"
+}

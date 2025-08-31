@@ -44,6 +44,7 @@ export interface IssueGroup {
   issues: GitHubIssue[];
   openCount: number;
   closedCount: number;
+  lastActivityDate: string; // ISO date string of most recent issue activity
   isExpanded?: boolean;
 }
 

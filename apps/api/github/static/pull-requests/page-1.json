@@ -1,0 +1,200 @@
+{
+  "data": [
+    {
+      "id": 2787729818,
+      "number": 9,
+      "title": "Enhance(error handling): improve flush loop and trigger handling in cscdm",
+      "description": "## The Problem\r\nThe flush loop goroutine dies permanently on first error, causing silent failures. DNS operations queue but never process after any API/network error. See #8 \r\n\r\n## The Solution\r\n\r\nRestructure to create goroutine ONCE outside loop:\r\n\r\n```go\r\nfunc (c *Client) flushLoop() {\r\n    triggerChan := make(chan struct{}, 1)  // Buffered\r\n    \r\n    go func() {  // Created ONCE\r\n        for {\r\n            c.flushTrigger.Wait()\r\n            // Non-blocking send\r\n            select {\r\n            case triggerChan <- struct{}{}:\r\n            default:\r\n            }\r\n        }\r\n    }()\r\n    \r\n    for {\r\n        // Main loop - no goroutine creation\r\n        if err != nil {\r\n            log(err)  // Continue instead of return\r\n        }\r\n    }\r\n}\r\n```\r\n\r\n## Why Simple Fix Doesn't Work\r\n\r\n**Original code (line 58-78):**\r\n```go\r\nfunc (c *Client) flushLoop() {\r\n    for {\r\n        triggerChan := make(chan struct{})\r\n        go func() {  // NEW goroutine every iteration!\r\n            c.flushTrigger.Wait()\r\n            close(triggerChan)\r\n        }()\r\n        \r\n        // ... select cases ...\r\n        \r\n        if err != nil {\r\n            return  // Dies forever\r\n        }\r\n    }\r\n}\r\n```\r\n\r\n**Just removing `return` causes leak:**\r\n- Each loop iteration creates NEW goroutine\r\n- On error, loop continues → creates another goroutine\r\n- Previous goroutines still blocked on `Wait()`\r\n- Result: 10+ goroutines/second accumulate = memory exhaustion\r\n\r\n## What Changes\r\n\r\n1. **Core fix**: Remove `return` after error → allows recovery\r\n2. **Prevent leak**: Move goroutine creation outside loop\r\n3. **Buffered channel**: Size 1 prevents blocking\r\n4. **Graceful shutdown**: Add triggerStop channel for cleanup\r\n\r\n## Impact\r\n\r\n**Before**: Any error = permanent death, silent failures\r\n**After**: Errors logged, processing continues, transient failures recover\r\n\r\n## Testing\r\n- [x] Build successful - `terraform-provider-cscdm.exe`\r\n  created\r\n- [x] Static analysis passed - go vet found no issues.\r\n  Executable runs - Provider binary executes without\r\n  errors\r\n- [x] This was manually tested with a local test file:\r\n\r\n```\r\n=== ISSUE #001: Goroutine Termination Bug Demo ===\r\n\r\n--- Testing BUGGY Implementation ---\r\nAdded operation: DNS Record 1\r\n  Flush attempt #1 for 1 operations\r\n[BUGGY] Error during flush: simulated API error (e.g., network timeout)\r\n[BUGGY] ❌ RETURNING - Goroutine will DIE!\r\n\r\nAdding more operations after error...\r\n\r\n❌ BUG CONFIRMED: 3 operations stuck in queue!\r\n   Goroutine alive: false\r\n   These operations will NEVER be processed!\r\n\r\n--- Testing FIXED Implementation ---\r\nAdded operation: DNS Record 1\r\n  Flush attempt #1 for 1 operations\r\n[FIXED] Error during flush: simulated API error (e.g., network timeout)\r\n[FIXED] ✅ CONTINUING - Goroutine stays alive!\r\n  Flush attempt #2 for 1 operations\r\n[FIXED] Flush successful\r\n[FIXED] Flush successful\r\n\r\n✅ FIX WORKS: Operations were processed despite error!    \r\n   Goroutine alive: true\r\n   Flush attempts: 3 (failed once, then succeeded)\r\n```\r\n\r\n## Breaking changes\r\nnone - API functions unchanged, the provider still works exactly the same in success scenarios, it just becomes more resilient in realistic error scenarios.",
+      "created_at": "2025-08-31T13:37:08Z",
+      "merged_at": null,
+      "html_url": "https://github.com/rropen/terraform-provider-cscdm/pull/9",
+      "state": "open",
+      "additions": 32,
+      "deletions": 9,
+      "comments": 1,
+      "repository": {
+        "name": "terraform-provider-cscdm",
+        "description": "Terraform Provider for CSC Domain Manager.",
+        "language": "Go",
+        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
+        "owner": {
+          "login": "rropen",
+          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
+        }
+      }
+    },
+    {
+      "id": 2786918386,
+      "number": 17,
+      "title": "Add Code Coverage Infrastructure",
+      "description": "Adds code coverage reporting infrastructure to docorator using covr and Codecov integration. This establishes the foundation for tracking test coverage metrics without modifying any package functionality.\r\n\r\n## Changes\r\n- **DESCRIPTION**: Added `covr` to Suggests\r\n- **README.md**: Added Codecov badge \r\n- **.github/workflows/test-coverage.yml**: New GitHub Actions workflow for coverage reporting\r\n\r\n## Testing for Reviewers\r\n```r\r\n# Install package with suggests\r\ndevtools::install(dependencies = TRUE)\r\n\r\n# Verify covr can be loaded\r\nlibrary(covr)\r\n\r\n# Run coverage (will work locally)\r\npackage_coverage()\r\n```\r\n\r\n## Prerequisites for Full Functionality\r\n**Repository admin must enable Codecov:**\r\n1. Visit https://github.com/apps/codecov\r\n2. Grant access to GSK-Biostatistics/docorator\r\n\r\nWithout this, the workflow will run but fail at the upload step (expected).\r\n\r\n## Notes\r\n- Workflow triggers on PRs and pushes to main/master\r\n- Uses standard r-lib/actions templates\r\n- No breaking changes -- safe to implement\r\n- Coverage percentages will be available after Codecov activation\r\n\r\naddresses #16 ",
+      "created_at": "2025-08-30T16:26:40Z",
+      "merged_at": null,
+      "html_url": "https://github.com/GSK-Biostatistics/docorator/pull/17",
+      "state": "open",
+      "additions": 55,
+      "deletions": 1,
+      "comments": 0,
+      "repository": {
+        "name": "docorator",
+        "description": null,
+        "language": "R",
+        "html_url": "https://github.com/GSK-Biostatistics/docorator",
+        "owner": {
+          "login": "GSK-Biostatistics",
+          "avatar_url": "https://avatars.githubusercontent.com/u/87132606?v=4"
+        }
+      }
+    },
+    {
+      "id": 2760288725,
+      "number": 5595,
+      "title": "Disable LDL/STL checks for CTK < 13.1 (nvbug 5243118)",
+      "description": "## Problem\r\n\r\nIssue #5560: SASS validation incorrectly disabled for nvcc compilation due to overly broad CTK version checks. nvbug 5243118 (LDL/STL bug) only affects nvrtc, not nvcc.\r\n\r\n## Solution\r\n\r\n- Added `is_nvrtc_sass_check_allowed()` helper function in `test_util.h` that uses `__CUDACC_RTC__` to detect compilation context. Function returns whether SASS checks should be performed based on:\r\n  - **nvcc**: Always allows SASS checks (no CTK restrictions)\r\n  - **nvrtc**: CTK version-dependent (disabled on CTK < 13.1)\r\n- Updated `should_check_sass()` in `test_scan.cpp` and `test_unique_by_key.cpp` to use this helper\r\n\r\n## Testing guide\r\n\r\n**Expected behavior:**\r\n- nvcc builds: SASS validation enabled regardless of CUDA Toolkit version\r\n- nvrtc builds: SASS validation only on CUDA Toolkit ≥ 13.1\r\n- Result: Tests should pass without requiring @pytest.mark.no_verify_sass decorators\r\n\r\n## Breaking Changes\r\n\r\n**None** - This is a backward-compatible fix that only affects internal test validation logic. No changes to public APIs, library functionality, build system, or dependencies.\r\n\r\n## Checklist\r\n- [x] I am familiar with the [Contributing Guidelines]().\r\n- [x] New or existing tests cover these changes.\r\n- [x] The documentation is up to date with these changes.\r\n",
+      "created_at": "2025-08-20T15:58:10Z",
+      "merged_at": null,
+      "html_url": "https://github.com/NVIDIA/cccl/pull/5595",
+      "state": "open",
+      "additions": 35,
+      "deletions": 4,
+      "comments": 3,
+      "repository": {
+        "name": "cccl",
+        "description": "CUDA Core Compute Libraries",
+        "language": "C++",
+        "html_url": "https://github.com/NVIDIA/cccl",
+        "owner": {
+          "login": "NVIDIA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1728152?v=4"
+        }
+      }
+    },
+    {
+      "id": 2759515533,
+      "number": 1478,
+      "title": "Return undefined instead of invalid action names for partial matches ",
+      "description": "Partially fixes #1474 - Prevents exception when typing partial cached commands by properly handling undefined action names.\r\n\r\n### Problem\r\nCache contains \"open bbc webpage\" → \"browser.openWebPage\". Typing just \"open\" throws exception because:\r\n1. `constructionValue.ts` returns `{ fullActionName: \"unknown.unknown\" }` \r\n2. `fromJsonAction` tries to parse \"unknown.unknown\" and fails\r\n\r\n### Solution\r\nTwo coordinated changes to handle partial matches gracefully:\r\n\r\n**1. constructionValue.ts**: Return `undefined` instead of \"unknown.unknown\" for partial matches\r\n```diff\r\n- return { fullActionName: \"unknown.unknown\" };\r\n+ return { fullActionName: undefined }; // Return undefined for partial matches\r\n```\r\n\r\n**2. requestAction.ts**: Handle undefined `fullActionName` in `fromJsonAction`\r\n```typescript\r\nconst { schemaName, actionName } =\r\n    actionJSON.fullActionName !== undefined\r\n        ? parseFullActionNameParts(actionJSON.fullActionName)\r\n        : { schemaName: undefined as any, actionName: undefined as any };\r\n```\r\n\r\n### Testing\r\n1. Execute: `open bbc webpage` (populates cache)  \r\n2. Type: `open` (partial match triggers completion)\r\n3. **Before**: Throws exception attempting to parse \"unknown.unknown\"\r\n4. **After**: No exception - returns undefined gracefully, preventing crash",
+      "created_at": "2025-08-20T11:47:09Z",
+      "merged_at": "2025-08-21T22:32:05Z",
+      "html_url": "https://github.com/microsoft/TypeAgent/pull/1478",
+      "state": "merged",
+      "additions": 10,
+      "deletions": 10,
+      "comments": 5,
+      "repository": {
+        "name": "TypeAgent",
+        "description": "Sample code that explores an architecture for using language models to build a personal agent that can work with application agents.",
+        "language": "TypeScript",
+        "html_url": "https://github.com/microsoft/TypeAgent",
+        "owner": {
+          "login": "microsoft",
+          "avatar_url": "https://avatars.githubusercontent.com/u/6154722?v=4"
+        }
+      }
+    },
+    {
+      "id": 2746051142,
+      "number": 232,
+      "title": "Fix: Support `GENERATED ALWAYS AS` columns to reduce migration failures (#212)",
+      "description": "## Problem Statement (#212)\r\n\r\npg-schema-diff incorrectly treats `GENERATED ALWAYS AS (expression) STORED` columns as `DEFAULT` columns, causing migration failures:\r\n\r\n```\r\nERROR: cannot use column reference in DEFAULT expression (SQLSTATE 0A000)\r\n```\r\n\r\n**Example**: A `tsvector` column with `GENERATED ALWAYS AS (to_tsvector('simple', title || ' ' || coalesce(artist, ''))) STORED` gets incorrectly converted to `DEFAULT to_tsvector(...)`, which fails because DEFAULT expressions cannot reference other columns.\r\n\r\n## Root Cause Analysis\r\n\r\n1. **Schema Introspection** (`internal/queries/queries.sql:91-151`): \r\n   - The `GetColumnsForTable` query doesn't check `pg_attribute.attgenerated` \r\n   - It treats all columns with expressions as DEFAULT columns\r\n\r\n2. **DDL Generation** (`pkg/diff/sql_generator.go:2671`):\r\n   - The `buildColumnDefinition` function only handles DEFAULT expressions\r\n   - No support for `GENERATED ALWAYS AS ... STORED` syntax\r\n\r\n## Solution\r\n\r\n### 1. Update Schema Introspection ✅\r\n**Modified** `internal/queries/queries.sql:94-106`:\r\n- Added `pg_attribute.attgenerated` detection ('s' = STORED generated column)\r\n- Split default and generation expressions using CASE statements:\r\n  ```sql\r\n  -- Only populate default_value for non-generated columns\r\n  COALESCE(\r\n      CASE \r\n          WHEN a.attgenerated = 's' THEN ''\r\n          ELSE pg_catalog.pg_get_expr(d.adbin, d.adrelid)\r\n      END, ''\r\n  )::TEXT AS default_value,\r\n  -- Only populate generation_expression for generated columns\r\n  COALESCE(\r\n      CASE\r\n          WHEN a.attgenerated = 's' THEN pg_catalog.pg_get_expr(d.adbin, d.adrelid)\r\n          ELSE ''\r\n      END, ''\r\n  )::TEXT AS generation_expression,\r\n  (a.attgenerated = 's') AS is_generated,\r\n  ```\r\n\r\n**Updated** `internal/queries/queries.sql.go` with new struct fields:\r\n- Added `GenerationExpression string`\r\n- Added `IsGenerated bool`\r\n- Updated row scanning to handle new fields\r\n\r\n### 2. Extend Column Model ✅\r\n**Enhanced** `internal/schema/schema.go:268-275`:\r\n```go\r\nColumn struct {\r\n    Name      string\r\n    Type      string\r\n    Collation SchemaQualifiedName\r\n    Default   string\r\n    // NEW: Generated column support\r\n    IsGenerated          bool\r\n    GenerationExpression string\r\n    IsNullable bool\r\n    Size     int\r\n    Identity *ColumnIdentity\r\n}\r\n```\r\n\r\n**Updated** `internal/schema/schema.go:992-996` column building logic:\r\n```go\r\ncolumns = append(columns, Column{\r\n    // ... existing fields ...\r\n    Default:             column.DefaultValue,\r\n    IsGenerated:         column.IsGenerated,\r\n    GenerationExpression: column.GenerationExpression,\r\n    // ... rest of fields ...\r\n})\r\n```\r\n\r\n### 3. Fix DDL Generation ✅\r\n**Fixed** `pkg/diff/sql_generator.go:2677-2681`:\r\n```go\r\nfunc buildColumnDefinition(column schema.Column) (string, error) {\r\n    sb := strings.Builder{}\r\n    sb.WriteString(fmt.Sprintf(\"%s %s\", schema.EscapeIdentifier(column.Name), column.Type))\r\n    if column.IsCollated() {\r\n        sb.WriteString(fmt.Sprintf(\" COLLATE %s\", column.Collation.GetFQEscapedName()))\r\n    }\r\n    // NEW: Handle generated columns first\r\n    if column.IsGenerated {\r\n        sb.WriteString(fmt.Sprintf(\" GENERATED ALWAYS AS (%s) STORED\", column.GenerationExpression))\r\n    } else if len(column.Default) > 0 {\r\n        sb.WriteString(fmt.Sprintf(\" DEFAULT %s\", column.Default))\r\n    }\r\n    if !column.IsNullable {\r\n        sb.WriteString(\" NOT NULL\")\r\n    }\r\n    // ... identity handling ...\r\n    return sb.String(), nil\r\n}\r\n```\r\n\r\n## Test Plan for Reviewers\r\n\r\n### 1. Automated Test Validation (Required)\r\n\r\nRun the automated test suite to verify all generated column functionality:\r\n\r\n```bash\r\n# Test generated column functionality (~6 seconds)\r\nPATH=\"/usr/lib/postgresql/16/bin:$PATH\" go test ./internal/migration_acceptance_tests -run \"TestColumnTestCases/.*[Gg]enerated.*\" -v\r\n\r\n# Test DDL generation unit tests (instant, no PostgreSQL needed)\r\ngo test ./pkg/diff -run \"TestBuildColumnDefinition\" -v\r\n\r\n# Verify no regressions in unit tests (instant)\r\ngo test ./pkg/diff -run \"TestBuild|TestTransform|TestPlan\"\r\n```\r\n\r\n**Success Criteria:**\r\n- All 5 generated column integration tests pass\r\n- All 4 column definition unit tests pass  \r\n- No unit test failures\r\n\r\n### 2. Manual End-to-End Validation (Optional)\r\n\r\nTo manually verify the fix resolves the original issue:\r\n\r\n<details><summary>Manual Test Steps</summary>\r\n\r\n```bash\r\n# 1. Start test database\r\ndocker run -d --name pg-test-generated \\\r\n  -e POSTGRES_PASSWORD=postgres \\\r\n  -e POSTGRES_DB=testdb \\\r\n  -p 5433:5432 postgres:15\r\n\r\n# 2. Create initial table\r\ndocker exec pg-test-generated psql -U postgres -d testdb -c \"\r\nCREATE TABLE public.tabs (\r\n    id serial PRIMARY KEY,\r\n    title text NOT NULL,\r\n    artist text\r\n);\"\r\n\r\n# 3. Create target schema with generated column\r\nmkdir test_schema_generated\r\ncat > test_schema_generated/tabs.sql << 'EOF'\r\nCREATE TABLE public.tabs (\r\n    id serial PRIMARY KEY,\r\n    title text NOT NULL,\r\n    artist text,\r\n    search_vector tsvector GENERATED ALWAYS AS (\r\n        to_tsvector('simple', title || ' ' || coalesce(artist, ''))\r\n    ) STORED\r\n);\r\nEOF\r\n\r\n# 4. Build and test pg-schema-diff  \r\ngo build -o pg-schema-diff ./cmd/pg-schema-diff\r\n\r\n# 5. Generate and apply migration (should succeed without errors)\r\n./pg-schema-diff apply \\\r\n  --from-dsn \"postgres://postgres:postgres@localhost:5433/testdb?sslmode=disable\" \\\r\n  --to-dir test_schema_generated\r\n\r\n# 6. Verify generated column works\r\ndocker exec pg-test-generated psql -U postgres -d testdb -c \"\r\nINSERT INTO public.tabs (title, artist) VALUES ('Hello World', 'Test Artist');\r\nSELECT title, artist, search_vector FROM public.tabs;\r\n\"\r\n\r\n# 7. Cleanup\r\ndocker stop pg-test-generated && docker rm pg-test-generated\r\nrm -rf test_schema_generated\r\n```\r\n\r\n**Expected Behavior:**\r\n- Migration applies successfully (no SQLSTATE 0A000 error)\r\n- Generated column automatically populates with tsvector data\r\n- DDL contains `GENERATED ALWAYS AS ... STORED` (not `DEFAULT`)\r\n\r\n</details>\r\n\r\n### 3. Regression Testing (Required)\r\n\r\nVerify existing functionality remains intact:\r\n\r\n```bash\r\n# Build verification (instant)\r\ngo build ./... && go vet ./...\r\n\r\n# Unit test verification (instant, no PostgreSQL needed)\r\ngo test ./pkg/diff -run \"TestBuild|TestTransform|TestPlan\"\r\n```\r\n\r\n**Full Regression Testing (Recommended):**\r\n```bash\r\n# Run complete test suite in Docker environment (as documented in CONTRIBUTING.md)\r\ndocker build -t pg-schema-diff-test-runner -f ./build/Dockerfile.test --build-arg POSTGRES_PACKAGE=postgresql16 .\r\ndocker run pg-schema-diff-test-runner\r\n```\r\n\r\n**Note**: Docker-based testing provides consistent environment and runs all integration tests including schema hash validations. This is the same test suite used in CI.\r\n\r\n## Impact\r\n\r\nThis fix properly supports PostgreSQL's generated columns feature (PostgreSQL 12+), commonly used for:\r\n- ✅ Full-text search vectors (`tsvector` columns)\r\n- ✅ Computed/derived columns (`price * tax_rate`)\r\n- ✅ JSON field extraction (`(data->>'field')::type`)\r\n- ✅ Automatic transformations (`upper(name)`, `lower(email)`)\r\n\r\n**Docs:**\r\nhttps://www.postgresql.org/docs/current/ddl-generated-columns.html",
+      "created_at": "2025-08-14T12:36:59Z",
+      "merged_at": "2025-08-27T20:12:01Z",
+      "html_url": "https://github.com/stripe/pg-schema-diff/pull/232",
+      "state": "merged",
+      "additions": 275,
+      "deletions": 37,
+      "comments": 11,
+      "repository": {
+        "name": "pg-schema-diff",
+        "description": "Go library for diffing Postgres schemas and generating SQL migrations",
+        "language": "Go",
+        "html_url": "https://github.com/stripe/pg-schema-diff",
+        "owner": {
+          "login": "stripe",
+          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
+        }
+      }
+    },
+    {
+      "id": 2742664883,
+      "number": 1835,
+      "title": "Remove `disableRecycling` documentation to deter developers from using internal prop",
+      "description": "The `disableRecycling` prop was documented but not exposed in the TypeScript interface, causing confusion for users. Issue #1831 reported \"Invalid attribute disableRecycling\" TypeScript errors. \r\n\r\n## Solution\r\n**Documentation-only change** as requested by maintainer feedback. Removed `disableRecycling` section from usage.md\r\n\r\n## Benefits\r\n1. **Resolves user confusion**: No more TypeScript errors from documented but unavailable props\r\n2. **Maintains internal functionality**: All existing features continue to work\r\n3. **Minimal change**: Single documentation update, no code refactoring\r\n4. **No breaking changes**: Internal systems unaffected\r\n\r\n## Testing\r\n- [x] All 136+ tests continue to pass\r\n- [x] Documentation no longer references `disableRecycling` while internal `disableRecycling` functionality preserved and tested\r\n- [x] TypeScript compilation clean",
+      "created_at": "2025-08-13T12:18:34Z",
+      "merged_at": "2025-08-21T17:58:32Z",
+      "html_url": "https://github.com/Shopify/flash-list/pull/1835",
+      "state": "merged",
+      "additions": 0,
+      "deletions": 7,
+      "comments": 5,
+      "repository": {
+        "name": "flash-list",
+        "description": "A better list for React Native",
+        "language": "TypeScript",
+        "html_url": "https://github.com/Shopify/flash-list",
+        "owner": {
+          "login": "Shopify",
+          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
+        }
+      }
+    },
+    {
+      "id": 2728241517,
+      "number": 12806,
+      "title": "utils: use `ShardIdentity` in `postgres_client.rs` for improved type safety",
+      "description": "## Summary\r\n\r\nThis PR refactors `postgres_client.rs` to use the existing `ShardIdentity` type instead of individual primitive shard fields, improving type safety and reducing code duplication.\r\n\r\n**Fixes #9823**\r\n\r\n## Problem\r\n\r\nThe `ConnectionConfigArgs` struct in `utils/postgres_client.rs` was manually tracking shard information using individual primitive fields:\r\n\r\n```rust\r\npub struct ConnectionConfigArgs<'a> {\r\n    pub shard_number: Option<u8>,        // ❌ Primitive types\r\n    pub shard_count: Option<u8>,         // ❌ No type safety\r\n    pub shard_stripe_size: Option<u32>,  // ❌ Manual validation \r\n    // ...\r\n}\r\n```\r\n\r\nThis approach had several issues:\r\n- **Type Safety**: Primitive types allowed mixing up parameters (e.g., passing shard_count where shard_number expected)\r\n- **Manual Validation**: Required runtime assertions to ensure all three fields were consistent\r\n- **Code Duplication**: Reinvented shard representation instead of using existing `ShardIdentity` type\r\n- **API Complexity**: Three separate `Option<T>` fields instead of one cohesive parameter\r\n\r\n## Solution\r\n\r\n### Phase 1: Move `ShardIdentity` to `utils`\r\n\r\n- [x] Moved `ShardIdentity` struct from `pageserver_api/shard.rs` to `utils/shard.rs`\r\n- [x] Moved related types: `ShardLayout`, `ShardConfigError`, `DEFAULT_STRIPE_SIZE`\r\n- [x] Updated `pageserver_api` to re-export from `utils` for backward compatibility\r\n- [x] Preserved pageserver-specific extension methods in `pageserver_api`\r\n\r\n### Phase 2: Refactor `ConnectionConfigArgs`\r\n\r\n- [x] Replace three individual fields with single `shard: Option<ShardIdentity>` field\r\n- [x] Update `options()` method to extract values from `ShardIdentity`\r\n- [x] Update all callers to use the unified type\r\n\r\n## Changes Made\r\n\r\n### Core Infrastructure\r\n- **`libs/utils/src/shard.rs`**: Added `ShardIdentity` struct with all core methods\r\n- **`libs/pageserver_api/src/shard.rs`**: Now re-exports from utils with pageserver-specific extensions  \r\n- **`libs/utils/src/postgres_client.rs`**: Refactored to use `Option<ShardIdentity>`\r\n\r\n### Updated Files\r\n- **`safekeeper/src/recovery.rs`**: Updated `ConnectionConfigArgs` constructor\r\n- **`pageserver/src/tenant/timeline/walreceiver/connection_manager.rs`**: Updated constructor\r\n\r\n## Benefits\r\n\r\n### **Type Safety**\r\n```rust\r\n// Before: Runtime assertions and unsafe unwraps\r\nif self.shard_number.is_some() {\r\n    assert!(self.shard_count.is_some());      // Runtime check\r\n    options.push(format!(\"shard_count={}\", self.shard_count.unwrap())); // Panic risk\r\n}\r\n\r\n// After: Compile-time guarantees\r\nif let Some(shard) = &self.shard {\r\n    options.push(format!(\"shard_count={}\", shard.count.literal())); // Type safe\r\n}\r\n```\r\n\r\n### **Simplified API**\r\n```rust\r\n// Before: 3 separate parameters\r\nConnectionConfigArgs {\r\n    shard_number: Some(0),\r\n    shard_count: Some(4), \r\n    shard_stripe_size: Some(2048),\r\n    // ...\r\n}\r\n\r\n// After: 1 unified parameter\r\nConnectionConfigArgs {\r\n    shard: Some(ShardIdentity::new(\r\n        ShardNumber(0), \r\n        ShardCount(4), \r\n        ShardStripeSize(2048)\r\n    ).unwrap()),\r\n    // ...\r\n}\r\n```\r\n\r\n### **Code Consistency**\r\n- Now uses the same `ShardIdentity` type as the rest of the codebase\r\n- Leverages existing validation and utility methods\r\n- Eliminates duplicate shard representation\r\n\r\n## Testing\r\n\r\n- [x] Added 6 comprehensive unit tests to verify identical option string generation\r\n- [x] Integration tests confirm WAL streaming functionality unchanged  \r\n- [x] All affected crates build successfully\r\n- [x] Existing test suite passes without modification\r\n- [x] Manual testing with local sharded tenants\r\n\r\n## Performance Impact\r\n\r\nNone - this is a purely structural refactoring with no runtime performance implications. The generated connection options remain identical.\r\n\r\n## Migration Guide\r\n\r\nFor code outside this repository using `ConnectionConfigArgs`:\r\n\r\n```rust\r\n// Before\r\nConnectionConfigArgs {\r\n    shard_number: Some(0),\r\n    shard_count: Some(4),\r\n    shard_stripe_size: Some(2048),\r\n    // ... other fields\r\n}\r\n\r\n// After  \r\nConnectionConfigArgs {\r\n    shard: Some(ShardIdentity::new(\r\n        ShardNumber(0),\r\n        ShardCount::new(4), \r\n        ShardStripeSize(2048)\r\n    ).unwrap()),\r\n    // ... other fields\r\n}\r\n```\r\n\r\nOr for unsharded connections:\r\n```rust\r\nConnectionConfigArgs {\r\n    shard: None,  // Replaces three None fields\r\n    // ... other fields\r\n}\r\n```\r\n\r\n## Backward Compatibility\r\n\r\n- [x] All existing imports of `ShardIdentity` continue to work via re-exports\r\n- [x] No breaking changes to public APIs outside of `ConnectionConfigArgs`\r\n- [x] Migration was designed to be incremental and reversible\r\n\r\n## Related\r\n\r\n- **Original Discussion**: https://github.com/neondatabase/neon/pull/9746#discussion_r1846338796\r\n- **Architecture Decision**: Move `ShardIdentity` to `utils` to avoid circular dependencies #9823 \r\n\r\n## Review Notes\r\n\r\nThis refactoring demonstrates several Rust best practices:\r\n1. **\"Make invalid states unrepresentable\"** - Use the type system to prevent bugs\r\n2. **DRY principle** - Reuse existing well-designed types instead of duplicating concepts  \r\n3. **Type safety over runtime checks** - Catch errors at compile time, not runtime\r\n4. **Proper encapsulation** - Group related data together in meaningful abstractions\r\n\r\nThe changes are purely structural with no behavioral modifications, making this a safe refactoring that improves code quality without affecting functionality.",
+      "created_at": "2025-08-07T15:42:07Z",
+      "merged_at": null,
+      "html_url": "https://github.com/neondatabase/neon/pull/12806",
+      "state": "open",
+      "additions": 390,
+      "deletions": 164,
+      "comments": 3,
+      "repository": {
+        "name": "neon",
+        "description": "Neon: Serverless Postgres. We separated storage and compute to offer autoscaling, code-like database branching, and scale to zero.",
+        "language": "Rust",
+        "html_url": "https://github.com/neondatabase/neon",
+        "owner": {
+          "login": "neondatabase",
+          "avatar_url": "https://avatars.githubusercontent.com/u/77690634?v=4"
+        }
+      }
+    },
+    {
+      "id": 2696869536,
+      "number": 6982,
+      "title": "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actor interventions",
+      "description": "# Screenshots\r\n\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/0b2800e3-4643-42d8-a235-3cf4c03333f0\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/0d465303-17c0-44cd-b867-53a86d698d44\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/7a0203aa-ee30-4e7f-a696-d5c2a6783ca7\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/83ff07d4-e5a1-45ac-9f72-feb9140aa5e3\" />\r\n<i><b>Current (problem):</b> Point of view of user LC. important milestones are able to be deleted accidentally or intentionally by other user's. LC can delete MC's work, after 7 days it is lost forever. </i>\r\n\r\n---\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/be501f4f-462f-453e-8db5-896ce93ed9b4\" />\r\n<img width=\"175\" height=\"auto\" alt=\"final2\" src=\"https://github.com/user-attachments/assets/2268d10c-d512-4ef2-a29d-ef63770fb04b\" />\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/4785c480-9f8c-4ad0-911d-49f682c74b7a\" />\r\n<img width=\"174\" height=\"auto\" alt=\"final1\" src=\"https://github.com/user-attachments/assets/bbdd8cd5-4033-4e02-9c24-5f071a3a0aed\" /><br>\r\n<i><b>Enhancement (new):</b> Point of view of user UB. Important milestones are now protected with a simple lock feature. UB cannot delete (or rename) LC's work when it is locked. </i>\r\n\r\n---\r\n\r\nThis PR implements a comprehensive version locking system that allows users to \"lock\" their saved versions to prevent deletion by other team members. The enhancement was requested on #6763. \r\n\r\n## Problem statement\r\n\r\n- The need for good Version Control has been an significant theme in the penpot community -- see https://community.penpot.app/t/using-version-control-to-collaboratively-work-on-penpot/633/3 and https://tree.taiga.io/project/penpot/us/187?milestone=262806. Currently there has been a milestone system implemented that enables user's to save important versions of the project. This is a highly valuable feature, however there are scenarios where it can be lost:\r\n- User A has saved a crucial \"milestone\" of a project. User B accidentally deletes it when meaning to restore the version. After 7 days, no records remain of User A's milestone and it is lost forever.\r\n- User A has saved a crucial \"milestone\" of a project. User B is a bad actor and intentionally deletes the version. After 7 days, no records remain of User A's milestone and it is lost forever.\r\n- Penpot's key competitor, Figma offers a git-style \"branching\" feature as a solution to the accidental deletion/ bad actor problem on their premium paid tier -- even if this feature were copied this could not be implemented without dramatic file changes -- leaving vulnerability to unforseen bugs.\r\n\r\n## Solution\r\n- The simplest solution is best. A \"lock\" feature for milestones. Now User A's \"milestone\" can be locked and it is protected from accidental deletion and bad actors.\r\n\r\n### Key Features\r\n- ✅ Only version creators can lock/unlock their own version milestones\r\n- ✅ Only version creators can rename their own version\r\n- ✅ Locked versions cannot be deleted by anyone except the creator  \r\n- ✅ System snapshots cannot be locked (only user-created versions)\r\n- ✅ Clear visual indicators and menu options in the UI, reuse of the \"lock\" icon\r\n- ✅ Comprehensive authorization checks and error handling in the frontend and backend\r\n\r\n\r\n### Implementation Overview\r\n- **Database**: Added `locked_by` column to `file_change` table in new migration file `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql`\r\n- **Backend**: New RPC endpoints for lock/unlock operations with authorization in `backend/src/app/rpc/commands/files_snapshot.clj`\r\n- **Frontend**: Lock/unlock UI in version history sidebar with visual indicators gracefully handles conditional rendering of lock and rename features.\r\n\r\n## Testing Instructions\r\n\r\n### Core Functionality Tests\r\n\r\n**Version Locking**\r\n1. Create a user version (\"Save Version\")\r\n2. Lock it via menu → \"Lock\"\r\n3. Verify lock indicator appears\r\n4. Unlock via menu → \"Unlock\"\r\n5. **Expected**: Lock/unlock works, visual indicators update correctly\r\n\r\n**Delete Protection**\r\n1. Lock a version you created\r\n2. Attempt to delete it\r\n3. **Expected**: Deletion blocked with clear error message\r\n\r\n**Authorization**\r\n1. User A creates and locks a version\r\n2. User B tries to lock/unlock/delete it\r\n3. **Expected**: User B's options to rename and delete are hidden.\r\n\r\n**System Snapshots**\r\n1. Try to lock an auto-saved system snapshot\r\n2. **Expected**: Operation fails with \"system snapshots cannot be locked\" error\r\n\r\n**UI Verification**\r\n- [x] Lock/unlock options appear only for your own user versions\r\n- [x] Locked versions display lock icon consistently\r\n- [x] Menu text changes appropriately (\"Lock\" ↔ \"Unlock\")\r\n- [x] Error messages are clear and actionable (ensured backend prevents user B deleting User A locked milestone) -- frontend handles gracefully with hidden buttons, leads to gateway error pages if forced.",
+      "created_at": "2025-07-26T10:41:46Z",
+      "merged_at": "2025-07-26T12:15:30Z",
+      "html_url": "https://github.com/penpot/penpot/commit/0b47a366abb56fe553c70ab6716230b1b4646071",
+      "state": "merged",
+      "additions": 292,
+      "deletions": 17,
+      "comments": 5,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      }
+    }
+  ],
+  "meta": {
+    "username": "lmcrean",
+    "count": 8,
+    "pagination": {
+      "page": 1,
+      "per_page": 20,
+      "total_count": 8,
+      "total_pages": 1,
+      "has_next_page": false,
+      "has_previous_page": false
+    }
+  }
+}
