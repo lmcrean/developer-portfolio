@@ -42,7 +42,7 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
         {/* Row 1: Issue Title and Status */}
         <div className="flex items-start gap-2 mb-2">
           <div className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
-            <span className="pr-text-primary font-bold text-sm leading-tight block truncate min-w-0 max-w-[calc(100%-80px)]">
+            <span className="pr-text-primary font-bold text-sm leading-tight block truncate min-w-0">
               {issue.title}
             </span>
           </div>
@@ -55,10 +55,13 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
 
         {/* Row 2: Metadata */}
         <div className="flex items-center justify-between text-sm pr-text-muted">
-          {/* Left: Issue Number and Labels */}
+          {/* Left: Issue Number, Dates and Labels */}
           <div className="flex items-center gap-3">
-            <span className="pr-text-muted">
-              #{issue.number}
+            
+            {/* Dates */}
+            <span className="text-xs text-gray-400">
+              Opened: {formatIssueDate(issue.created_at)}
+              {issue.closed_at && ` • Closed: ${formatIssueDate(issue.closed_at)}`}
             </span>
             
             {/* Labels */}
