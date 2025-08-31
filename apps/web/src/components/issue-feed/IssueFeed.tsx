@@ -15,12 +15,10 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   className = ''
 }) => {
   const [expandedRepos, setExpandedRepos] = useState<Set<string>>(new Set());
-  const [showExternal, setShowExternal] = useState(true);
   const [selectedRepos, setSelectedRepos] = useState<string[]>([]);
   
   const { data, loading, error, refetch } = useIssuesApi({
-    username,
-    showExternal
+    username
   });
 
   const toggleRepo = (repoName: string) => {
@@ -47,13 +45,10 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   if (error) return <div className="text-red-500">Error loading issues: {error}</div>;
   if (!data) return null;
 
-  // Apply client-side filtering
-  let filteredGroups = data.groups;
+  // Filter to only show external repositories
+  let filteredGroups = data.groups.filter(g => g.repository.is_external);
   
-  if (!showExternal) {
-    filteredGroups = filteredGroups.filter(g => !g.repository.is_external);
-  }
-  
+  // Apply additional repository filtering if selected
   if (selectedRepos.length > 0) {
     filteredGroups = filteredGroups.filter(g => 
       selectedRepos.includes(g.repository.name)
@@ -63,15 +58,13 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   return (
     <div className={`issue-feed ${className}`}>
       <div className="issue-feed-header mb-6">
-        <h2 className="text-2xl font-bold mb-2">Issue Tracking</h2>
+        <h2 className="text-2xl font-bold mb-2">External Issue Tracking</h2>
         <p className="text-gray-400">
-          Tracking {data.metadata.total_issues} issues across {data.metadata.total_repositories} repositories
+          Tracking {filteredGroups.reduce((sum, g) => sum + g.issues.length, 0)} issues across {filteredGroups.length} external repositories
         </p>
         
         <IssueFilters
-          showExternal={showExternal}
-          onToggleExternal={setShowExternal}
-          repositories={data.groups.map(g => g.repository)}
+          repositories={filteredGroups.map(g => g.repository)}
           selectedRepos={selectedRepos}
           onRepoSelect={setSelectedRepos}
         />
