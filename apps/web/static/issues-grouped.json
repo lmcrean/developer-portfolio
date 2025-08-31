@@ -1,0 +1,688 @@
+{
+  "groups": [
+    {
+      "repository": {
+        "id": 744654314,
+        "name": "Wealth-Quest",
+        "full_name": "lmcrean/Wealth-Quest",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        },
+        "html_url": "https://github.com/lmcrean/Wealth-Quest",
+        "description": "A front-end JavaScript game where the user goes on a quest for passive income. The user achieves passive income by navigating deals, paydays and life happenings.",
+        "is_external": false
+      },
+      "issues": [
+        {
+          "id": 2092096499,
+          "number": 25,
+          "title": "tooltips inside modal is displaying aggressively narrow",
+          "html_url": "https://github.com/lmcrean/Wealth-Quest/issues/25",
+          "state": "closed",
+          "created_at": "2024-01-20T15:34:16Z",
+          "closed_at": "2024-01-22T12:35:13Z",
+          "updated_at": "2024-01-22T12:35:13Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/Wealth-Quest",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 2092005146,
+          "number": 18,
+          "title": "As a player, I need to view card modals that will result from the board",
+          "html_url": "https://github.com/lmcrean/Wealth-Quest/issues/18",
+          "state": "closed",
+          "created_at": "2024-01-20T10:41:06Z",
+          "closed_at": "2024-01-22T12:35:12Z",
+          "updated_at": "2024-01-22T12:35:12Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/Wealth-Quest",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 2092005559,
+          "number": 19,
+          "title": "As a user I need to view the readme file",
+          "html_url": "https://github.com/lmcrean/Wealth-Quest/issues/19",
+          "state": "closed",
+          "created_at": "2024-01-20T10:42:38Z",
+          "closed_at": "2024-01-22T12:35:12Z",
+          "updated_at": "2024-01-22T12:35:12Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/Wealth-Quest",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 2092004537,
+          "number": 17,
+          "title": "As a player, I need to view tool tip modals that will help me with the game",
+          "html_url": "https://github.com/lmcrean/Wealth-Quest/issues/17",
+          "state": "closed",
+          "created_at": "2024-01-20T10:39:05Z",
+          "closed_at": "2024-01-22T12:35:11Z",
+          "updated_at": "2024-01-22T12:35:11Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/Wealth-Quest",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 2092000577,
+          "number": 13,
+          "title": "As a player, I need instructions at the beginning that are easy to understand",
+          "html_url": "https://github.com/lmcrean/Wealth-Quest/issues/13",
+          "state": "closed",
+          "created_at": "2024-01-20T10:25:43Z",
+          "closed_at": "2024-01-22T12:35:10Z",
+          "updated_at": "2024-01-22T12:35:10Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/Wealth-Quest",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 0,
+      "closedCount": 5
+    },
+    {
+      "repository": {
+        "id": 931736858,
+        "name": "team-5",
+        "full_name": "dimitri-edel/team-5",
+        "owner": {
+          "login": "dimitri-edel",
+          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+        },
+        "html_url": "https://github.com/dimitri-edel/team-5",
+        "description": null,
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 2991248398,
+          "number": 126,
+          "title": "Security: Make sure this Django key gets revoked, changed, and removed from the code.",
+          "html_url": "https://github.com/dimitri-edel/team-5/issues/126",
+          "state": "open",
+          "created_at": "2025-04-13T12:56:55Z",
+          "closed_at": null,
+          "updated_at": "2025-04-13T12:56:55Z",
+          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 2849271131,
+          "number": 13,
+          "title": "Test API to React communication",
+          "html_url": "https://github.com/dimitri-edel/team-5/issues/13",
+          "state": "closed",
+          "created_at": "2025-02-12T20:21:26Z",
+          "closed_at": "2025-02-21T13:14:25Z",
+          "updated_at": "2025-02-21T13:14:25Z",
+          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
+          "labels": [],
+          "user": {
+            "login": "dimitri-edel",
+            "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+          }
+        },
+        {
+          "id": 2851924698,
+          "number": 42,
+          "title": "Deploy Frontend and Backend on Heroku",
+          "html_url": "https://github.com/dimitri-edel/team-5/issues/42",
+          "state": "closed",
+          "created_at": "2025-02-13T19:30:26Z",
+          "closed_at": "2025-02-13T19:30:45Z",
+          "updated_at": "2025-02-13T19:30:45Z",
+          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
+          "labels": [],
+          "user": {
+            "login": "dimitri-edel",
+            "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+          }
+        },
+        {
+          "id": 2849218004,
+          "number": 2,
+          "title": "Create File Structure for Github Repo",
+          "html_url": "https://github.com/dimitri-edel/team-5/issues/2",
+          "state": "closed",
+          "created_at": "2025-02-12T19:52:24Z",
+          "closed_at": "2025-02-13T17:07:53Z",
+          "updated_at": "2025-02-13T17:07:56Z",
+          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
+          "labels": [],
+          "user": {
+            "login": "dimitri-edel",
+            "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
+          }
+        }
+      ],
+      "openCount": 1,
+      "closedCount": 3
+    },
+    {
+      "repository": {
+        "id": 48769241,
+        "name": "penpot",
+        "full_name": "penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        },
+        "html_url": "https://github.com/penpot/penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 3246270558,
+          "number": 6919,
+          "title": "issue: Frontend yarn permission error prevents localhost testing via Docker Desktop GUI. Expecting to preview application on local machine",
+          "html_url": "https://github.com/penpot/penpot/issues/6919",
+          "state": "closed",
+          "created_at": "2025-07-20T11:11:32Z",
+          "closed_at": "2025-07-24T20:55:32Z",
+          "updated_at": "2025-07-24T20:55:32Z",
+          "repository_url": "https://api.github.com/repos/penpot/penpot",
+          "labels": [
+            {
+              "id": 6313394997,
+              "name": "self-hosted",
+              "color": "BFD7B3"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 3168922154,
+          "number": 6763,
+          "title": "feature: Saved version histories should be protected from external user interferance",
+          "html_url": "https://github.com/penpot/penpot/issues/6763",
+          "state": "open",
+          "created_at": "2025-06-23T17:30:58Z",
+          "closed_at": null,
+          "updated_at": "2025-06-25T13:42:42Z",
+          "repository_url": "https://api.github.com/repos/penpot/penpot",
+          "labels": [
+            {
+              "id": 305068488,
+              "name": "enhancement",
+              "color": "0052cc"
+            },
+            {
+              "id": 2718024921,
+              "name": "managed on taiga",
+              "color": "7BF384"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 3154558714,
+          "number": 6709,
+          "title": "feature request: Design Branching System for Parallel Design Workflows",
+          "html_url": "https://github.com/penpot/penpot/issues/6709",
+          "state": "open",
+          "created_at": "2025-06-17T19:32:22Z",
+          "closed_at": null,
+          "updated_at": "2025-06-18T09:08:31Z",
+          "repository_url": "https://api.github.com/repos/penpot/penpot",
+          "labels": [
+            {
+              "id": 305068488,
+              "name": "enhancement",
+              "color": "0052cc"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 2,
+      "closedCount": 1
+    },
+    {
+      "repository": {
+        "id": 946796949,
+        "name": "dottie",
+        "full_name": "lmcrean/dottie",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        },
+        "html_url": "https://github.com/lmcrean/dottie",
+        "description": "Dottie : Your Period Bestie. Empowering adolescent girls with knowledge about their menstrual health through accessible, friendly AI-powered guidance.",
+        "is_external": false
+      },
+      "issues": [
+        {
+          "id": 3006342540,
+          "number": 218,
+          "title": "CORS Issue in production -- can't connect to backend",
+          "html_url": "https://github.com/lmcrean/dottie/issues/218",
+          "state": "closed",
+          "created_at": "2025-04-19T10:08:16Z",
+          "closed_at": "2025-04-21T14:35:21Z",
+          "updated_at": "2025-04-21T14:35:21Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/dottie",
+          "labels": [
+            {
+              "id": 8407063981,
+              "name": "must have",
+              "color": "B60205"
+            },
+            {
+              "id": 8479013851,
+              "name": "production",
+              "color": "5319e7"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 3002027664,
+          "number": 170,
+          "title": "Production: update Supabase tables to accomodate new Json format for assessment",
+          "html_url": "https://github.com/lmcrean/dottie/issues/170",
+          "state": "closed",
+          "created_at": "2025-04-17T10:01:17Z",
+          "closed_at": "2025-04-19T13:19:32Z",
+          "updated_at": "2025-04-19T13:19:34Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/dottie",
+          "labels": [
+            {
+              "id": 8479013851,
+              "name": "production",
+              "color": "5319e7"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 2974088862,
+          "number": 76,
+          "title": "Frontend (Decision tree): Assignment logic in assessment result needs confirming - false assigns \"Developing Pattern\"",
+          "html_url": "https://github.com/lmcrean/dottie/issues/76",
+          "state": "closed",
+          "created_at": "2025-04-05T09:42:35Z",
+          "closed_at": "2025-04-14T12:18:56Z",
+          "updated_at": "2025-04-14T12:18:56Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/dottie",
+          "labels": [
+            {
+              "id": 8277952004,
+              "name": "urgent bug",
+              "color": "b60205"
+            },
+            {
+              "id": 8407044477,
+              "name": "fix",
+              "color": "b60205"
+            },
+            {
+              "id": 8407057869,
+              "name": "location: frontend/src/pages",
+              "color": "5319e7"
+            },
+            {
+              "id": 8407063981,
+              "name": "must have",
+              "color": "B60205"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 0,
+      "closedCount": 3
+    },
+    {
+      "repository": {
+        "id": 1003925498,
+        "name": "terraform-provider-cscdm",
+        "full_name": "rropen/terraform-provider-cscdm",
+        "owner": {
+          "login": "rropen",
+          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
+        },
+        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
+        "description": "Terraform Provider for CSC Domain Manager.",
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 3369295026,
+          "number": 8,
+          "title": "Aggressive Goroutine Termination in Flush Loop",
+          "html_url": "https://github.com/rropen/terraform-provider-cscdm/issues/8",
+          "state": "open",
+          "created_at": "2025-08-30T16:47:02Z",
+          "closed_at": null,
+          "updated_at": "2025-08-31T17:47:01Z",
+          "repository_url": "https://api.github.com/repos/rropen/terraform-provider-cscdm",
+          "labels": [
+            {
+              "id": 8798746979,
+              "name": "platform",
+              "color": "0052CC"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 1,
+      "closedCount": 0
+    },
+    {
+      "repository": {
+        "id": 1027744379,
+        "name": "docorator",
+        "full_name": "GSK-Biostatistics/docorator",
+        "owner": {
+          "login": "GSK-Biostatistics",
+          "avatar_url": "https://avatars.githubusercontent.com/u/87132606?v=4"
+        },
+        "html_url": "https://github.com/GSK-Biostatistics/docorator",
+        "description": null,
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 3369276320,
+          "number": 16,
+          "title": "Feat request: Add Code Coverage Reporting for better macro-understanding of test status",
+          "html_url": "https://github.com/GSK-Biostatistics/docorator/issues/16",
+          "state": "open",
+          "created_at": "2025-08-30T16:24:08Z",
+          "closed_at": null,
+          "updated_at": "2025-08-30T16:24:49Z",
+          "repository_url": "https://api.github.com/repos/GSK-Biostatistics/docorator",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 1,
+      "closedCount": 0
+    },
+    {
+      "repository": {
+        "id": 1028549924,
+        "name": "cellatria",
+        "full_name": "AstraZeneca/cellatria",
+        "owner": {
+          "login": "AstraZeneca",
+          "avatar_url": "https://avatars.githubusercontent.com/u/16338928?v=4"
+        },
+        "html_url": "https://github.com/AstraZeneca/cellatria",
+        "description": "An Agentic AI Framework for Ingestion and Standardization of Single-Cell RNA-seq Data Analysis",
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 3366738470,
+          "number": 2,
+          "title": "Enabled README png to work in github dark mode with gray on black text",
+          "html_url": "https://github.com/AstraZeneca/cellatria/issues/2",
+          "state": "closed",
+          "created_at": "2025-08-29T12:35:36Z",
+          "closed_at": "2025-08-29T22:44:28Z",
+          "updated_at": "2025-08-29T22:44:28Z",
+          "repository_url": "https://api.github.com/repos/AstraZeneca/cellatria",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 0,
+      "closedCount": 1
+    },
+    {
+      "repository": {
+        "id": 376268212,
+        "name": "Portfolio-2---Alien-Memory-Game",
+        "full_name": "moirahartigan/Portfolio-2---Alien-Memory-Game",
+        "owner": {
+          "login": "moirahartigan",
+          "avatar_url": "https://avatars.githubusercontent.com/u/82383538?v=4"
+        },
+        "html_url": "https://github.com/moirahartigan/Portfolio-2---Alien-Memory-Game",
+        "description": null,
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 1845899614,
+          "number": 1,
+          "title": "When pressing reset, the cards flip after they've been reshuffled",
+          "html_url": "https://github.com/moirahartigan/Portfolio-2---Alien-Memory-Game/issues/1",
+          "state": "open",
+          "created_at": "2023-08-10T21:04:52Z",
+          "closed_at": null,
+          "updated_at": "2023-08-10T21:04:52Z",
+          "repository_url": "https://api.github.com/repos/moirahartigan/Portfolio-2---Alien-Memory-Game",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 1,
+      "closedCount": 0
+    },
+    {
+      "repository": {
+        "id": 658760780,
+        "name": "PP1",
+        "full_name": "Ahmad-Hazrati/PP1",
+        "owner": {
+          "login": "Ahmad-Hazrati",
+          "avatar_url": "https://avatars.githubusercontent.com/u/136331424?v=4"
+        },
+        "html_url": "https://github.com/Ahmad-Hazrati/PP1",
+        "description": null,
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 1805091502,
+          "number": 1,
+          "title": "Order now button on home page appears to be overlapping in mobile view",
+          "html_url": "https://github.com/Ahmad-Hazrati/PP1/issues/1",
+          "state": "open",
+          "created_at": "2023-07-14T15:45:38Z",
+          "closed_at": null,
+          "updated_at": "2023-07-14T15:45:38Z",
+          "repository_url": "https://api.github.com/repos/Ahmad-Hazrati/PP1",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 1,
+      "closedCount": 0
+    },
+    {
+      "repository": {
+        "id": 707272128,
+        "name": "halloween-hackathon",
+        "full_name": "alcl2000/halloween-hackathon",
+        "owner": {
+          "login": "alcl2000",
+          "avatar_url": "https://avatars.githubusercontent.com/u/107885891?v=4"
+        },
+        "html_url": "https://github.com/alcl2000/halloween-hackathon",
+        "description": null,
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 1952901953,
+          "number": 5,
+          "title": "Finalise Project Choice",
+          "html_url": "https://github.com/alcl2000/halloween-hackathon/issues/5",
+          "state": "closed",
+          "created_at": "2023-10-19T19:12:28Z",
+          "closed_at": "2023-10-19T20:02:02Z",
+          "updated_at": "2023-10-19T20:02:02Z",
+          "repository_url": "https://api.github.com/repos/alcl2000/halloween-hackathon",
+          "labels": [
+            {
+              "id": 6105933808,
+              "name": "MVP",
+              "color": "DDA316"
+            }
+          ],
+          "user": {
+            "login": "alcl2000",
+            "avatar_url": "https://avatars.githubusercontent.com/u/107885891?v=4"
+          }
+        }
+      ],
+      "openCount": 0,
+      "closedCount": 1
+    },
+    {
+      "repository": {
+        "id": 679857811,
+        "name": "RetrOlympics-Rush",
+        "full_name": "lmcrean/RetrOlympics-Rush",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        },
+        "html_url": "https://github.com/lmcrean/RetrOlympics-Rush",
+        "description": "A nostalgic sidescroller game with a nod to the 2024 Paris Olympics, completed for Code Institute's Retro-Themed Hackathon",
+        "is_external": false
+      },
+      "issues": [
+        {
+          "id": 1855589712,
+          "number": 3,
+          "title": "deploy project on Github pages",
+          "html_url": "https://github.com/lmcrean/RetrOlympics-Rush/issues/3",
+          "state": "closed",
+          "created_at": "2023-08-17T19:36:35Z",
+          "closed_at": "2023-08-18T17:53:56Z",
+          "updated_at": "2023-08-18T17:53:56Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/RetrOlympics-Rush",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 0,
+      "closedCount": 1
+    },
+    {
+      "repository": {
+        "id": 649127860,
+        "name": "hoverboard-vanilla-stack",
+        "full_name": "lmcrean/hoverboard-vanilla-stack",
+        "owner": {
+          "login": "lmcrean",
+          "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+        },
+        "html_url": "https://github.com/lmcrean/hoverboard-vanilla-stack",
+        "description": "A responsive product home page for a Virtual Learning Environment. The key focus for the project was responsive CSS, using flex and grid displays to allow the website to be viewed comfortably on different devices.",
+        "is_external": false
+      },
+      "issues": [
+        {
+          "id": 1789975247,
+          "number": 44,
+          "title": "Features card disappears into grid - switch elements",
+          "html_url": "https://github.com/lmcrean/hoverboard-vanilla-stack/issues/44",
+          "state": "closed",
+          "created_at": "2023-07-05T17:17:55Z",
+          "closed_at": "2023-07-08T11:23:32Z",
+          "updated_at": "2023-07-09T20:29:21Z",
+          "repository_url": "https://api.github.com/repos/lmcrean/hoverboard-vanilla-stack",
+          "labels": [
+            {
+              "id": 5658669951,
+              "name": "Pleasing Design",
+              "color": "914CEC"
+            },
+            {
+              "id": 5658670790,
+              "name": "1 home page",
+              "color": "8BBAF9"
+            },
+            {
+              "id": 5659329214,
+              "name": "0 High Priority",
+              "color": "B60205"
+            },
+            {
+              "id": 5693644501,
+              "name": "Positioning",
+              "color": "A67714"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 0,
+      "closedCount": 1
+    }
+  ],
+  "metadata": {
+    "total_issues": 23,
+    "total_repositories": 12,
+    "external_repositories": 8,
+    "last_updated": "2025-08-31T18:50:40.116Z"
+  }
+}

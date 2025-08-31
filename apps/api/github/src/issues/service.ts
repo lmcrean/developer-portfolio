@@ -1,5 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { GitHubIssue, Repository, IssueGroup, IssuesApiResponse } from '@shared/types/issues';
+import { isRepositoryExcluded } from './excludedRepositories';
 
 interface CachedData {
   data: any;

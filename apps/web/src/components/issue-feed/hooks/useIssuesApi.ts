@@ -4,7 +4,6 @@ import staticClient from '../../api/client/staticClient';
 
 interface UseIssuesApiOptions {
   username: string;
-  showExternal: boolean;
 }
 
 export const useIssuesApi = (options: UseIssuesApiOptions) => {
@@ -23,13 +22,13 @@ export const useIssuesApi = (options: UseIssuesApiOptions) => {
       if (staticData) {
         setData(staticData);
       } else {
-        // Fallback to live API
+        // Fallback to live API - always fetch external repos
         const apiUrl = process.env.REACT_APP_API_BASE_URL || 
                       process.env.DOCUSAURUS_API_BASE_URL || 
                       'http://localhost:3000';
         
         const response = await fetch(
-          `${apiUrl}/api/issues/grouped?username=${options.username}&external=${options.showExternal}`
+          `${apiUrl}/api/issues/grouped?username=${options.username}&external=true`
         );
         
         if (!response.ok) throw new Error('Failed to fetch issues');
@@ -43,7 +42,7 @@ export const useIssuesApi = (options: UseIssuesApiOptions) => {
     } finally {
       setLoading(false);
     }
-  }, [options.username, options.showExternal]);
+  }, [options.username]);
 
   useEffect(() => {
     fetchIssues();
