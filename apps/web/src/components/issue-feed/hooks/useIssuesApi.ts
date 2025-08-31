@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { IssuesApiResponse } from '@shared/types/issues';
-import { staticClient } from '../../api/client/staticClient';
+import staticClient from '../../api/client/staticClient';
 
 interface UseIssuesApiOptions {
   username: string;
