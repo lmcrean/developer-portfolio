@@ -19,8 +19,9 @@ const IssueFilters: React.FC<Props> = ({
       <div className="flex flex-wrap gap-4 items-center">
         {/* Repository count info */}
         <span className="text-sm text-gray-300">
-          Improving {externalRepos.length} repository docs
+          Agile approach
         </span>
+        <hr></hr>
         {/* Clear Filters */}
         {selectedRepos.length > 0 && (
           <button
