@@ -17,19 +17,13 @@ npm run build
 
 # Use compiled JS instead of ts-node for CI reliability
 echo "🔧 Running pull request static data generation with compiled JavaScript..."
-node dist/scripts/generateStaticData.js
+node dist/apps/api/github/src/scripts/generateStaticData.js
 
 # Generate issues static data
 echo "🔧 Running issues static data generation..."
-# The compiled script is in a different location due to TypeScript paths
-ISSUES_SCRIPT="dist/apps/api/github/src/scripts/generateIssuesStaticData.js"
-if [ -f "$ISSUES_SCRIPT" ]; then
-  echo "📋 Using compiled issues generation script..."
-  node "$ISSUES_SCRIPT"
-else
-  echo "⚠️ Issues script not found at expected location, using ts-node fallback..."
-  npm run generate-issues-data
-fi
+# Use the compiled JavaScript file for issues generation
+echo "📋 Using compiled issues generation script..."
+node dist/apps/api/github/src/scripts/generateIssuesStaticData.js
 
 # Validate generated static data in API location (ready for copying)
 echo "📁 Validating generated pull request static data in API location..."
