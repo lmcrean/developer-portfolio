@@ -27,7 +27,8 @@ node dist/apps/api/github/src/scripts/generateIssuesStaticData.js
 
 # Validate generated static data in API location (ready for copying)
 echo "📁 Validating generated pull request static data in API location..."
-cd static/pull-requests
+# The compiled script creates files relative to its location
+cd dist/apps/api/github/static/pull-requests
 
 # Count generated files
 page_count=$(ls page-*.json 2>/dev/null | wc -l)
@@ -55,7 +56,7 @@ if [ "$actual_files" -ne "$expected_files" ]; then
   exit 1
 fi
 
-# Go back to API root to validate issues data
+# Go back to the dist/apps/api/github directory to validate issues data
 cd ../..
 
 # Validate issues static data
@@ -78,5 +79,5 @@ echo "📋 Issues data includes filtered repositories (excludes: team-5, PP1, ha
 echo "✅ Static data generation complete!"
 echo "📁 Generated $page_count PR page files + 1 metadata file = $expected_files total PR files"
 echo "📁 Generated 1 issues grouped.json file"
-echo "📁 Static data location: apps/api/github/static/"
+echo "📁 Static data location: apps/api/github/dist/apps/api/github/static/"
 echo "💡 Next step: Prepare web app, then run copy-static-data.sh"

@@ -7,7 +7,8 @@ set -e
 echo "📁 Copying static data from API to web app..."
 
 # Define locations
-API_STATIC_DIR="apps/api/github/static/pull-requests"
+# The compiled scripts now generate files in dist/apps/api/github/static
+API_STATIC_DIR="apps/api/github/dist/apps/api/github/static/pull-requests"
 WEB_STATIC_DIR="apps/web/static"
 
 # Verify API static location exists and has data
@@ -100,7 +101,7 @@ ls -la "$WEB_STATIC_DIR"/pr-*.json
 
 # Copy issues static data
 echo "📋 Copying issues static data..."
-ISSUES_SOURCE="apps/api/github/static/issues/grouped.json"
+ISSUES_SOURCE="apps/api/github/dist/apps/api/github/static/issues/grouped.json"
 ISSUES_TARGET="$WEB_STATIC_DIR/issues-grouped.json"
 
 if [ -f "$ISSUES_SOURCE" ]; then
