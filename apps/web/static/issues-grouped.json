@@ -100,88 +100,6 @@
     },
     {
       "repository": {
-        "id": 931736858,
-        "name": "team-5",
-        "full_name": "dimitri-edel/team-5",
-        "owner": {
-          "login": "dimitri-edel",
-          "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
-        },
-        "html_url": "https://github.com/dimitri-edel/team-5",
-        "description": null,
-        "is_external": true
-      },
-      "issues": [
-        {
-          "id": 2991248398,
-          "number": 126,
-          "title": "Security: Make sure this Django key gets revoked, changed, and removed from the code.",
-          "html_url": "https://github.com/dimitri-edel/team-5/issues/126",
-          "state": "open",
-          "created_at": "2025-04-13T12:56:55Z",
-          "closed_at": null,
-          "updated_at": "2025-04-13T12:56:55Z",
-          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
-          "labels": [],
-          "user": {
-            "login": "lmcrean",
-            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
-          }
-        },
-        {
-          "id": 2849271131,
-          "number": 13,
-          "title": "Test API to React communication",
-          "html_url": "https://github.com/dimitri-edel/team-5/issues/13",
-          "state": "closed",
-          "created_at": "2025-02-12T20:21:26Z",
-          "closed_at": "2025-02-21T13:14:25Z",
-          "updated_at": "2025-02-21T13:14:25Z",
-          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
-          "labels": [],
-          "user": {
-            "login": "dimitri-edel",
-            "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
-          }
-        },
-        {
-          "id": 2851924698,
-          "number": 42,
-          "title": "Deploy Frontend and Backend on Heroku",
-          "html_url": "https://github.com/dimitri-edel/team-5/issues/42",
-          "state": "closed",
-          "created_at": "2025-02-13T19:30:26Z",
-          "closed_at": "2025-02-13T19:30:45Z",
-          "updated_at": "2025-02-13T19:30:45Z",
-          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
-          "labels": [],
-          "user": {
-            "login": "dimitri-edel",
-            "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
-          }
-        },
-        {
-          "id": 2849218004,
-          "number": 2,
-          "title": "Create File Structure for Github Repo",
-          "html_url": "https://github.com/dimitri-edel/team-5/issues/2",
-          "state": "closed",
-          "created_at": "2025-02-12T19:52:24Z",
-          "closed_at": "2025-02-13T17:07:53Z",
-          "updated_at": "2025-02-13T17:07:56Z",
-          "repository_url": "https://api.github.com/repos/dimitri-edel/team-5",
-          "labels": [],
-          "user": {
-            "login": "dimitri-edel",
-            "avatar_url": "https://avatars.githubusercontent.com/u/126069681?v=4"
-          }
-        }
-      ],
-      "openCount": 1,
-      "closedCount": 3
-    },
-    {
-      "repository": {
         "id": 48769241,
         "name": "penpot",
         "full_name": "penpot/penpot",
@@ -483,114 +401,6 @@
     },
     {
       "repository": {
-        "id": 376268212,
-        "name": "Portfolio-2---Alien-Memory-Game",
-        "full_name": "moirahartigan/Portfolio-2---Alien-Memory-Game",
-        "owner": {
-          "login": "moirahartigan",
-          "avatar_url": "https://avatars.githubusercontent.com/u/82383538?v=4"
-        },
-        "html_url": "https://github.com/moirahartigan/Portfolio-2---Alien-Memory-Game",
-        "description": null,
-        "is_external": true
-      },
-      "issues": [
-        {
-          "id": 1845899614,
-          "number": 1,
-          "title": "When pressing reset, the cards flip after they've been reshuffled",
-          "html_url": "https://github.com/moirahartigan/Portfolio-2---Alien-Memory-Game/issues/1",
-          "state": "open",
-          "created_at": "2023-08-10T21:04:52Z",
-          "closed_at": null,
-          "updated_at": "2023-08-10T21:04:52Z",
-          "repository_url": "https://api.github.com/repos/moirahartigan/Portfolio-2---Alien-Memory-Game",
-          "labels": [],
-          "user": {
-            "login": "lmcrean",
-            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
-          }
-        }
-      ],
-      "openCount": 1,
-      "closedCount": 0
-    },
-    {
-      "repository": {
-        "id": 658760780,
-        "name": "PP1",
-        "full_name": "Ahmad-Hazrati/PP1",
-        "owner": {
-          "login": "Ahmad-Hazrati",
-          "avatar_url": "https://avatars.githubusercontent.com/u/136331424?v=4"
-        },
-        "html_url": "https://github.com/Ahmad-Hazrati/PP1",
-        "description": null,
-        "is_external": true
-      },
-      "issues": [
-        {
-          "id": 1805091502,
-          "number": 1,
-          "title": "Order now button on home page appears to be overlapping in mobile view",
-          "html_url": "https://github.com/Ahmad-Hazrati/PP1/issues/1",
-          "state": "open",
-          "created_at": "2023-07-14T15:45:38Z",
-          "closed_at": null,
-          "updated_at": "2023-07-14T15:45:38Z",
-          "repository_url": "https://api.github.com/repos/Ahmad-Hazrati/PP1",
-          "labels": [],
-          "user": {
-            "login": "lmcrean",
-            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
-          }
-        }
-      ],
-      "openCount": 1,
-      "closedCount": 0
-    },
-    {
-      "repository": {
-        "id": 707272128,
-        "name": "halloween-hackathon",
-        "full_name": "alcl2000/halloween-hackathon",
-        "owner": {
-          "login": "alcl2000",
-          "avatar_url": "https://avatars.githubusercontent.com/u/107885891?v=4"
-        },
-        "html_url": "https://github.com/alcl2000/halloween-hackathon",
-        "description": null,
-        "is_external": true
-      },
-      "issues": [
-        {
-          "id": 1952901953,
-          "number": 5,
-          "title": "Finalise Project Choice",
-          "html_url": "https://github.com/alcl2000/halloween-hackathon/issues/5",
-          "state": "closed",
-          "created_at": "2023-10-19T19:12:28Z",
-          "closed_at": "2023-10-19T20:02:02Z",
-          "updated_at": "2023-10-19T20:02:02Z",
-          "repository_url": "https://api.github.com/repos/alcl2000/halloween-hackathon",
-          "labels": [
-            {
-              "id": 6105933808,
-              "name": "MVP",
-              "color": "DDA316"
-            }
-          ],
-          "user": {
-            "login": "alcl2000",
-            "avatar_url": "https://avatars.githubusercontent.com/u/107885891?v=4"
-          }
-        }
-      ],
-      "openCount": 0,
-      "closedCount": 1
-    },
-    {
-      "repository": {
         "id": 679857811,
         "name": "RetrOlympics-Rush",
         "full_name": "lmcrean/RetrOlympics-Rush",
@@ -680,9 +490,9 @@
     }
   ],
   "metadata": {
-    "total_issues": 23,
-    "total_repositories": 12,
-    "external_repositories": 8,
-    "last_updated": "2025-08-31T18:50:40.116Z"
+    "total_issues": 16,
+    "total_repositories": 8,
+    "external_repositories": 4,
+    "last_updated": "2025-08-31T19:07:24.299Z"
   }
 }

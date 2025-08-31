@@ -33,7 +33,21 @@ export class GitHubIssuesService {
         per_page: 100
       });
 
-      const issues = response.data.items.map(item => this.transformToGitHubIssue(item));
+      const issues = response.data.items
+        .filter(item => {
+          // Extract repo name from repository URL
+          const repoMatch = item.repository_url.match(/repos\/([^\/]+)\/([^\/]+)$/);
+          if (repoMatch) {
+            const [, owner, name] = repoMatch;
+            const fullName = `${owner}/${name}`;
+            if (isRepositoryExcluded(name, fullName)) {
+              console.log(`⏭️ Filtering out issue from excluded repo: ${fullName}`);
+              return false;
+            }
+          }
+          return true;
+        })
+        .map(item => this.transformToGitHubIssue(item));
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
@@ -59,7 +73,21 @@ export class GitHubIssuesService {
         per_page: 100
       });
 
-      const issues = response.data.items.map(item => this.transformToGitHubIssue(item));
+      const issues = response.data.items
+        .filter(item => {
+          // Extract repo name from repository URL
+          const repoMatch = item.repository_url.match(/repos\/([^\/]+)\/([^\/]+)$/);
+          if (repoMatch) {
+            const [, owner, name] = repoMatch;
+            const fullName = `${owner}/${name}`;
+            if (isRepositoryExcluded(name, fullName)) {
+              console.log(`⏭️ Filtering out closed issue from excluded repo: ${fullName}`);
+              return false;
+            }
+          }
+          return true;
+        })
+        .map(item => this.transformToGitHubIssue(item));
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
@@ -133,6 +161,12 @@ export class GitHubIssuesService {
       
       const [, owner, name] = repoMatch;
       const repoKey = `${owner}/${name}`;
+      
+      // Skip excluded repositories
+      if (isRepositoryExcluded(name, repoKey)) {
+        console.log(`⏭️ Skipping excluded repository: ${repoKey}`);
+        continue;
+      }
       
       if (!groups.has(repoKey)) {
         // Fetch repository details

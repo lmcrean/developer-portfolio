@@ -4,9 +4,17 @@
  */
 export const EXCLUDED_REPOSITORIES = [
   'team-5',
-  'Portfolio-2--Alien-Memory-Game',
+  'Portfolio-2---Alien-Memory-Game',  // Fixed: three hyphens, not two
   'PP1',
-  'hallween-hackathon'
+  'halloween-hackathon'
+];
+
+/**
+ * List of repository owners to exclude from issue tracking
+ * Issues from any repository owned by these users will be excluded
+ */
+export const EXCLUDED_OWNERS = [
+  'moirahartigan'
 ];
 
 /**
@@ -20,8 +28,16 @@ export function isRepositoryExcluded(repoName: string, fullName?: string): boole
     return true;
   }
   
-  // Also check if the full name contains any excluded repo
+  // Check by owner if fullName is provided
   if (fullName) {
+    const owner = fullName.split('/')[0];
+    if (EXCLUDED_OWNERS.some(excluded => 
+      owner.toLowerCase() === excluded.toLowerCase()
+    )) {
+      return true;
+    }
+    
+    // Also check if the full name contains any excluded repo
     return EXCLUDED_REPOSITORIES.some(excluded => 
       fullName.toLowerCase().includes(excluded.toLowerCase())
     );
