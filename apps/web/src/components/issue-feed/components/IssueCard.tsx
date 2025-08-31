@@ -28,14 +28,6 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
       }}
       aria-label={`Issue #${issue.number}, ${isOpen ? 'open' : 'closed'} ${relativeTime}. Opens in new tab.`}
     >
-      {/* Left: Status Indicator */}
-      <div className="flex-shrink-0 pt-1">
-        {isOpen ? (
-          <div className="w-4 h-4 rounded-full border-2 border-green-500" />
-        ) : (
-          <div className="w-4 h-4 rounded-full bg-purple-500" />
-        )}
-      </div>
 
       {/* Right: Content */}
       <div className="flex-1 min-w-0">
