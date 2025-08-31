@@ -15,21 +15,19 @@ const IssueFilters: React.FC<Props> = ({
   const externalRepos = repositories.filter(r => r.is_external);
 
   return (
-    <div className="issue-filters mt-4 p-4 bg-gray-800/30 rounded-lg">
+    <div className="issue-filters">
       <div className="flex flex-wrap gap-4 items-center">
-        {/* Repository count info */}
-        <span className="text-sm text-gray-300">
-          Agile approach
-        </span>
-        <hr></hr>
         {/* Clear Filters */}
         {selectedRepos.length > 0 && (
-          <button
-            onClick={() => onRepoSelect([])}
-            className="text-sm text-blue-400 hover:text-blue-300"
-          >
-            Clear filters ({selectedRepos.length} selected)
-          </button>
+          <>
+            <span className="text-gray-500">|</span>
+            <button
+              onClick={() => onRepoSelect([])}
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              Clear filters ({selectedRepos.length} selected)
+            </button>
+          </>
         )}
       </div>
     </div>

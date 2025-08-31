@@ -16,34 +16,50 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
 
   return (
     <div 
-      className="issue-card p-4 hover:bg-gray-800/30 cursor-pointer transition-colors"
+      className="flex gap-3 px-6 max-sm:px-3 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-900/20 light:hover:bg-blue-50 focus:outline-none focus:bg-blue-900/20 light:focus:bg-blue-50 hover:shadow-sm border-t border-gray-800 first:border-t-0"
       onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      aria-label={`Issue #${issue.number}, ${isOpen ? 'open' : 'closed'} ${relativeTime}. Opens in new tab.`}
     >
-      <div className="flex items-start gap-3">
-        {/* Status Indicator */}
-        <div className="flex-shrink-0 mt-1">
-          {isOpen ? (
-            <div className="w-4 h-4 rounded-full border-2 border-green-500" />
-          ) : (
-            <div className="w-4 h-4 rounded-full bg-purple-500" />
-          )}
-        </div>
+      {/* Left: Status Indicator */}
+      <div className="flex-shrink-0 pt-1">
+        {isOpen ? (
+          <div className="w-4 h-4 rounded-full border-2 border-green-500" />
+        ) : (
+          <div className="w-4 h-4 rounded-full bg-purple-500" />
+        )}
+      </div>
 
-        {/* Issue Content */}
-        <div className="flex-1 min-w-0">
-          {/* Title and Time */}
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <h4 className="text-sm font-medium text-white hover:text-blue-400 transition-colors">
+      {/* Right: Content */}
+      <div className="flex-1 min-w-0">
+        {/* Row 1: Issue Title and Status */}
+        <div className="flex items-start gap-2 mb-2">
+          <div className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
+            <span className="pr-text-primary font-bold text-sm leading-tight block truncate min-w-0 max-w-[calc(100%-80px)]">
               {issue.title}
-            </h4>
-            <span className="text-xs text-gray-500 flex-shrink-0">
-              {relativeTime}
             </span>
           </div>
+          <div className="flex-shrink-0 flex items-center gap-1">
+            <span className={`text-sm font-medium whitespace-nowrap ${isOpen ? 'text-green-400' : 'text-purple-400'}`}>
+              {isOpen ? 'Open' : 'Closed'}
+            </span>
+          </div>
+        </div>
 
-          {/* Metadata */}
-          <div className="flex items-center gap-3 text-xs text-gray-400">
-            <span>#{issue.number}</span>
+        {/* Row 2: Metadata */}
+        <div className="flex items-center justify-between text-sm pr-text-muted">
+          {/* Left: Issue Number and Labels */}
+          <div className="flex items-center gap-3">
+            <span className="pr-text-muted">
+              #{issue.number}
+            </span>
             
             {/* Labels */}
             {issue.labels && issue.labels.length > 0 && (
@@ -63,11 +79,12 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
                 ))}
               </div>
             )}
-
-            {/* Dates */}
+          </div>
+          
+          {/* Right: Time */}
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="text-xs">
-              Opened: {formatIssueDate(issue.created_at)}
-              {issue.closed_at && ` • Closed: ${formatIssueDate(issue.closed_at)}`}
+              {relativeTime}
             </span>
           </div>
         </div>

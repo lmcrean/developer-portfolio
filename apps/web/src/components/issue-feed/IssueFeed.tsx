@@ -56,8 +56,14 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   }
 
   return (
-    <div className={`issue-feed ${className}`}>
-      <div className="issue-feed-header mb-6">
+    <div className={`w-full p-4 max-sm:px-1 max-sm:py-2 ${className}`} style={{ fontFamily: '"IBM Plex Serif", serif' }}>
+      {/* Table Header - Consistent with Pull Request Feed */}
+      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
+        Agile Approach: Github Issues
+      </div>
+
+      {/* Filters and Controls */}
+      <div className="px-4 max-sm:px-1 py-4">
         <IssueFilters
           repositories={filteredGroups.map(g => g.repository)}
           selectedRepos={selectedRepos}
@@ -81,15 +87,24 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
         </div>
       </div>
 
-      <div className="issue-repository-list space-y-4">
-        {filteredGroups.map((group) => (
-          <IssueRepositoryGroup
-            key={group.repository.full_name}
-            group={group}
-            isExpanded={expandedRepos.has(group.repository.full_name)}
-            onToggle={() => toggleRepo(group.repository.full_name)}
-          />
-        ))}
+      {/* Issue Repository List - Consistent container */}
+      <div className="divide-y divide-gray-700 light:divide-gray-200" style={{ borderTop: 'none' }}>
+        {filteredGroups.length === 0 ? (
+          <div className="px-4 py-12 text-center">
+            <span className="text-sm text-gray-400 light:text-gray-200 font-medium">
+              No issues available
+            </span>
+          </div>
+        ) : (
+          filteredGroups.map((group) => (
+            <IssueRepositoryGroup
+              key={group.repository.full_name}
+              group={group}
+              isExpanded={expandedRepos.has(group.repository.full_name)}
+              onToggle={() => toggleRepo(group.repository.full_name)}
+            />
+          ))
+        )}
       </div>
     </div>
   );
