@@ -7,6 +7,7 @@ import { setupMiddleware } from './config/middleware';
 import { setupHealthRoutes } from './routes/health';
 import { setupGitHubRoutes } from './routes/github';
 import { setupValidationRoutes } from './routes/validation';
+import { setupIssuesRoutes } from './issues/routes';
 import { setup404Handler } from './utils/errorHandler';
 
 // Load environment variables from .env file
@@ -32,6 +33,7 @@ setupMiddleware(app);
 setupHealthRoutes(app);
 setupGitHubRoutes(app, githubService);
 setupValidationRoutes(app, githubService);
+setupIssuesRoutes(app, process.env.GITHUB_TOKEN || '');
 
 // Serve static files (for pre-generated JSON data)
 const staticPath = path.join(__dirname, '..', 'static');

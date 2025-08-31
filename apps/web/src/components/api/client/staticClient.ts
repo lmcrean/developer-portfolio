@@ -11,6 +11,7 @@ import {
   PaginationMeta,
   ApiResponse
 } from '@shared/types/pull-requests';
+import { IssuesApiResponse } from '@shared/types/issues';
 
 interface StaticDataMetadata {
   total_count: number;
@@ -204,6 +205,27 @@ class StaticClient {
       };
     } catch (error) {
       return { available: false };
+    }
+  }
+
+  /**
+   * Get issues data from static JSON
+   */
+  async getIssues(): Promise<IssuesApiResponse | null> {
+    try {
+      const url = `${this.baseURL}/issues-grouped.json`;
+      console.log('📋 Fetching static issues data from:', url);
+      
+      const response = await axios.get<IssuesApiResponse>(url, {
+        timeout: 10000,
+        headers: { 'Content-Type': 'application/json' }
+      });
+      
+      console.log('✅ Static issues data loaded');
+      return response.data;
+    } catch (error) {
+      console.warn('⚠️ Failed to fetch static issues data:', error);
+      return null;
     }
   }
 }
