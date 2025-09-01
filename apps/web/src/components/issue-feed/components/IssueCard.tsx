@@ -75,12 +75,6 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
             )}
           </div>
           
-          {/* Right: Time */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-xs">
-              {relativeTime}
-            </span>
-          </div>
         </div>
       </div>
     </div>
