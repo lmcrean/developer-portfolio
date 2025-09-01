@@ -56,12 +56,16 @@ const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) 
               </span>
             </div>
             <div className="flex-shrink-0 flex items-center gap-2">
-              <span className="px-2 py-0.5 bg-green-900/30 text-green-400 rounded text-xs font-medium whitespace-nowrap">
-                {openCount} open
-              </span>
-              <span className="px-2 py-0.5 bg-purple-900/30 text-purple-400 rounded text-xs font-medium whitespace-nowrap">
-                {closedCount} closed
-              </span>
+              {openCount > 0 && (
+                <span className="px-2 py-0.5 bg-green-900/30 text-green-400 rounded text-xs font-medium whitespace-nowrap">
+                  {openCount} open
+                </span>
+              )}
+              {closedCount > 0 && (
+                <span className="px-2 py-0.5 bg-purple-900/30 text-purple-400 rounded text-xs font-medium whitespace-nowrap">
+                  {closedCount} closed
+                </span>
+              )}
             </div>
           </div>
 
