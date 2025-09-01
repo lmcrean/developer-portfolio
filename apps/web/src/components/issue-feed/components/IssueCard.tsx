@@ -57,9 +57,9 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
               {issue.closed_at && ` • Closed: ${formatIssueDate(issue.closed_at)}`}
             </span>
             
-            {/* Labels */}
+            {/* Labels - Hidden on mobile */}
             {issue.labels && issue.labels.length > 0 && (
-              <div className="flex gap-1">
+              <div className="hidden sm:flex gap-1">
                 <span className="text-xs text-gray-400"><FontAwesomeIcon icon={faTag} /></span>
                 {issue.labels.slice(0, 3).map((label) => (
                   <span
