@@ -28,19 +28,18 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
       }}
       aria-label={`Issue #${issue.number}, ${isOpen ? 'open' : 'closed'} ${relativeTime}. Opens in new tab.`}
     >
+      {/* Status Indicator Dot */}
+      <div className="flex-shrink-0 pt-1.5">
+        <div className={`w-2.5 h-2.5 rounded-full ${isOpen ? 'bg-green-400' : 'bg-purple-400'}`} />
+      </div>
 
       {/* Right: Content */}
       <div className="flex-1 min-w-0">
-        {/* Row 1: Issue Title and Status */}
+        {/* Row 1: Issue Title */}
         <div className="flex items-start gap-2 mb-2">
-          <div className="flex-1 min-w-0 max-w-[calc(100%-80px)]">
+          <div className="flex-1 min-w-0">
             <span className="pr-text-primary font-bold text-sm leading-tight block truncate min-w-0">
               {issue.title}
-            </span>
-          </div>
-          <div className="flex-shrink-0 flex items-center gap-1">
-            <span className={`text-sm font-medium whitespace-nowrap ${isOpen ? 'text-green-400' : 'text-purple-400'}`}>
-              {isOpen ? 'Open' : 'Closed'}
             </span>
           </div>
         </div>
