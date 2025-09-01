@@ -21,6 +21,16 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
     username
   });
 
+  // Initialize all repos as expanded when data is loaded
+  useEffect(() => {
+    if (data) {
+      const externalRepos = data.groups
+        .filter(g => g.repository.is_external)
+        .map(g => g.repository.full_name);
+      setExpandedRepos(new Set(externalRepos));
+    }
+  }, [data]);
+
   const toggleRepo = (repoName: string) => {
     setExpandedRepos(prev => {
       const next = new Set(prev);
