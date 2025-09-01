@@ -34,7 +34,7 @@
     {
       "id": 3246270558,
       "number": 6919,
-      "title": "issue: Frontend yarn permission error prevents localhost testing via Docker Desktop GUI. Expecting to preview application on local machine",
+      "title": "issue: Frontend yarn permission error prevents localhost testing via Docker Desktop GUI",
       "url": "https://github.com/penpot/penpot/issues/6919",
       "state": "closed",
       "date_opened": "2025-07-20T11:11:32Z",
@@ -46,9 +46,9 @@
       "number": 6763,
       "title": "feature: Saved version histories should be protected from external user interferance",
       "url": "https://github.com/penpot/penpot/issues/6763",
-      "state": "open",
+      "state": "closed",
       "date_opened": "2025-06-23T17:30:58Z",
-      "date_closed": null,
+      "date_closed": "2025-08-31T22:14:58Z",
       "repository": "penpot/penpot"
     },
     {
@@ -62,5 +62,5 @@
       "repository": "penpot/penpot"
     }
   ],
-  "generated_at": "2025-08-31T22:12:53.476Z"
+  "generated_at": "2025-09-01T11:43:41.724Z"
 }
