@@ -7,7 +7,8 @@ set -e
 echo "📁 Copying static data from API to web app..."
 
 # Define locations
-API_STATIC_DIR="apps/api/github/static/pull-requests"
+# The compiled scripts now generate files in dist/apps/api/github/static
+API_STATIC_DIR="apps/api/github/dist/apps/api/github/static/pull-requests"
 WEB_STATIC_DIR="apps/web/static"
 
 # Verify API static location exists and has data
@@ -98,6 +99,25 @@ echo "🔍 Final verification of web app static data..."
 echo "📊 Web app static directory contents:"
 ls -la "$WEB_STATIC_DIR"/pr-*.json
 
+# Copy issues static data
+echo "📋 Copying issues static data..."
+ISSUES_SOURCE="apps/api/github/dist/apps/api/github/static/issues/grouped.json"
+ISSUES_TARGET="$WEB_STATIC_DIR/issues-grouped.json"
+
+if [ -f "$ISSUES_SOURCE" ]; then
+  cp "$ISSUES_SOURCE" "$ISSUES_TARGET"
+  if [ ! -f "$ISSUES_TARGET" ]; then
+    echo "❌ Failed to copy issues data file"
+    exit 1
+  fi
+  echo "✅ Successfully copied issues data as issues-grouped.json"
+  issues_size=$(stat -f%z "$ISSUES_TARGET" 2>/dev/null || stat -c%s "$ISSUES_TARGET" 2>/dev/null)
+  echo "📊 Issues data size: ${issues_size} bytes"
+else
+  echo "⚠️ Issues data file not found: $ISSUES_SOURCE"
+  echo "💡 Issues tracking feature will not be available"
+fi
+
 echo "✅ Static data successfully copied to web app!"
-echo "📁 Copied $copied_count files from API to: $WEB_STATIC_DIR"
-echo "🎯 Web app is ready for deployment with embedded static data"
+echo "📁 Copied $copied_count PR files + issues data from API to: $WEB_STATIC_DIR"
+echo "🎯 Web app is ready for deployment with embedded static data (PR + Issues)"

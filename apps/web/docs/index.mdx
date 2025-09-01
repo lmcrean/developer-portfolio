@@ -8,6 +8,7 @@ description: Live GitHub pull request activity feed
 ---
 
 import PullRequestFeed from '../src/components/pull-request-feed/PullRequestFeed';
+import IssueFeed from '../src/components/issue-feed/IssueFeed';
 import DeveloperBusinessCard from '@site/src/components/banner/banner';
 
 <DeveloperBusinessCard />
@@ -18,6 +19,10 @@ import DeveloperBusinessCard from '@site/src/components/banner/banner';
   </div>
 
   <PullRequestFeed username="lmcrean" className="mb-8" />
+</div>
+
+<div className="pt-8 m-auto">
+  <IssueFeed username="lmcrean" className="mb-8" />
 </div>
 
 ---

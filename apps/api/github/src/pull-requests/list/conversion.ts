@@ -74,6 +74,7 @@ export async function fetchDetailedPRData(
     state: pr.merged_at ? 'merged' as const : pr.state as 'open' | 'closed',
     additions: pr.additions,
     deletions: pr.deletions,
+    comments: pr.comments,
     repository: {
       name: repo,
       description: repoData.description,
