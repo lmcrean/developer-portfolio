@@ -37,9 +37,9 @@ export const formatAbsoluteDate = (dateString: string | null | undefined): strin
 
 export const getStatusDisplay = (state: string | null | undefined, mergedAt: string | null, draft?: boolean) => {
   // Dark-first design: dark mode colors are primary, light mode is the exception
-  if (draft) return { emoji: '•', text: 'draft', color: 'text-gray-500 light:text-gray-400' };
-  if (mergedAt) return { emoji: '•', text: 'merged', color: 'text-teal-400 light:text-teal-600' };
-  if (state === 'open') return { emoji: '○', text: 'open', color: 'text-yellow-400 light:text-yellow-600' };
+  if (draft) return { emoji: '•', text: 'draft', color};
+  if (mergedAt) return { emoji: '•', text: 'merged' };
+  if (state === 'open') return { emoji: '○', text: 'open'};
   return { emoji: '×', text: 'closed', color: 'text-pink-400 light:text-pink-600' };
 };
 

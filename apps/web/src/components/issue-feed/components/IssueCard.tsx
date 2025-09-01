@@ -32,7 +32,7 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
     >
       {/* Status Indicator Dot */}
       <div className="flex-shrink-0 pt-1.5">
-        <div className={`w-2.5 h-2.5 rounded-full ${isOpen ? 'bg-green-400' : 'bg-purple-400'}`} />
+        <div className={`w-2.5 h-2.5 rounded-full ${isOpen ? 'bg-teal-400' : 'bg-purple-400'}`} />
       </div>
 
       {/* Right: Content */}
