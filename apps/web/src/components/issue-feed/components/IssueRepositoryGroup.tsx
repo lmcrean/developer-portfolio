@@ -46,7 +46,7 @@ const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) 
         {/* Right: Content */}
         <div className="flex-1 min-w-0">
           {/* Row 1: Repository Name and Issue Counts */}
-          <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
               <span className="pr-text-primary font-bold text-sm leading-tight truncate block">
                 {repository.name}
