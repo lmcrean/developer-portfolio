@@ -70,11 +70,11 @@ const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) 
           </div>
 
           {/* Row 2: Repository Description (when collapsed) */}
-          {repository.description && !isExpanded && (
-            <div className="text-sm pr-text-muted truncate">
+          {/* {repository.description && (
+            <div className="text-sm text-gray-400 italic truncate">
               {repository.description}
             </div>
-          )}
+          )} */}
         </div>
       </div>
 

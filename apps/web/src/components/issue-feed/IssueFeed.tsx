@@ -65,6 +65,12 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
     );
   }
 
+  // Check if all repos are expanded or collapsed
+  const allReposExpanded = filteredGroups.length > 0 && 
+    filteredGroups.every(g => expandedRepos.has(g.repository.full_name));
+  const allReposCollapsed = filteredGroups.length > 0 && 
+    filteredGroups.every(g => !expandedRepos.has(g.repository.full_name));
+
   return (
     <div className={`w-full p-4 max-sm:px-1 max-sm:py-2 ${className}`} style={{ fontFamily: '"IBM Plex Serif", serif' }}>
       {/* Table Header - Consistent with Pull Request Feed */}
@@ -81,19 +87,25 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
         />
 
         <div className="flex gap-2 mt-4">
-          <button 
-            onClick={() => toggleAllRepos(true)}
-            className="text-sm text-gray-400 hover:text-blue-300"
-          >
-            Expand All
-          </button>
-          <span className="text-gray-500">|</span>
-          <button 
-            onClick={() => toggleAllRepos(false)}
-            className="text-sm text-gray-400 hover:text-blue-300"
-          >
-            Collapse All
-          </button>
+          {!allReposExpanded && (
+            <>
+              <button 
+                onClick={() => toggleAllRepos(true)}
+                className="text-sm text-gray-400 hover:text-blue-300"
+              >
+                Expand All
+              </button>
+              {!allReposCollapsed && <span className="text-gray-500">|</span>}
+            </>
+          )}
+          {!allReposCollapsed && (
+            <button 
+              onClick={() => toggleAllRepos(false)}
+              className="text-sm text-gray-400 hover:text-blue-300"
+            >
+              Collapse All
+            </button>
+          )}
         </div>
       </div>
 
