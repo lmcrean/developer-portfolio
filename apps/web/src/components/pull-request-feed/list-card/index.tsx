@@ -28,7 +28,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
   return (
     <div 
-      className="flex gap-3 px-4 max-sm:px-2 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-900/20 light:hover:bg-blue-50 focus:outline-none focus:bg-blue-900/20 light:focus:bg-blue-50 hover:shadow-sm"
+      className="flex gap-3 px-4 max-sm:px-2 py-4 cursor-pointer transition-all duration-200 hover:bg-teal-900/20 light:hover:bg-blue-50 focus:outline-none focus:bg-teal-900/20 light:focus:bg-blue-50 hover:shadow-sm"
       onClick={onClick}
       role="button"
       tabIndex={0}

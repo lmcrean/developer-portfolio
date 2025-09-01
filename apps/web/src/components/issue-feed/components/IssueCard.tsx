@@ -18,7 +18,7 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
 
   return (
     <div 
-      className="flex gap-3 px-6 max-sm:px-3 py-4 cursor-pointer transition-all duration-200 hover:bg-blue-900/20 light:hover:bg-blue-50 focus:outline-none focus:bg-blue-900/20 light:focus:bg-blue-50 hover:shadow-sm border-t border-gray-800 first:border-t-0"
+      className="flex gap-3 px-6 max-sm:px-3 py-4 cursor-pointer transition-all duration-200 light:hover:bg-blue-50 focus:outline-none hover:bg-pink-400/5 light:focus:bg-blue-50 hover:shadow-sm border-t border-gray-800 first:border-t-0"
       onClick={handleClick}
       role="button"
       tabIndex={0}
@@ -57,9 +57,9 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
               {issue.closed_at && ` • Closed: ${formatIssueDate(issue.closed_at)}`}
             </span>
             
-            {/* Labels */}
+            {/* Labels - Hidden on mobile */}
             {issue.labels && issue.labels.length > 0 && (
-              <div className="flex gap-1">
+              <div className="hidden sm:flex gap-1">
                 <span className="text-xs text-gray-400"><FontAwesomeIcon icon={faTag} /></span>
                 {issue.labels.slice(0, 3).map((label) => (
                   <span
