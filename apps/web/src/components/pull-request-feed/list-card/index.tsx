@@ -105,12 +105,6 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
               </span>
             )}
             
-            {/* Comments */}
-            {pullRequest.comments && pullRequest.comments > 0 && (
-              <span className="text-xs opacity-70 italic">
-                {pullRequest.comments} {pullRequest.comments === 1 ? 'comment' : 'comments'}
-              </span>
-            )}
             
             {/* Time */}
             <span className="text-xs">
