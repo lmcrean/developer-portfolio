@@ -1,6 +1,8 @@
 import React from 'react';
 import { GitHubIssue } from '@shared/types/issues';
 import { formatIssueDate, getRelativeTime } from '@shared/types/issues/utilities';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTag } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
   issue: GitHubIssue;
@@ -58,14 +60,13 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
             {/* Labels */}
             {issue.labels && issue.labels.length > 0 && (
               <div className="flex gap-1">
+                <span className="text-xs text-gray-400"><FontAwesomeIcon icon={faTag} /></span>
                 {issue.labels.slice(0, 3).map((label) => (
                   <span
                     key={label.id}
-                    className="px-2 py-0.5 rounded-full text-xs"
+                    className="px-2 rounded-full text-xs text-gray-400"
                     style={{
-                      backgroundColor: `#${label.color}20`,
-                      color: `#${label.color}`,
-                      border: `1px solid #${label.color}40`
+                      border: `1px solid gray`
                     }}
                   >
                     {label.name}
