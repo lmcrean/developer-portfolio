@@ -18,7 +18,7 @@ const IssueCard: React.FC<Props> = ({ issue }) => {
 
   return (
     <div 
-      className="flex gap-3 px-6 max-sm:px-3 py-4 cursor-pointer transition-all duration-200 bg-teal-900/25 hover:bg-teal-900/10 light:hover:bg-blue-50 focus:outline-none focus:bg-teal-900/30 light:focus:bg-blue-50 hover:shadow-sm border-t border-gray-800 first:border-t-0"
+      className="flex gap-3 px-6 max-sm:px-3 py-4 cursor-pointer transition-all duration-200 bg-teal-400/10 hover:bg-teal-900/10 light:hover:bg-blue-50 focus:outline-none focus:bg-teal-900/30 light:focus:bg-blue-50 hover:shadow-sm border-t border-gray-800 first:border-t-0"
       onClick={handleClick}
       role="button"
       tabIndex={0}
