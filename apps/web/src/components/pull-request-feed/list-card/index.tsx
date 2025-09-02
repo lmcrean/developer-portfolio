@@ -63,7 +63,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
         {/* Row 1: Org:Repo:Title and Language */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-1">
-            <span className="pr-text-muted text-sm max-sm:hidden">
+            <span className="pr-text-muted text-sm max-lg:hidden">
               {pullRequest.repository.owner.login}:
             </span>
             <span className="font-medium pr-text-secondary text-sm max-sm:hidden">
