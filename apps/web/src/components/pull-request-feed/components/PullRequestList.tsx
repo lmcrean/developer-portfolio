@@ -101,6 +101,37 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
     }
   }, [pullRequests.length, previousPullRequestCount, isClient, pullRequests]);
 
+  // Split pull requests into merged and open
+  const mergedPRs = pullRequests.filter(pr => pr.merged_at);
+  const openPRs = pullRequests.filter(pr => !pr.merged_at && pr.state === 'open');
+
+  // Helper function to render PR cards
+  const renderPRCards = (prs: PullRequestListData[]) => {
+    return prs.map((pr, index) => {
+      const isAnimating = animatingItems.has(pr.id);
+      const animationDelay = isAnimating ? (index - previousPullRequestCount) * 0.1 : 0;
+      
+      return (
+        <div
+          key={pr.id}
+          className={`${
+            isAnimating 
+              ? 'pr-fade-in animate-fade-in' 
+              : 'opacity-100'
+          }`}
+          style={{
+            animationDelay: isAnimating ? `${animationDelay}s` : undefined,
+          }}
+        >
+          <PullRequestFeedListCard
+            pullRequest={pr}
+            onClick={() => onCardClick(pr)}
+          />
+        </div>
+      );
+    });
+  };
+
   // Determine what to render in the table body
   const renderTableBody = () => {
     // Show error state if error exists and no pull requests
@@ -112,29 +143,39 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
     if (pullRequests.length > 0) {
       return (
         <>
-          {pullRequests.map((pr, index) => {
-            const isAnimating = animatingItems.has(pr.id);
-            const animationDelay = isAnimating ? (index - previousPullRequestCount) * 0.1 : 0;
-            
-            return (
-              <div
-                key={pr.id}
-                className={`${
-                  isAnimating 
-                    ? 'pr-fade-in animate-fade-in' 
-                    : 'opacity-100'
-                }`}
-                style={{
-                  animationDelay: isAnimating ? `${animationDelay}s` : undefined,
-                }}
-              >
-                <PullRequestFeedListCard
-                  pullRequest={pr}
-                  onClick={() => onCardClick(pr)}
-                />
+          {/* Merged PRs Section */}
+          {mergedPRs.length > 0 && (
+            <>
+              <div className="px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200">
+                <div className="text-sm font-semibold pr-text-secondary">
+                  Enterprise Solutions
+                </div>
+                <div className="text-xs italic text-gray-400 light:text-gray-600 mt-1">
+                  Approved in production
+                </div>
               </div>
-            );
-          })}
+              <div className="divide-y divide-gray-700 light:divide-gray-200">
+                {renderPRCards(mergedPRs)}
+              </div>
+            </>
+          )}
+          
+          {/* Open PRs Section */}
+          {openPRs.length > 0 && (
+            <>
+              <div className="px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200 mt-6">
+                <div className="text-sm font-semibold pr-text-secondary">
+                  Enterprise Solutions
+                </div>
+                <div className="text-xs italic text-gray-400 light:text-gray-600 mt-1">
+                  Pending approval
+                </div>
+              </div>
+              <div className="divide-y divide-gray-700 light:divide-gray-200">
+                {renderPRCards(openPRs)}
+              </div>
+            </>
+          )}
         </>
       );
     }
@@ -180,13 +221,8 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
         }
       `}} />
 
-      {/* Table Header - Always visible */}
-      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
-        Enterprise Solutions
-      </div>
-
       {/* Table Body - Dynamic content based on state */}
-      <div className="divide-y divide-gray-700 light:divide-gray-200" style={{ borderTop: 'none' }}>
+      <div>
         {renderTableBody()}
         
         {/* Infinite Scroll Trigger & Loading More Indicator */}

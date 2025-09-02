@@ -123,7 +123,7 @@ describe('PullRequestFeedListCard Integration Tests', () => {
       const openPR = { ...mockListPR, state: 'open' as const, merged_at: null };
       render(<PullRequestFeedListCard pullRequest={openPR} onClick={mockOnClick} />);
       
-      const statusElement = screen.getByText('open').closest('div');
+      const statusElement = screen.getByText('opened').closest('div');
       expect(statusElement).toHaveClass('text-green-600');
       expect(screen.getByText('○')).toBeInTheDocument();
     });

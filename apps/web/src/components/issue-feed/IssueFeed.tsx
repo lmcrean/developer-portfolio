@@ -74,8 +74,11 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   return (
     <div className={`w-full p-4 max-sm:px-1 max-sm:py-2 ${className}`} style={{ fontFamily: '"IBM Plex Serif", serif' }}>
       {/* Table Header - Consistent with Pull Request Feed */}
-      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
+      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 text-sm font-semibold pr-text-secondary  light:border-gray-200">
         Agile Approach
+      </div>
+      <div className="px-4 pb-3 text-xs italic text-gray-400 light:text-gray-600 mt-1 border-b border-gray-700">
+        Github Issues
       </div>
 
       {/* Filters and Controls */}
@@ -91,7 +94,7 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
             <>
               <button 
                 onClick={() => toggleAllRepos(true)}
-                className="text-sm text-gray-400 hover:text-blue-300"
+                className=" text-gray-400 hover:text-blue-300 text-xs"
               >
                 Expand All
               </button>
@@ -101,7 +104,7 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
           {!allReposCollapsed && (
             <button 
               onClick={() => toggleAllRepos(false)}
-              className="text-sm text-gray-400 hover:text-blue-300"
+              className="text-xs text-gray-400 hover:text-blue-300"
             >
               Collapse All
             </button>

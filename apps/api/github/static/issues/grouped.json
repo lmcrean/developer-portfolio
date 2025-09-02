@@ -2,6 +2,41 @@
   "groups": [
     {
       "repository": {
+        "id": 506584771,
+        "name": "cranker-connector",
+        "full_name": "hsbc/cranker-connector",
+        "owner": {
+          "login": "hsbc",
+          "avatar_url": "https://avatars.githubusercontent.com/u/48318517?v=4"
+        },
+        "html_url": "https://github.com/hsbc/cranker-connector",
+        "description": "A Cranker connector for Java as a library that has no external dependencies.",
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 3372594989,
+          "number": 15,
+          "title": "Optimisation Issue: NumberFormatException in Content-Length Parsing",
+          "html_url": "https://github.com/hsbc/cranker-connector/issues/15",
+          "state": "open",
+          "created_at": "2025-09-01T12:55:52Z",
+          "closed_at": null,
+          "updated_at": "2025-09-01T12:55:52Z",
+          "repository_url": "https://api.github.com/repos/hsbc/cranker-connector",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 1,
+      "closedCount": 0,
+      "lastActivityDate": "2025-09-01T12:55:52.000Z"
+    },
+    {
+      "repository": {
         "id": 48769241,
         "name": "penpot",
         "full_name": "penpot/penpot",
@@ -498,9 +533,9 @@
     }
   ],
   "metadata": {
-    "total_issues": 16,
-    "total_repositories": 8,
-    "external_repositories": 4,
-    "last_updated": "2025-09-01T11:43:41.724Z"
+    "total_issues": 17,
+    "total_repositories": 9,
+    "external_repositories": 5,
+    "last_updated": "2025-09-02T15:14:33.036Z"
   }
 }

@@ -1,6 +1,29 @@
 {
   "data": [
     {
+      "id": 2790279129,
+      "number": 16,
+      "title": "Fix NumberFormatException vulnerability in Content-Length header parsing",
+      "description": "#15  Malformed `Content-Length` headers cause unhandled `NumberFormatException`, crashing the WebSocket handler thread and enabling trivial DoS attacks. A DoS vulnerability that can crash these connections with a single malformed header is definitely worth fixing.\r\n\r\n**Attack vector:** `curl -H \"Content-Length: not-a-number\" http://target/api`\r\n\r\n## Solution\r\nAdded try-catch blocks around `Long.parseLong()` calls in:\r\n- `CrankerRequestParser.java:61`\r\n- `ConnectorSocketV3.java:701`\r\n\r\nInvalid values now return `-1` and log warnings instead of throwing exceptions.\r\n\r\n## Impact\r\n\r\n### Before (Vulnerable)\r\n- `Long.parseLong(\"abc\")` throws uncaught `NumberFormatException`\r\n → Thread crashes, WebSocket connection drops, request fails\r\n → Single malformed request can disrupt service\r\n → Recovery Depends on thread pool size; \r\n → if repeated attacks exhaust pool → full outage\r\n\r\n### After (Fixed)  \r\n- Invalid Content-Length returns `-1` (same as missing header)\r\n → Request processed normally, treated as having unknown body length\r\n → Malformed headers handled gracefully, no service impact\r\n → Recovery: Not needed; service remains fully operational\r\n\r\n\r\n\r\n## Testing Guide\r\n```bash\r\n# Test malformed values (should return HTTP error, not crash)\r\ncurl -H \"Content-Length: abc\" http://localhost:8080/api\r\ncurl -H \"Content-Length: 12.5\" http://localhost:8080/api\r\ncurl -H \"Content-Length: \" http://localhost:8080/api\r\n\r\n# Verify service still running\r\ncurl -I http://localhost:8080/health\r\n```\r\n\r\n## Breaking Changes\r\nNone. Invalid Content-Length headers already violated HTTP spec - this change makes handling RFC-compliant by treating malformed values as missing headers.\r\n\r\n### Why This Is Not \"False Passing\":\r\n- **-1 means \"unknown length\"**, not \"no body\" - per Java HttpClient spec\r\n- **Body still transmitted:** Actual content flows through WebSocket binary messages regardless of Content-Length\r\n- **Request validation continues:** Other security checks and validations still apply",
+      "created_at": "2025-09-01T16:06:23Z",
+      "merged_at": null,
+      "html_url": "https://github.com/hsbc/cranker-connector/pull/16",
+      "state": "open",
+      "additions": 18,
+      "deletions": 2,
+      "comments": 0,
+      "repository": {
+        "name": "cranker-connector",
+        "description": "A Cranker connector for Java as a library that has no external dependencies.",
+        "language": "Java",
+        "html_url": "https://github.com/hsbc/cranker-connector",
+        "owner": {
+          "login": "hsbc",
+          "avatar_url": "https://avatars.githubusercontent.com/u/48318517?v=4"
+        }
+      }
+    },
+    {
       "id": 2787729818,
       "number": 9,
       "title": "Enhance(error handling): improve flush loop and trigger handling in cscdm",
@@ -57,7 +80,7 @@
       "state": "open",
       "additions": 35,
       "deletions": 4,
-      "comments": 3,
+      "comments": 4,
       "repository": {
         "name": "cccl",
         "description": "CUDA Core Compute Libraries",
@@ -187,11 +210,11 @@
   ],
   "meta": {
     "username": "lmcrean",
-    "count": 8,
+    "count": 9,
     "pagination": {
       "page": 1,
       "per_page": 20,
-      "total_count": 8,
+      "total_count": 9,
       "total_pages": 1,
       "has_next_page": false,
       "has_previous_page": false

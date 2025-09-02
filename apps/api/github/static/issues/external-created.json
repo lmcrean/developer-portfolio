@@ -2,6 +2,16 @@
   "count": 6,
   "issues": [
     {
+      "id": 3372594989,
+      "number": 15,
+      "title": "Optimisation Issue: NumberFormatException in Content-Length Parsing",
+      "url": "https://github.com/hsbc/cranker-connector/issues/15",
+      "state": "open",
+      "date_opened": "2025-09-01T12:55:52Z",
+      "date_closed": null,
+      "repository": "hsbc/cranker-connector"
+    },
+    {
       "id": 3369295026,
       "number": 8,
       "title": "Aggressive Goroutine Termination in Flush Loop",
@@ -20,16 +30,6 @@
       "date_opened": "2025-08-30T16:24:08Z",
       "date_closed": null,
       "repository": "GSK-Biostatistics/docorator"
-    },
-    {
-      "id": 3366738470,
-      "number": 2,
-      "title": "Enabled README png to work in github dark mode with gray on black text",
-      "url": "https://github.com/AstraZeneca/cellatria/issues/2",
-      "state": "closed",
-      "date_opened": "2025-08-29T12:35:36Z",
-      "date_closed": "2025-08-29T22:44:28Z",
-      "repository": "AstraZeneca/cellatria"
     },
     {
       "id": 3246270558,
@@ -62,5 +62,5 @@
       "repository": "penpot/penpot"
     }
   ],
-  "generated_at": "2025-09-01T11:43:41.724Z"
+  "generated_at": "2025-09-02T15:14:33.036Z"
 }

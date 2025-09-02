@@ -4,6 +4,7 @@ import {
   PullRequestListData 
 } from '@shared/types/pull-requests';
 import {
+  formatAbsoluteDate,
   getRelativeTime,
   getStatusDisplay,
   formatBytesChange
@@ -25,6 +26,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
   // Only calculate relative time on client side
   const relativeTime = isClient ? getRelativeTime(pullRequest.created_at) : 'Loading...';
+  const statusDate = pullRequest.merged_at ? pullRequest.merged_at : pullRequest.created_at;
 
   return (
     <div 
@@ -58,43 +60,49 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
       {/* Right: Content */}
       <div className="flex-1 min-w-0">
-        {/* Row 1: PR Title in Bold */}
+        {/* Row 1: Org:Repo:Title and Language */}
         <div className="flex items-start justify-between gap-2 mb-2">
-          <span className="pr-text-primary font-bold text-sm leading-tight">
-            {pullRequest.title}
-          </span>
-          <div className="flex-shrink-0 flex items-center gap-1">
-            <div className={`flex items-center gap-1 ${status.color} text-sm font-medium`}>
-              <span>{status.emoji}</span>
-              <span className="max-sm:hidden">{status.text}</span>
-            </div>
+          <div className="flex items-center gap-1">
+            <span className="pr-text-muted text-sm max-lg:hidden">
+              {pullRequest.repository.owner.login}:
+            </span>
+            <span className="font-medium pr-text-secondary text-sm max-sm:hidden">
+              {pullRequest.repository.name}:
+            </span>
+            <span className="pr-text-primary font-bold text-sm leading-tight">
+              {pullRequest.title}
+            </span>
+          </div>
+          <div className="flex-shrink-0 max-sm:hidden">
+            {pullRequest.repository.language && (
+              <span className="italic text-sm pr-text-muted">
+                {pullRequest.repository.language}
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Row 2: Left and Right sections */}
+        {/* Row 2: Status Date and Changes/Time */}
         <div className="flex items-center justify-between text-sm pr-text-muted">
-          {/* Left: Organization and Repository */}
-          <div className="flex items-center gap-2">
-            <span className="pr-text-muted">
-              {pullRequest.repository.owner.login}:
-            </span>
-            <span className="font-medium pr-text-secondary">
-              {pullRequest.repository.name}
+          {/* Left: Status with date */}
+          <div className="flex items-center gap-1">
+            <span className="text-xs">
+              {status.text} {relativeTime}
             </span>
           </div>
           
-          {/* Right: Language, Changes, Time */}
-          <div className="flex items-center gap-3 flex-wrap max-sm:hidden">
-            {/* Language */}
+          {/* Right: Changes on desktop, Language on mobile */}
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Language - shown on mobile only */}
             {pullRequest.repository.language && (
-              <span className="italic">
+              <span className="italic text-xs pr-text-muted sm:hidden">
                 {pullRequest.repository.language}
               </span>
             )}
             
-            {/* Changes */}
+            {/* Changes - hidden on mobile */}
             {bytesChange.hasData && (
-              <span className="font-mono text-xs">
+              <span className="font-mono text-xs max-sm:hidden">
                 <span className="text-green-400 light:text-green-600">
                   {bytesChange.formatted.split(' ')[0]}
                 </span>
@@ -104,12 +112,6 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
                 </span>
               </span>
             )}
-            
-            
-            {/* Time */}
-            <span className="text-xs">
-              {relativeTime}
-            </span>
           </div>
         </div>
       </div>
