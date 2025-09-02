@@ -30,6 +30,13 @@ const LIMITED_REPOSITORIES = {
   'penpot': 'keep-latest-only'
 };
 
+// Repository-level overrides for specific customizations
+const REPOSITORY_OVERRIDES: Record<string, { language?: string }> = {
+  'penpot': {
+    language: 'Clojure, SQL'
+  }
+};
+
 interface PullRequestOverride {
   id: number;
   title?: string;
@@ -182,11 +189,30 @@ class StaticDataGenerator {
   }
 
   /**
+   * Apply repository-level overrides (e.g., language customization)
+   */
+  private applyRepositoryOverrides(pr: PullRequestListData): PullRequestListData {
+    const repoOverride = REPOSITORY_OVERRIDES[pr.repository.name];
+    if (!repoOverride) {
+      return pr;
+    }
+    
+    return {
+      ...pr,
+      repository: {
+        ...pr.repository,
+        ...(repoOverride.language && { language: repoOverride.language })
+      }
+    };
+  }
+
+  /**
    * Filter PRs to only include external repositories with additional filtering rules
    */
   private filterToExternalPRs(prs: PullRequestListData[]): PullRequestListData[] {
     // First, apply manual overrides to fix incorrect data
-    let processedPRs = prs.map(pr => this.applyManualOverrides(pr));
+    let processedPRs = prs.map(pr => this.applyManualOverrides(pr))
+      .map(pr => this.applyRepositoryOverrides(pr));
     
     // Filter to external repositories only and apply blacklist
     let filtered = processedPRs.filter(pr => {
