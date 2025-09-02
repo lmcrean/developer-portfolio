@@ -74,8 +74,11 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   return (
     <div className={`w-full p-4 max-sm:px-1 max-sm:py-2 ${className}`} style={{ fontFamily: '"IBM Plex Serif", serif' }}>
       {/* Table Header - Consistent with Pull Request Feed */}
-      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-header border-b border-gray-700 light:border-gray-200">
+      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 py-3 text-sm font-semibold pr-text-secondary border-b border-gray-700 light:border-gray-200">
         Agile Approach
+      </div>
+      <div className="text-xs italic text-gray-400 light:text-gray-600 mt-1">
+        Github Issues
       </div>
 
       {/* Filters and Controls */}
