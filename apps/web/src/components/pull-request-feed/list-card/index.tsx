@@ -63,17 +63,17 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
         {/* Row 1: Org:Repo:Title and Language */}
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-1">
-            <span className="pr-text-muted text-sm">
+            <span className="pr-text-muted text-sm max-sm:hidden">
               {pullRequest.repository.owner.login}:
             </span>
-            <span className="font-medium pr-text-secondary text-sm">
+            <span className="font-medium pr-text-secondary text-sm max-sm:hidden">
               {pullRequest.repository.name}:
             </span>
             <span className="pr-text-primary font-bold text-sm leading-tight">
               {pullRequest.title}
             </span>
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 max-sm:hidden">
             {pullRequest.repository.language && (
               <span className="italic text-sm pr-text-muted">
                 {pullRequest.repository.language}
@@ -91,11 +91,18 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
             </span>
           </div>
           
-          {/* Right: Changes and Time */}
-          <div className="flex items-center gap-3 flex-wrap max-sm:hidden">
-            {/* Changes */}
+          {/* Right: Changes on desktop, Language on mobile */}
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Language - shown on mobile only */}
+            {pullRequest.repository.language && (
+              <span className="italic text-xs pr-text-muted sm:hidden">
+                {pullRequest.repository.language}
+              </span>
+            )}
+            
+            {/* Changes - hidden on mobile */}
             {bytesChange.hasData && (
-              <span className="font-mono text-xs">
+              <span className="font-mono text-xs max-sm:hidden">
                 <span className="text-green-400 light:text-green-600">
                   {bytesChange.formatted.split(' ')[0]}
                 </span>
