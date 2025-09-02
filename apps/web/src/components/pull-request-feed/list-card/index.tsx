@@ -4,6 +4,7 @@ import {
   PullRequestListData 
 } from '@shared/types/pull-requests';
 import {
+  formatAbsoluteDate,
   getRelativeTime,
   getStatusDisplay,
   formatBytesChange
@@ -25,6 +26,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
   // Only calculate relative time on client side
   const relativeTime = isClient ? getRelativeTime(pullRequest.created_at) : 'Loading...';
+  const statusDate = pullRequest.merged_at ? pullRequest.merged_at : pullRequest.created_at;
 
   return (
     <div 
@@ -58,40 +60,42 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
       {/* Right: Content */}
       <div className="flex-1 min-w-0">
-        {/* Row 1: PR Title in Bold */}
+        {/* Row 1: Org:Repo:Title and Language */}
         <div className="flex items-start justify-between gap-2 mb-2">
-          <span className="pr-text-primary font-bold text-sm leading-tight">
-            {pullRequest.title}
-          </span>
-          <div className="flex-shrink-0 flex items-center gap-1">
-            <div className={`flex items-center gap-1 ${status.color} text-sm font-medium`}>
-              <span>{status.emoji}</span>
-              <span className="max-sm:hidden">{status.text}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 2: Left and Right sections */}
-        <div className="flex items-center justify-between text-sm pr-text-muted">
-          {/* Left: Organization and Repository */}
-          <div className="flex items-center gap-2">
-            <span className="pr-text-muted">
+          <div className="flex items-center gap-1">
+            <span className="pr-text-muted text-sm">
               {pullRequest.repository.owner.login}:
             </span>
-            <span className="font-medium pr-text-secondary">
-              {pullRequest.repository.name}
+            <span className="font-medium pr-text-secondary text-sm">
+              {pullRequest.repository.name}:
+            </span>
+            <span className="pr-text-primary font-bold text-sm leading-tight">
+              {pullRequest.title}
             </span>
           </div>
-          
-          {/* Right: Language, Changes, Time */}
-          <div className="flex items-center gap-3 flex-wrap max-sm:hidden">
-            {/* Language */}
+          <div className="flex-shrink-0">
             {pullRequest.repository.language && (
-              <span className="italic">
+              <span className="italic text-sm pr-text-muted">
                 {pullRequest.repository.language}
               </span>
             )}
-            
+          </div>
+        </div>
+
+        {/* Row 2: Status Date and Changes/Time */}
+        <div className="flex items-center justify-between text-sm pr-text-muted">
+          {/* Left: Status with date */}
+          <div className="flex items-center gap-1">
+            <span className={`${status.color}`}>
+              {status.emoji}
+            </span>
+            <span className="text-xs">
+              {status.text} {isClient && new Date(statusDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
+          </div>
+          
+          {/* Right: Changes and Time */}
+          <div className="flex items-center gap-3 flex-wrap max-sm:hidden">
             {/* Changes */}
             {bytesChange.hasData && (
               <span className="font-mono text-xs">
@@ -104,7 +108,6 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
                 </span>
               </span>
             )}
-            
             
             {/* Time */}
             <span className="text-xs">
