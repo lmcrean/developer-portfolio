@@ -86,11 +86,8 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
         <div className="flex items-center justify-between text-sm pr-text-muted">
           {/* Left: Status with date */}
           <div className="flex items-center gap-1">
-            <span className={`${status.color}`}>
-              {status.emoji}
-            </span>
             <span className="text-xs">
-              {status.text} {isClient && new Date(statusDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              {status.text} {relativeTime}
             </span>
           </div>
           
@@ -108,11 +105,6 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
                 </span>
               </span>
             )}
-            
-            {/* Time */}
-            <span className="text-xs">
-              {relativeTime}
-            </span>
           </div>
         </div>
       </div>
