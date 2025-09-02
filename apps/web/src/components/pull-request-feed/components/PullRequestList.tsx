@@ -151,7 +151,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
                   Enterprise Solutions
                 </div>
                 <div className="text-xs italic text-gray-400 light:text-gray-600 mt-1">
-                  Confirmed in production
+                  Approved in production
                 </div>
               </div>
               <div className="divide-y divide-gray-700 light:divide-gray-200">
