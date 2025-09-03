@@ -67,6 +67,7 @@ export interface DetailedPullRequestApiResponse {
 export interface PullRequestFeedListCardProps {
   pullRequest: PullRequestListData;
   onClick: () => void;
+  hoverBgColor?: 'teal' | 'orange';
 }
 
 export interface PullRequestFeedDetailCardProps {

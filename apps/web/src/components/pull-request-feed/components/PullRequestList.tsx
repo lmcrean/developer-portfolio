@@ -106,7 +106,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
   const openPRs = pullRequests.filter(pr => !pr.merged_at && pr.state === 'open');
 
   // Helper function to render PR cards
-  const renderPRCards = (prs: PullRequestListData[]) => {
+  const renderPRCards = (prs: PullRequestListData[], hoverBgColor: 'teal' | 'orange' = 'teal') => {
     return prs.map((pr, index) => {
       const isAnimating = animatingItems.has(pr.id);
       const animationDelay = isAnimating ? (index - previousPullRequestCount) * 0.1 : 0;
@@ -126,6 +126,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
           <PullRequestFeedListCard
             pullRequest={pr}
             onClick={() => onCardClick(pr)}
+            hoverBgColor={hoverBgColor}
           />
         </div>
       );
@@ -155,7 +156,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
                 </div>
               </div>
               <div className="divide-y divide-gray-700 light:divide-gray-200">
-                {renderPRCards(mergedPRs)}
+                {renderPRCards(mergedPRs, 'teal')}
               </div>
             </>
           )}
@@ -169,7 +170,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
                 </div>
               </div>
               <div className="divide-y divide-gray-700 light:divide-gray-200">
-                {renderPRCards(openPRs)}
+                {renderPRCards(openPRs, 'orange')}
               </div>
             </>
           )}
