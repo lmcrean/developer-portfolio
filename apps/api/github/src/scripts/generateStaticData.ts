@@ -30,6 +30,9 @@ const LIMITED_REPOSITORIES = {
   'penpot': 'keep-latest-only'
 };
 
+// Maximum allowed length for repository names
+const MAX_REPOSITORY_NAME_LENGTH = 20;
+
 // Repository name truncation patterns
 // These patterns will be used to truncate long repository names at the API layer
 const REPOSITORY_NAME_TRUNCATION_PATTERNS = [
@@ -180,15 +183,24 @@ class StaticDataGenerator {
   }
 
   /**
-   * Process repository name based on truncation patterns
+   * Process repository name based on truncation patterns and length limit
    */
   private processRepositoryName(name: string): string {
+    // First apply pattern-based truncation
+    let processedName = name;
     for (const { pattern, replacement } of REPOSITORY_NAME_TRUNCATION_PATTERNS) {
-      if (pattern.test(name)) {
-        return name.replace(pattern, replacement);
+      if (pattern.test(processedName)) {
+        processedName = processedName.replace(pattern, replacement);
+        break; // Apply only the first matching pattern
       }
     }
-    return name;
+    
+    // Then enforce maximum length limit (no ellipsis, just truncate)
+    if (processedName.length > MAX_REPOSITORY_NAME_LENGTH) {
+      processedName = processedName.substring(0, MAX_REPOSITORY_NAME_LENGTH);
+    }
+    
+    return processedName;
   }
 
   /**
