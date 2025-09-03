@@ -30,6 +30,15 @@ const LIMITED_REPOSITORIES = {
   'penpot': 'keep-latest-only'
 };
 
+// Repository name truncation patterns
+// These patterns will be used to truncate long repository names at the API layer
+const REPOSITORY_NAME_TRUNCATION_PATTERNS = [
+  {
+    pattern: /^(woocommerce-gateway)-.*$/,
+    replacement: '$1'
+  }
+];
+
 // Repository-level overrides for specific customizations
 const REPOSITORY_OVERRIDES: Record<string, { language?: string }> = {
   'penpot': {
@@ -171,6 +180,18 @@ class StaticDataGenerator {
   }
 
   /**
+   * Process repository name based on truncation patterns
+   */
+  private processRepositoryName(name: string): string {
+    for (const { pattern, replacement } of REPOSITORY_NAME_TRUNCATION_PATTERNS) {
+      if (pattern.test(name)) {
+        return name.replace(pattern, replacement);
+      }
+    }
+    return name;
+  }
+
+  /**
    * Apply manual overrides to fix incorrect PR data
    */
   private applyManualOverrides(pr: PullRequestListData): PullRequestListData {
@@ -189,19 +210,21 @@ class StaticDataGenerator {
   }
 
   /**
-   * Apply repository-level overrides (e.g., language customization)
+   * Apply repository-level overrides (e.g., language customization, name truncation)
    */
   private applyRepositoryOverrides(pr: PullRequestListData): PullRequestListData {
+    // First, process the repository name
+    const processedName = this.processRepositoryName(pr.repository.name);
+    
+    // Then check for specific overrides using the original name
     const repoOverride = REPOSITORY_OVERRIDES[pr.repository.name];
-    if (!repoOverride) {
-      return pr;
-    }
     
     return {
       ...pr,
       repository: {
         ...pr.repository,
-        ...(repoOverride.language && { language: repoOverride.language })
+        name: processedName,
+        ...(repoOverride?.language && { language: repoOverride.language })
       }
     };
   }
