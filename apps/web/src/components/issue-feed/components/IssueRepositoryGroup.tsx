@@ -16,7 +16,7 @@ const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) 
   return (
     <div className="issue-repo-group">
       <div 
-        className="flex gap-3 px-4 max-sm:px-2 py-4 cursor-pointer transition-all duration-200 hover:bg-gray-800/50 light:hover:bg-gray-50 focus:outline-none focus:bg-gray-800/50 light:focus:bg-gray-50 hover:shadow-sm"
+        className="flex gap-3 px-4 max-sm:px-2 py-4 cursor-pointer transition-all duration-200 focus:outline-none hover:shadow-sm"
         onClick={onToggle}
         role="button"
         tabIndex={0}
