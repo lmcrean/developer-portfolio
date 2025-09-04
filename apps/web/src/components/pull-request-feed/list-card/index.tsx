@@ -93,11 +93,19 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           </div>
           
           {/* Right: Changes on desktop, Language on mobile */}
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-1 flex-wrap">
             {/* Language - shown on mobile only */}
             {pullRequest.repository.language && (
               <span className="italic text-xs pr-text-muted sm:hidden">
                 {pullRequest.repository.language}
+              </span>
+            )}
+
+            {/* Comments - hidden on mobile */}
+            {pullRequest.comments !== undefined && pullRequest.comments > 0 && (
+              <span className="text-xs opacity-70 max-sm:hidden">
+                <i className="far fa-comment fa-xs" title="Comments"></i>{' '}
+                {pullRequest.comments}
               </span>
             )}
             
