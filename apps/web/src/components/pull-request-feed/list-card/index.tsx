@@ -93,7 +93,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           </div>
           
           {/* Right: Changes on desktop, Language on mobile */}
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-1 flex-wrap">
             {/* Language - shown on mobile only */}
             {pullRequest.repository.language && (
               <span className="italic text-xs pr-text-muted sm:hidden">
