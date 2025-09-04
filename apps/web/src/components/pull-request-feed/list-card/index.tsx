@@ -100,6 +100,14 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
                 {pullRequest.repository.language}
               </span>
             )}
+
+            {/* Comments - hidden on mobile */}
+            {pullRequest.comments !== undefined && pullRequest.comments > 0 && (
+              <span className="text-xs opacity-70 max-sm:hidden">
+                <i className="far fa-comment fa-xs" title="Comments"></i>{' '}
+                {pullRequest.comments}
+              </span>
+            )}
             
             {/* Changes - hidden on mobile */}
             {bytesChange.hasData && (

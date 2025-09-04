@@ -1,6 +1,29 @@
 {
   "data": [
     {
+      "id": 2793359837,
+      "number": 88,
+      "title": "Fix inconsistent subscription status after cancellation with centralized cancellation logic",
+      "description": "## Issue #78 \r\nAfter cancelling a subscription, the status is inconsistent across different areas (#78):\r\n- Backend Orders: shows \"pending subscription\" ❌\r\n- My Account > Subscriptions: shows \"pending subscription\" ❌  \r\n- My Account > Orders: shows \"cancelled\" ✅\r\n\r\n## Root Cause\r\nSubscription cancellation events weren't properly synchronized between orders, subscriptions, and renewal orders. The gateway was missing status propagation logic.\r\n\r\n## Solution\r\nAdd centralized cancellation handling and status synchronization:\r\n\r\n1. **Unified cancellation handler** - Single method to handle all cancellation scenarios (payment cancelled, billing request cancelled, subscription cancelled)\r\n\r\n2. **Status synchronization hooks** - Ensure parent orders reflect subscription status changes and vice versa\r\n\r\n3. **Metadata cleanup** - Clear pending payment flags when cancellation occurs\r\n\r\n## Changes\r\n- `class-wc-gocardless-gateway.php`: Add `handle_subscription_cancellation()` method\r\n- `class-wc-gocardless-gateway-addons.php`: Add `sync_parent_order_status()` hook\r\n- Update webhook handlers to use centralized cancellation logic\r\n\r\n## Testing\r\n1. Create subscription order\r\n2. Cancel subscription from frontend/backend\r\n3. Verify all areas show \"cancelled\" status consistently\r\n\r\n## Unit Test Instructions\r\n\r\n```bash\r\n# Install dependencies\r\ncomposer install\r\n\r\n# Run cancellation tests\r\nvendor/bin/phpunit --testdox --filter=\"Test_Cancellation_Simplified|Test_Parent_Order_Sync\"\r\n```\r\n\r\n**Expected:** 13/13 tests pass validating subscription cancellation logic",
+      "created_at": "2025-09-02T16:50:26Z",
+      "merged_at": null,
+      "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless/pull/88",
+      "state": "open",
+      "additions": 89,
+      "deletions": 5,
+      "comments": 1,
+      "repository": {
+        "name": "woocommerce-gateway",
+        "description": "A GoCardless payments integration for WooCommerce",
+        "language": "PHP",
+        "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless",
+        "owner": {
+          "login": "gocardless",
+          "avatar_url": "https://avatars.githubusercontent.com/u/790629?v=4"
+        }
+      }
+    },
+    {
       "id": 2790279129,
       "number": 16,
       "title": "Fix NumberFormatException vulnerability in Content-Length header parsing",
@@ -27,16 +50,16 @@
       "id": 2787729818,
       "number": 9,
       "title": "Enhance(error handling): improve flush loop and trigger handling in cscdm",
-      "description": "## The Problem\r\nThe flush loop goroutine dies permanently on first error, causing silent failures. DNS operations queue but never process after any API/network error. See #8 \r\n\r\n## The Solution\r\n\r\nRestructure to create goroutine ONCE outside loop:\r\n\r\n```go\r\nfunc (c *Client) flushLoop() {\r\n    triggerChan := make(chan struct{}, 1)  // Buffered\r\n    \r\n    go func() {  // Created ONCE\r\n        for {\r\n            c.flushTrigger.Wait()\r\n            // Non-blocking send\r\n            select {\r\n            case triggerChan <- struct{}{}:\r\n            default:\r\n            }\r\n        }\r\n    }()\r\n    \r\n    for {\r\n        // Main loop - no goroutine creation\r\n        if err != nil {\r\n            log(err)  // Continue instead of return\r\n        }\r\n    }\r\n}\r\n```\r\n\r\n## Why Simple Fix Doesn't Work\r\n\r\n**Original code (line 58-78):**\r\n```go\r\nfunc (c *Client) flushLoop() {\r\n    for {\r\n        triggerChan := make(chan struct{})\r\n        go func() {  // NEW goroutine every iteration!\r\n            c.flushTrigger.Wait()\r\n            close(triggerChan)\r\n        }()\r\n        \r\n        // ... select cases ...\r\n        \r\n        if err != nil {\r\n            return  // Dies forever\r\n        }\r\n    }\r\n}\r\n```\r\n\r\n**Just removing `return` causes leak:**\r\n- Each loop iteration creates NEW goroutine\r\n- On error, loop continues → creates another goroutine\r\n- Previous goroutines still blocked on `Wait()`\r\n- Result: 10+ goroutines/second accumulate = memory exhaustion\r\n\r\n## What Changes\r\n\r\n1. **Core fix**: Remove `return` after error → allows recovery\r\n2. **Prevent leak**: Move goroutine creation outside loop\r\n3. **Buffered channel**: Size 1 prevents blocking\r\n4. **Graceful shutdown**: Add triggerStop channel for cleanup\r\n\r\n## Impact\r\n\r\n**Before**: Any error = permanent death, silent failures\r\n**After**: Errors logged, processing continues, transient failures recover\r\n\r\n## Testing\r\n- [x] Build successful - `terraform-provider-cscdm.exe`\r\n  created\r\n- [x] Static analysis passed - go vet found no issues.\r\n  Executable runs - Provider binary executes without\r\n  errors\r\n- [x] This was manually tested with a local test file:\r\n\r\n```\r\n=== ISSUE #001: Goroutine Termination Bug Demo ===\r\n\r\n--- Testing BUGGY Implementation ---\r\nAdded operation: DNS Record 1\r\n  Flush attempt #1 for 1 operations\r\n[BUGGY] Error during flush: simulated API error (e.g., network timeout)\r\n[BUGGY] ❌ RETURNING - Goroutine will DIE!\r\n\r\nAdding more operations after error...\r\n\r\n❌ BUG CONFIRMED: 3 operations stuck in queue!\r\n   Goroutine alive: false\r\n   These operations will NEVER be processed!\r\n\r\n--- Testing FIXED Implementation ---\r\nAdded operation: DNS Record 1\r\n  Flush attempt #1 for 1 operations\r\n[FIXED] Error during flush: simulated API error (e.g., network timeout)\r\n[FIXED] ✅ CONTINUING - Goroutine stays alive!\r\n  Flush attempt #2 for 1 operations\r\n[FIXED] Flush successful\r\n[FIXED] Flush successful\r\n\r\n✅ FIX WORKS: Operations were processed despite error!    \r\n   Goroutine alive: true\r\n   Flush attempts: 3 (failed once, then succeeded)\r\n```\r\n\r\n## Breaking changes\r\nnone - API functions unchanged, the provider still works exactly the same in success scenarios, it just becomes more resilient in realistic error scenarios.",
+      "description": "\r\n## Problem Statement\r\nThe flush loop creates a new goroutine on every iteration that blocks on `sync.Cond.Wait()`. When `return` is removed to fix error resilience, this causes a goroutine leak as abandoned goroutines accumulate. See #8.\r\n\r\nInspecting `internal\\cscdm\\cscdm.go`:\r\n1. **Error kills loop**: `return` on error terminates goroutine permanently\r\n2. **Goroutine leak**: Each iteration creates new goroutine that blocks on `Wait()`\r\n3. **Tooling**: `sync.Cond` with select requires a goroutine-bridge pattern that causes the leak\r\n\r\n##  Solution\r\n1. **Replace sync.Cond with buffered channel**: Simpler, cleaner concurrency\r\n2. **Remove goroutine creation in loop**: No more leaks\r\n3. **Remove `return` on error**: Allows recovery from transient failures\r\n4. **Add `sync.Once` to Stop()**: Prevents panic from multiple closes\r\n\r\n## Impact\r\n\r\n**Before**: Any error leads to permanent death, silent failures\r\n**After**: Errors logged, processing continues, transient failures recover\r\n\r\n## Testing\r\n- [x] Build successful - `terraform-provider-cscdm.exe`\r\n  created\r\n- [x] Static analysis passed - go vet found no issues.\r\n- [x] Unit and integration tests added as sibling files in line with go conventions\r\n\r\n### How to test\r\nModerators can confirm the fix has 100% pass rate with `make testacc` or `make test` cmd\r\n\r\n## Breaking changes\r\nnone - API functions unchanged, the provider still works exactly the same in success scenarios, it just becomes more resilient in realistic error scenarios.",
       "created_at": "2025-08-31T13:37:08Z",
       "merged_at": null,
       "html_url": "https://github.com/rropen/terraform-provider-cscdm/pull/9",
       "state": "open",
-      "additions": 32,
-      "deletions": 9,
-      "comments": 1,
+      "additions": 483,
+      "deletions": 19,
+      "comments": 2,
       "repository": {
-        "name": "terraform-provider-cscdm",
+        "name": "terraform-provider-c",
         "description": "Terraform Provider for CSC Domain Manager.",
         "language": "Go",
         "html_url": "https://github.com/rropen/terraform-provider-cscdm",
@@ -73,14 +96,14 @@
       "id": 2760288725,
       "number": 5595,
       "title": "Disable LDL/STL checks for CTK < 13.1 (nvbug 5243118)",
-      "description": "## Problem\r\n\r\nIssue #5560: SASS validation incorrectly disabled for nvcc compilation due to overly broad CTK version checks. nvbug 5243118 (LDL/STL bug) only affects nvrtc, not nvcc.\r\n\r\n## Solution\r\n\r\n- Added `is_nvrtc_sass_check_allowed()` helper function in `test_util.h` that uses `__CUDACC_RTC__` to detect compilation context. Function returns whether SASS checks should be performed based on:\r\n  - **nvcc**: Always allows SASS checks (no CTK restrictions)\r\n  - **nvrtc**: CTK version-dependent (disabled on CTK < 13.1)\r\n- Updated `should_check_sass()` in `test_scan.cpp` and `test_unique_by_key.cpp` to use this helper\r\n\r\n## Testing guide\r\n\r\n**Expected behavior:**\r\n- nvcc builds: SASS validation enabled regardless of CUDA Toolkit version\r\n- nvrtc builds: SASS validation only on CUDA Toolkit ≥ 13.1\r\n- Result: Tests should pass without requiring @pytest.mark.no_verify_sass decorators\r\n\r\n## Breaking Changes\r\n\r\n**None** - This is a backward-compatible fix that only affects internal test validation logic. No changes to public APIs, library functionality, build system, or dependencies.\r\n\r\n## Checklist\r\n- [x] I am familiar with the [Contributing Guidelines]().\r\n- [x] New or existing tests cover these changes.\r\n- [x] The documentation is up to date with these changes.\r\n",
+      "description": "## Problem statement\r\n\r\nIssue #5560: c.parallel tests incorrectly perform SASS validation for LDL/STL instructions on CTK < 13.1, causing false positives due to nvbug 5243118 where nvrtc generates these instructions when nvcc would not.\r\n\r\n## Solution\r\n\r\nSince c.parallel **always** uses nvrtc internally for kernel compilation (not nvcc), the fix unconditionally applies CTK version checks:\r\n\r\n### C++ Changes\r\n- Added `is_ctk_version_allows_sass_check()` helper function in `test_util.h` that checks CTK version using `__CUDACC_VER_MAJOR__` and `__CUDACC_VER_MINOR__` macros\r\n- Returns `true` for CTK ≥ 13.1 (where bug is fixed), `false` otherwise\r\n- Updated `should_check_sass()` in `test_scan.cpp` and `test_unique_by_key.cpp` to use this helper\r\n\r\n### Python Changes  \r\n- Added `_should_check_sass_for_ctk_version()` in `_cccl_interop.py` that checks runtime CTK version\r\n- Modified `call_build()` to only perform SASS checks when both `_check_sass` is enabled AND CTK ≥ 13.1\r\n- Updated `conftest.py` fixture to emit warning when SASS checks are disabled due to CTK version\r\n- Simplified `test_scan.py` to remove CC 9.0+ check (now handled by CTK version check)\r\n\r\n## Testing guide\r\n\r\n**Expected behavior:**\r\n- CTK < 13.1: SASS validation disabled (with warning), tests pass without false positives\r\n- CTK ≥ 13.1: SASS validation enabled, properly catches real LDL/STL issues\r\n- Complex types still skip SASS checks via existing logic\r\n\r\n## Breaking Changes\r\n\r\n**None** - This is a backward-compatible fix that only affects internal test validation logic. No changes to public APIs, library functionality, build system, or dependencies.\r\n\r\n## Checklist\r\n- [x] I am familiar with the [Contributing Guidelines]().\r\n- [x] New or existing tests cover these changes.\r\n- [x] The documentation is up to date with these changes.\r\n",
       "created_at": "2025-08-20T15:58:10Z",
       "merged_at": null,
       "html_url": "https://github.com/NVIDIA/cccl/pull/5595",
       "state": "open",
-      "additions": 35,
-      "deletions": 4,
-      "comments": 4,
+      "additions": 122,
+      "deletions": 16,
+      "comments": 7,
       "repository": {
         "name": "cccl",
         "description": "CUDA Core Compute Libraries",
@@ -199,7 +222,7 @@
       "repository": {
         "name": "penpot",
         "description": "Penpot: The open-source design tool for design and code collaboration",
-        "language": "Clojure",
+        "language": "Clojure, SQL",
         "html_url": "https://github.com/penpot/penpot",
         "owner": {
           "login": "penpot",
@@ -210,11 +233,11 @@
   ],
   "meta": {
     "username": "lmcrean",
-    "count": 9,
+    "count": 10,
     "pagination": {
       "page": 1,
       "per_page": 20,
-      "total_count": 9,
+      "total_count": 10,
       "total_pages": 1,
       "has_next_page": false,
       "has_previous_page": false
