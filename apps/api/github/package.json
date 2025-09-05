@@ -8,12 +8,14 @@
     "dev:manual": "cross-env PORT=3015 ts-node src/index.ts",
     "dev:e2e": "cross-env PORT=3015 ts-node src/index.ts",
     "dev:vercel": "vercel dev",
-    "build": "tsc",
+    "build": "tsc && npm run validate-pr-descriptions",
     "start": "node dist/index.js",
     "deploy": "vercel --prod",
-    "test": "echo \"No tests yet\" && exit 0",
+    "test": "npm run test:validation",
+    "test:validation": "ts-node src/scripts/testValidation.ts",
     "generate-static-data": "ts-node src/scripts/generateStaticData.ts",
-    "generate-issues-data": "ts-node src/scripts/generateIssuesStaticData.ts"
+    "generate-issues-data": "ts-node src/scripts/generateIssuesStaticData.ts",
+    "validate-pr-descriptions": "ts-node src/scripts/validatePullRequestDescriptions.ts"
   },
   "dependencies": {
     "@octokit/rest": "^20.0.2",
