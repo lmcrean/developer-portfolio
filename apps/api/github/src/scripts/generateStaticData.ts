@@ -55,6 +55,7 @@ interface PullRequestOverride {
   state?: 'open' | 'closed' | 'merged';
   merged_at?: string | null;
   html_url?: string;
+  blocked?: boolean; // When true, the PR will be filtered out completely
 }
 
 const PR_OVERRIDES: Record<number, PullRequestOverride> = {
@@ -65,6 +66,11 @@ const PR_OVERRIDES: Record<number, PullRequestOverride> = {
     state: "merged",
     merged_at: "2025-07-26T12:15:30Z",
     html_url: "https://github.com/penpot/penpot/commit/0b47a366abb56fe553c70ab6716230b1b4646071"
+  },
+  // Block disableRecycling documentation PR to deter developers from using internal prop
+  2742664883: {
+    id: 2742664883,
+    blocked: true
   }
 };
 
@@ -251,6 +257,12 @@ class StaticDataGenerator {
     
     // Filter to external repositories only and apply blacklist
     let filtered = processedPRs.filter(pr => {
+      // Block manually blocked PRs
+      const override = PR_OVERRIDES[pr.id];
+      if (override?.blocked) {
+        return false;
+      }
+      
       // Hide completely blacklisted repositories
       if (HIDDEN_REPOSITORIES.includes(pr.repository.name)) {
         return false;

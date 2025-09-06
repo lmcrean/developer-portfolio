@@ -162,29 +162,6 @@
       }
     },
     {
-      "id": 2742664883,
-      "number": 1835,
-      "title": "Remove `disableRecycling` documentation to deter developers from using internal prop",
-      "description": "The `disableRecycling` prop was documented but not exposed in the TypeScript interface, causing confusion for users. Issue #1831 reported \"Invalid attribute disableRecycling\" TypeScript errors. \r\n\r\n## Solution\r\n**Documentation-only change** as requested by maintainer feedback. Removed `disableRecycling` section from usage.md\r\n\r\n## Benefits\r\n1. **Resolves user confusion**: No more TypeScript errors from documented but unavailable props\r\n2. **Maintains internal functionality**: All existing features continue to work\r\n3. **Minimal change**: Single documentation update, no code refactoring\r\n4. **No breaking changes**: Internal systems unaffected\r\n\r\n## Testing\r\n- [x] All 136+ tests continue to pass\r\n- [x] Documentation no longer references `disableRecycling` while internal `disableRecycling` functionality preserved and tested\r\n- [x] TypeScript compilation clean",
-      "created_at": "2025-08-13T12:18:34Z",
-      "merged_at": "2025-08-21T17:58:32Z",
-      "html_url": "https://github.com/Shopify/flash-list/pull/1835",
-      "state": "merged",
-      "additions": 0,
-      "deletions": 7,
-      "comments": 5,
-      "repository": {
-        "name": "flash-list",
-        "description": "A better list for React Native",
-        "language": "TypeScript",
-        "html_url": "https://github.com/Shopify/flash-list",
-        "owner": {
-          "login": "Shopify",
-          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
-        }
-      }
-    },
-    {
       "id": 2728241517,
       "number": 12806,
       "title": "utils: use `ShardIdentity` in `postgres_client.rs` for improved type safety",
