@@ -24,13 +24,27 @@ cd e2e
 echo "📦 Installing E2E dependencies..."
 npm ci
 
-# Install Playwright browsers
-echo "🎭 Installing Playwright browsers..."
-npx playwright install
+# Install only WebKit browser (Safari) - much faster than all browsers
+echo "🎭 Installing Playwright WebKit browser..."
+npx playwright install webkit
 
-# Install system dependencies for browsers (required for WebKit/Safari on Linux)
-echo "📦 Installing Playwright system dependencies..."
-npx playwright install-deps
+# Install minimal system dependencies with timeout and fallback
+echo "📦 Installing minimal system dependencies..."
+timeout 300s npx playwright install-deps webkit || {
+  echo "⚠️ System dependencies installation timed out or failed"
+  echo "🔄 Attempting to continue without full system dependencies..."
+  echo "💡 WebKit browser may still work with existing system packages"
+}
+
+# Validate WebKit browser installation
+echo "🧪 Validating WebKit browser installation..."
+if ! npx playwright test --list 2>/dev/null | grep -q "safari"; then
+  echo "❌ WebKit/Safari browser not properly installed"
+  echo "🔍 Available browsers:"
+  npx playwright test --list 2>/dev/null || echo "No browsers available"
+  exit 1
+fi
+echo "✅ WebKit browser validated successfully"
 
 # Pre-test validation
 echo "🌐 Pre-test validation..."

@@ -47,6 +47,14 @@ jobs:
           cache: 'npm'
           cache-dependency-path: apps/web/package-lock.json
       
+      - name: 📱 Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-webkit-${{ runner.os }}-${{ hashFiles('e2e/package-lock.json') }}
+          restore-keys: |
+            playwright-webkit-${{ runner.os }}-
+      
       - name: 🔧 Generate Static Data
         env:
           GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
@@ -118,12 +126,16 @@ jobs:
         timeout-minutes: 10
       
       - name: 🧪 Run E2E Tests
+        env:
+          # Optimize Playwright for CI
+          PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+          PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS: true
         run: |
           chmod +x .github/workflows/scripts/run-e2e-tests.sh
           echo "🎯 Starting E2E tests..."
           ./.github/workflows/scripts/run-e2e-tests.sh "${{ steps.set_url.outputs.deployment_url }}"
           echo "✅ E2E tests passed successfully"
-        timeout-minutes: 20
+        timeout-minutes: 15
         # CRITICAL FIX: No continue-on-error - both main and branch must pass E2E tests
       
       - name: 📊 Upload Test Results
