@@ -27,11 +27,11 @@ const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) 
           }
         }}
       >
-        {/* Left: Organization Icon and Expand/Collapse */}
+        {/* Left: Organization Icon and Expand/Collapse - Chevron Hidden */}
         <div className="flex-shrink-0 flex items-center gap-2 pt-1">
           <FontAwesomeIcon 
             icon={isExpanded ? faChevronDown : faChevronRight} 
-            className="w-3 h-3 text-gray-400"
+            className="hidden w-3 h-3 text-gray-400"
           />
           <img 
             src={repository.owner.avatar_url}

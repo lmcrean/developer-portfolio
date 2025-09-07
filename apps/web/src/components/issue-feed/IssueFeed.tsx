@@ -24,10 +24,8 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   // Initialize all repos as expanded when data is loaded
   useEffect(() => {
     if (data) {
-      const externalRepos = data.groups
-        .filter(g => g.repository.is_external)
-        .map(g => g.repository.full_name);
-      setExpandedRepos(new Set(externalRepos));
+      const allRepos = data.groups.map(g => g.repository.full_name);
+      setExpandedRepos(new Set(allRepos));
     }
   }, [data]);
 
@@ -81,8 +79,8 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
         Github Issues
       </div>
 
-      {/* Filters and Controls */}
-      <div className="px-4 max-sm:px-1 py-4">
+      {/* Filters and Controls - Hidden */}
+      <div className="hidden px-4 max-sm:px-1 py-4">
         <IssueFilters
           repositories={filteredGroups.map(g => g.repository)}
           selectedRepos={selectedRepos}
