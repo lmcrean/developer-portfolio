@@ -62,10 +62,10 @@ const PR_OVERRIDES: Record<number, PullRequestOverride> = {
   // Penpot milestone lock feature PR - was incorrectly marked as closed, actually merged
   2696869536: {
     id: 2696869536,
-    title: "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actor interventions",
+    title: "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actors",
     state: "merged",
     merged_at: "2025-07-26T12:15:30Z",
-    html_url: "https://github.com/penpot/penpot/commit/0b47a366abb56fe553c70ab6716230b1b4646071"
+    html_url: "https://github.com/penpot/penpot/pull/6982"
   },
   // Block disableRecycling documentation PR to deter developers from using internal prop
   2742664883: {
@@ -81,7 +81,7 @@ interface PullRequestListData {
   id: number;
   number: number;
   title: string;
-  description: string | null;
+  description?: string | null; // Optional since we strip it during processing
   created_at: string;
   merged_at: string | null;
   state: 'open' | 'closed' | 'merged';
@@ -248,12 +248,22 @@ class StaticDataGenerator {
   }
 
   /**
+   * Strip unused fields from PR data to reduce file size and improve loading performance
+   */
+  private stripUnusedFields(pr: PullRequestListData): PullRequestListData {
+    // Remove description field since it's not rendered in the UI and can be very large
+    const { description, ...strippedPr } = pr;
+    return strippedPr as PullRequestListData;
+  }
+
+  /**
    * Filter PRs to only include external repositories with additional filtering rules
    */
   private filterToExternalPRs(prs: PullRequestListData[]): PullRequestListData[] {
-    // First, apply manual overrides to fix incorrect data
+    // First, apply manual overrides to fix incorrect data, then strip unused fields
     let processedPRs = prs.map(pr => this.applyManualOverrides(pr))
-      .map(pr => this.applyRepositoryOverrides(pr));
+      .map(pr => this.applyRepositoryOverrides(pr))
+      .map(pr => this.stripUnusedFields(pr));
     
     // Filter to external repositories only and apply blacklist
     let filtered = processedPRs.filter(pr => {
@@ -460,10 +470,10 @@ class StaticDataGenerator {
       
       console.log(`📊 Collected ${allPRs.length} total PRs`);
 
-      // Filter to external PRs only
-      console.log('🔍 Filtering to external PRs only...');
+      // Filter to external PRs only and strip unused fields
+      console.log('🔍 Filtering to external PRs only and stripping unused fields...');
       const externalPRs = this.filterToExternalPRs(allPRs);
-      console.log(`📊 Found ${externalPRs.length} external PRs after filtering`);
+      console.log(`📊 Found ${externalPRs.length} external PRs after filtering (descriptions removed for performance)`);
 
       // Enhance external PRs with detailed data
       console.log('🔧 Enhancing external PRs with detailed data...');
