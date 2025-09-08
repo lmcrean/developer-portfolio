@@ -5,7 +5,7 @@ export interface PullRequestListData {
   id: number;
   number: number;
   title: string;
-  description: string | null;
+  description?: string | null; // Optional since we strip it during static generation
   created_at: string;
   merged_at: string | null;
   state: 'open' | 'closed' | 'merged';
