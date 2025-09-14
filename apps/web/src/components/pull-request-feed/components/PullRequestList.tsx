@@ -73,27 +73,37 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
   // Detect newly added items and trigger fade-in animation
   useEffect(() => {
     if (!isClient) return;
-    
+
     const currentCount = pullRequests.length;
+
+    // Skip animation for initial load (when previousPullRequestCount is 0)
+    const isInitialLoad = previousPullRequestCount === 0;
+
     if (currentCount > previousPullRequestCount) {
-      // New items added - mark them for animation
-      const newItemIds = new Set<number>();
-      for (let i = previousPullRequestCount; i < currentCount; i++) {
-        if (pullRequests[i]) {
-          newItemIds.add(pullRequests[i].id);
+      // Only animate if this is NOT the initial load
+      if (!isInitialLoad) {
+        // New items added after initial load - mark them for animation
+        const newItemIds = new Set<number>();
+        for (let i = previousPullRequestCount; i < currentCount; i++) {
+          if (pullRequests[i]) {
+            newItemIds.add(pullRequests[i].id);
+          }
         }
+
+        setAnimatingItems(newItemIds);
+
+        // Remove animation classes after animation completes
+        const timer = setTimeout(() => {
+          setAnimatingItems(new Set());
+        }, 800); // Match animation duration
+
+        setPreviousPullRequestCount(currentCount);
+
+        return () => clearTimeout(timer);
+      } else {
+        // Initial load - just update the count without animation
+        setPreviousPullRequestCount(currentCount);
       }
-      
-      setAnimatingItems(newItemIds);
-      
-      // Remove animation classes after animation completes
-      const timer = setTimeout(() => {
-        setAnimatingItems(new Set());
-      }, 800); // Match animation duration
-      
-      setPreviousPullRequestCount(currentCount);
-      
-      return () => clearTimeout(timer);
     } else if (currentCount < previousPullRequestCount) {
       // Items were removed (filter change, etc.)
       setPreviousPullRequestCount(currentCount);

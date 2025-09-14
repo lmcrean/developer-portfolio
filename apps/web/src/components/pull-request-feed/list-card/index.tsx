@@ -26,7 +26,8 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
   }, []);
 
   // Only calculate relative time on client side
-  const relativeTime = isClient ? getRelativeTime(pullRequest.created_at) : 'Loading...';
+  // Use empty string during SSR to minimize visual shift
+  const relativeTime = isClient ? getRelativeTime(pullRequest.created_at) : '';
   const statusDate = pullRequest.merged_at ? pullRequest.merged_at : pullRequest.created_at;
 
   return (
