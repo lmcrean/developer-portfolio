@@ -6,24 +6,29 @@ set -e
 
 echo "🔧 Generating static data for single-server deployment..."
 
-# Install API dependencies for static generation
-echo "📦 Installing API dependencies..."
-cd apps/api/github
+# Install CI script dependencies
+echo "📦 Installing CI script dependencies..."
+cd .github/workflows/scripts/typescript
 npm ci
 
-# Build and generate static data
-echo "⚡ Building API and generating static data..."
-npm run build
+# Install API dependencies (for GitHubService)
+echo "📦 Installing API dependencies..."
+cd ../../../../apps/api/github
+npm ci
 
-# Use compiled JS instead of ts-node for CI reliability
-echo "🔧 Running pull request static data generation with compiled JavaScript..."
-node dist/apps/api/github/src/scripts/generateStaticData.js
+# Go back to CI scripts directory
+cd ../../../../.github/workflows/scripts/typescript
+
+# Build and run the CI script
+echo "⚡ Building and running static data generation CI script..."
+npm run build
+node ../dist/generateStaticData.js
 
 # Generate issues static data
 echo "🔧 Running issues static data generation..."
-# Use the compiled JavaScript file for issues generation
-echo "📋 Using compiled issues generation script..."
-node dist/apps/api/github/src/scripts/generateIssuesStaticData.js
+# Run the issues generation script from CI location
+echo "📋 Using CI issues generation script..."
+node ../dist/generateIssuesStaticData.js
 
 # Validate generated static data in API location (ready for copying)
 echo "📁 Validating generated pull request static data in API location..."
