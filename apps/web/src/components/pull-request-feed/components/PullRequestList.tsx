@@ -34,9 +34,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
   // Ref for the infinite scroll trigger element
   const infiniteScrollTriggerRef = useRef<HTMLDivElement>(null);
   
-  // Animation state - track which items are newly added for fade-in animation
-  const [animatingItems, setAnimatingItems] = useState<Set<number>>(new Set());
-  const [previousPullRequestCount, setPreviousPullRequestCount] = useState(0);
+  // Removed animation state to eliminate delays
 
   // Handle loading more items
   const handleLoadMore = useCallback(() => {
@@ -70,77 +68,22 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
     };
   }, [isClient, hasMoreItems, isLoadingMore, loading, handleLoadMore]);
 
-  // Detect newly added items and trigger fade-in animation
-  useEffect(() => {
-    if (!isClient) return;
-
-    const currentCount = pullRequests.length;
-
-    // Skip animation for initial load (when previousPullRequestCount is 0)
-    const isInitialLoad = previousPullRequestCount === 0;
-
-    if (currentCount > previousPullRequestCount) {
-      // Only animate if this is NOT the initial load
-      if (!isInitialLoad) {
-        // New items added after initial load - mark them for animation
-        const newItemIds = new Set<number>();
-        for (let i = previousPullRequestCount; i < currentCount; i++) {
-          if (pullRequests[i]) {
-            newItemIds.add(pullRequests[i].id);
-          }
-        }
-
-        setAnimatingItems(newItemIds);
-
-        // Remove animation classes after animation completes
-        const timer = setTimeout(() => {
-          setAnimatingItems(new Set());
-        }, 800); // Match animation duration
-
-        setPreviousPullRequestCount(currentCount);
-
-        return () => clearTimeout(timer);
-      } else {
-        // Initial load - just update the count without animation
-        setPreviousPullRequestCount(currentCount);
-      }
-    } else if (currentCount < previousPullRequestCount) {
-      // Items were removed (filter change, etc.)
-      setPreviousPullRequestCount(currentCount);
-      setAnimatingItems(new Set());
-    }
-  }, [pullRequests.length, previousPullRequestCount, isClient, pullRequests]);
+  // Removed animation useEffect to eliminate delays
 
   // Split pull requests into merged and open
   const mergedPRs = pullRequests.filter(pr => pr.merged_at);
   const openPRs = pullRequests.filter(pr => !pr.merged_at && pr.state === 'open');
 
-  // Helper function to render PR cards
+  // Helper function to render PR cards - simplified without animations
   const renderPRCards = (prs: PullRequestListData[], hoverBgColor: 'teal' | 'orange' = 'teal') => {
-    return prs.map((pr, index) => {
-      const isAnimating = animatingItems.has(pr.id);
-      const animationDelay = isAnimating ? (index - previousPullRequestCount) * 0.1 : 0;
-      
-      return (
-        <div
-          key={pr.id}
-          className={`${
-            isAnimating 
-              ? 'pr-fade-in animate-fade-in' 
-              : 'opacity-100'
-          }`}
-          style={{
-            animationDelay: isAnimating ? `${animationDelay}s` : undefined,
-          }}
-        >
-          <PullRequestFeedListCard
-            pullRequest={pr}
-            onClick={() => onCardClick(pr)}
-            hoverBgColor={hoverBgColor}
-          />
-        </div>
-      );
-    });
+    return prs.map((pr) => (
+      <PullRequestFeedListCard
+        key={pr.id}
+        pullRequest={pr}
+        onClick={() => onCardClick(pr)}
+        hoverBgColor={hoverBgColor}
+      />
+    ));
   };
 
   // Determine what to render in the table body
@@ -206,28 +149,6 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
 
   return (
     <div className={`w-full p-4 max-sm:px-1 max-sm:py-2 ${className}`} data-testid="pull-request-feed" style={{ fontFamily: '"IBM Plex Serif", serif' }}>
-      {/* CSS for fade-in animation */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .pr-fade-in {
-          opacity: 0;
-          transform: translateY(20px);
-        }
-        
-        .animate-fade-in {
-          animation: pr-fade-in 0.6s ease-out forwards;
-        }
-        
-        @keyframes pr-fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}} />
 
       {/* Table Body - Dynamic content based on state */}
       <div>
