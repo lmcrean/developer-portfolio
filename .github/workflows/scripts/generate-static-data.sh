@@ -6,34 +6,36 @@ set -e
 
 echo "🔧 Generating static data for single-server deployment..."
 
+# Get the script's directory and navigate to repo root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT="$( cd "$SCRIPT_DIR/../../.." && pwd )"
+
 # Install CI script dependencies
 echo "📦 Installing CI script dependencies..."
-cd .github/workflows/scripts/typescript
+cd "$REPO_ROOT/.github/workflows/scripts/typescript"
 npm ci
 
 # Install API dependencies (for GitHubService)
 echo "📦 Installing API dependencies..."
-cd ../../../../apps/api/github
+cd "$REPO_ROOT/apps/api/github"
 npm ci
 
 # Go back to CI scripts directory
-cd ../../../../.github/workflows/scripts/typescript
+cd "$REPO_ROOT/.github/workflows/scripts/typescript"
 
-# Build and run the CI script
-echo "⚡ Building and running static data generation CI script..."
-npm run build
-node ../dist/generateStaticData.js
+# Run the CI script using ts-node
+echo "⚡ Running static data generation CI script..."
+npx ts-node generateStaticData.ts
 
 # Generate issues static data
 echo "🔧 Running issues static data generation..."
-# Run the issues generation script from CI location
 echo "📋 Using CI issues generation script..."
-node ../dist/generateIssuesStaticData.js
+npx ts-node generateIssuesStaticData.ts
 
 # Validate generated static data in API location (ready for copying)
 echo "📁 Validating generated pull request static data in API location..."
-# The compiled script creates files relative to its location
-cd dist/apps/api/github/static/pull-requests
+# The script creates files in the apps/api/github/static directory
+cd "$REPO_ROOT/apps/api/github/static/pull-requests"
 
 # Count generated files
 page_count=$(ls page-*.json 2>/dev/null | wc -l)
@@ -61,8 +63,8 @@ if [ "$actual_files" -ne "$expected_files" ]; then
   exit 1
 fi
 
-# Go back to the dist/apps/api/github directory to validate issues data
-cd ../..
+# Go back to the api/github directory to validate issues data
+cd "$REPO_ROOT/apps/api/github"
 
 # Validate issues static data
 echo "📁 Validating generated issues static data..."
@@ -84,5 +86,5 @@ echo "📋 Issues data includes filtered repositories (excludes: team-5, PP1, ha
 echo "✅ Static data generation complete!"
 echo "📁 Generated $page_count PR page files + 1 metadata file = $expected_files total PR files"
 echo "📁 Generated 1 issues grouped.json file"
-echo "📁 Static data location: apps/api/github/dist/apps/api/github/static/"
+echo "📁 Static data location: apps/api/github/static/"
 echo "💡 Next step: Prepare web app, then run copy-static-data.sh"
