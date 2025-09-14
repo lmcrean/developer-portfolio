@@ -6,10 +6,14 @@ set -e
 
 echo "📁 Copying static data from API to web app..."
 
-# Define locations
-# The compiled scripts now generate files in dist/apps/api/github/static
-API_STATIC_DIR="apps/api/github/dist/apps/api/github/static/pull-requests"
-WEB_STATIC_DIR="apps/web/static"
+# Get the script's directory and navigate to repo root
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+REPO_ROOT="$( cd "$SCRIPT_DIR/../../.." && pwd )"
+
+# Define locations relative to repo root
+# The scripts now generate files directly in apps/api/github/static
+API_STATIC_DIR="$REPO_ROOT/apps/api/github/static/pull-requests"
+WEB_STATIC_DIR="$REPO_ROOT/apps/web/static"
 
 # Verify API static location exists and has data
 echo "🔍 Verifying API static data location..."
@@ -101,7 +105,7 @@ ls -la "$WEB_STATIC_DIR"/pr-*.json
 
 # Copy issues static data
 echo "📋 Copying issues static data..."
-ISSUES_SOURCE="apps/api/github/dist/apps/api/github/static/issues/grouped.json"
+ISSUES_SOURCE="$REPO_ROOT/apps/api/github/static/issues/grouped.json"
 ISSUES_TARGET="$WEB_STATIC_DIR/issues-grouped.json"
 
 if [ -f "$ISSUES_SOURCE" ]; then
