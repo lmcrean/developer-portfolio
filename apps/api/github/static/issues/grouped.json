@@ -2,6 +2,47 @@
   "groups": [
     {
       "repository": {
+        "id": 1003925498,
+        "name": "terraform-provider-cscdm",
+        "full_name": "rropen/terraform-provider-cscdm",
+        "owner": {
+          "login": "rropen",
+          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
+        },
+        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
+        "description": "Terraform Provider for CSC Domain Manager.",
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 3369295026,
+          "number": 8,
+          "title": "Aggressive Goroutine Termination in Flush Loop",
+          "html_url": "https://github.com/rropen/terraform-provider-cscdm/issues/8",
+          "state": "closed",
+          "created_at": "2025-08-30T16:47:02Z",
+          "closed_at": "2025-09-10T02:45:43Z",
+          "updated_at": "2025-09-10T02:45:43Z",
+          "repository_url": "https://api.github.com/repos/rropen/terraform-provider-cscdm",
+          "labels": [
+            {
+              "id": 8798746979,
+              "name": "platform",
+              "color": "0052CC"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 0,
+      "closedCount": 1,
+      "lastActivityDate": "2025-09-10T02:45:43.000Z"
+    },
+    {
+      "repository": {
         "id": 506584771,
         "name": "cranker-connector",
         "full_name": "hsbc/cranker-connector",
@@ -124,47 +165,6 @@
       "openCount": 1,
       "closedCount": 2,
       "lastActivityDate": "2025-08-31T22:18:40.000Z"
-    },
-    {
-      "repository": {
-        "id": 1003925498,
-        "name": "terraform-provider-cscdm",
-        "full_name": "rropen/terraform-provider-cscdm",
-        "owner": {
-          "login": "rropen",
-          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
-        },
-        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
-        "description": "Terraform Provider for CSC Domain Manager.",
-        "is_external": true
-      },
-      "issues": [
-        {
-          "id": 3369295026,
-          "number": 8,
-          "title": "Aggressive Goroutine Termination in Flush Loop",
-          "html_url": "https://github.com/rropen/terraform-provider-cscdm/issues/8",
-          "state": "open",
-          "created_at": "2025-08-30T16:47:02Z",
-          "closed_at": null,
-          "updated_at": "2025-08-31T17:47:01Z",
-          "repository_url": "https://api.github.com/repos/rropen/terraform-provider-cscdm",
-          "labels": [
-            {
-              "id": 8798746979,
-              "name": "platform",
-              "color": "0052CC"
-            }
-          ],
-          "user": {
-            "login": "lmcrean",
-            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
-          }
-        }
-      ],
-      "openCount": 1,
-      "closedCount": 0,
-      "lastActivityDate": "2025-08-31T17:47:01.000Z"
     },
     {
       "repository": {
@@ -536,6 +536,6 @@
     "total_issues": 17,
     "total_repositories": 9,
     "external_repositories": 5,
-    "last_updated": "2025-09-02T15:14:33.036Z"
+    "last_updated": "2025-09-14T17:17:18.421Z"
   }
 }

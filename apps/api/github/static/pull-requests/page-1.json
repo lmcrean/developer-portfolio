@@ -142,7 +142,7 @@
       "state": "open",
       "additions": 17,
       "deletions": 5,
-      "comments": 2,
+      "comments": 3,
       "repository": {
         "name": "guava",
         "description": "Google core libraries for Java",

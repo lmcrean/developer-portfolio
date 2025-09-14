@@ -1,5 +1,5 @@
 {
-  "count": 6,
+  "count": 7,
   "issues": [
     {
       "id": 3372594989,
@@ -16,9 +16,9 @@
       "number": 8,
       "title": "Aggressive Goroutine Termination in Flush Loop",
       "url": "https://github.com/rropen/terraform-provider-cscdm/issues/8",
-      "state": "open",
+      "state": "closed",
       "date_opened": "2025-08-30T16:47:02Z",
-      "date_closed": null,
+      "date_closed": "2025-09-10T02:45:43Z",
       "repository": "rropen/terraform-provider-cscdm"
     },
     {
@@ -30,6 +30,16 @@
       "date_opened": "2025-08-30T16:24:08Z",
       "date_closed": null,
       "repository": "GSK-Biostatistics/docorator"
+    },
+    {
+      "id": 3366738470,
+      "number": 2,
+      "title": "Enabled README png to work in github dark mode with gray on black text",
+      "url": "https://github.com/AstraZeneca/cellatria/issues/2",
+      "state": "closed",
+      "date_opened": "2025-08-29T12:35:36Z",
+      "date_closed": "2025-08-29T22:44:28Z",
+      "repository": "AstraZeneca/cellatria"
     },
     {
       "id": 3246270558,
@@ -62,5 +72,5 @@
       "repository": "penpot/penpot"
     }
   ],
-  "generated_at": "2025-09-02T15:14:33.036Z"
+  "generated_at": "2025-09-14T17:17:18.421Z"
 }
