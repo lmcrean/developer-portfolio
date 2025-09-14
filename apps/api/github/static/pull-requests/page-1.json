@@ -1,390 +1,46 @@
-{
-  "data": [
-    {
-      "id": 2826689299,
-      "number": 7989,
-      "title": " Fix `Iterators.mergeSorted()` to preserve stability for equal elements",
-      "created_at": "2025-09-14T13:04:00Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7989",
-      "state": "open",
-      "additions": 167,
-      "deletions": 10,
-      "comments": 0,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2826673514,
-      "number": 7988,
-      "title": "Add tests demonstrating `Iterators.mergeSorted()` instability",
-      "created_at": "2025-09-14T12:42:05Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7988",
-      "state": "open",
-      "additions": 134,
-      "deletions": 0,
-      "comments": 0,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2826631136,
-      "number": 7987,
-      "title": "Add test for putIfAbsent to catch implementations that incorrectly ignore null values",
-      "created_at": "2025-09-14T11:44:42Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7987",
-      "state": "open",
-      "additions": 14,
-      "deletions": 0,
-      "comments": 0,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2826605057,
-      "number": 7986,
-      "title": "Fix resource leak in FileBackedOutputStream to prevent file handle exhaustion",
-      "created_at": "2025-09-14T11:18:16Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7986",
-      "state": "open",
-      "additions": 98,
-      "deletions": 5,
-      "comments": 0,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2826428657,
-      "number": 6396,
-      "title": "Make bind address configurable for app dev server",
-      "created_at": "2025-09-14T07:48:19Z",
-      "merged_at": null,
-      "html_url": "https://github.com/Shopify/cli/pull/6396",
-      "state": "open",
-      "additions": 93,
-      "deletions": 9,
-      "comments": 0,
-      "repository": {
-        "name": "cli",
-        "description": "Build apps, themes, and hydrogen storefronts for Shopify",
-        "language": "TypeScript",
-        "html_url": "https://github.com/Shopify/cli",
-        "owner": {
-          "login": "Shopify",
-          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
-        }
-      }
-    },
-    {
-      "id": 2812657547,
-      "number": 6371,
-      "title": "Feat: Git Multi-Environment Theme Conflict Resolution ",
-      "created_at": "2025-09-09T16:50:52Z",
-      "merged_at": null,
-      "html_url": "https://github.com/Shopify/cli/pull/6371",
-      "state": "open",
-      "additions": 1553,
-      "deletions": 1,
-      "comments": 0,
-      "repository": {
-        "name": "cli",
-        "description": "Build apps, themes, and hydrogen storefronts for Shopify",
-        "language": "TypeScript",
-        "html_url": "https://github.com/Shopify/cli",
-        "owner": {
-          "login": "Shopify",
-          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
-        }
-      }
-    },
-    {
-      "id": 2805908000,
-      "number": 7974,
-      "title": "Improve error messages for annotation methods on synthetic TypeVariables",
-      "created_at": "2025-09-07T09:30:27Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7974",
-      "state": "open",
-      "additions": 17,
-      "deletions": 5,
-      "comments": 3,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2804990483,
-      "number": 7973,
-      "title": "Fix TypeToken hashCode contract violation ",
-      "created_at": "2025-09-06T14:42:10Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7973",
-      "state": "closed",
-      "additions": 53,
-      "deletions": 1,
-      "comments": 3,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2793359837,
-      "number": 88,
-      "title": "Fix inconsistent subscription status after cancellation with centralized cancellation logic",
-      "created_at": "2025-09-02T16:50:26Z",
-      "merged_at": null,
-      "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless/pull/88",
-      "state": "open",
-      "additions": 89,
-      "deletions": 5,
-      "comments": 1,
-      "repository": {
-        "name": "woocommerce-gateway",
-        "description": "A GoCardless payments integration for WooCommerce",
-        "language": "PHP",
-        "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless",
-        "owner": {
-          "login": "gocardless",
-          "avatar_url": "https://avatars.githubusercontent.com/u/790629?v=4"
-        }
-      }
-    },
-    {
-      "id": 2790279129,
-      "number": 16,
-      "title": "Fix NumberFormatException vulnerability in Content-Length header parsing",
-      "created_at": "2025-09-01T16:06:23Z",
-      "merged_at": null,
-      "html_url": "https://github.com/hsbc/cranker-connector/pull/16",
-      "state": "open",
-      "additions": 18,
-      "deletions": 2,
-      "comments": 0,
-      "repository": {
-        "name": "cranker-connector",
-        "description": "A Cranker connector for Java as a library that has no external dependencies.",
-        "language": "Java",
-        "html_url": "https://github.com/hsbc/cranker-connector",
-        "owner": {
-          "login": "hsbc",
-          "avatar_url": "https://avatars.githubusercontent.com/u/48318517?v=4"
-        }
-      }
-    },
-    {
-      "id": 2787729818,
-      "number": 9,
-      "title": "Enhance(error handling): improve flush loop and trigger handling in cscdm",
-      "created_at": "2025-08-31T13:37:08Z",
-      "merged_at": "2025-09-10T02:45:42Z",
-      "html_url": "https://github.com/rropen/terraform-provider-cscdm/pull/9",
-      "state": "merged",
-      "additions": 483,
-      "deletions": 19,
-      "comments": 3,
-      "repository": {
-        "name": "terraform-provider-c",
-        "description": "Terraform Provider for CSC Domain Manager.",
-        "language": "Go",
-        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
-        "owner": {
-          "login": "rropen",
-          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
-        }
-      }
-    },
-    {
-      "id": 2786918386,
-      "number": 17,
-      "title": "Add Code Coverage Infrastructure",
-      "created_at": "2025-08-30T16:26:40Z",
-      "merged_at": null,
-      "html_url": "https://github.com/GSK-Biostatistics/docorator/pull/17",
-      "state": "open",
-      "additions": 55,
-      "deletions": 1,
-      "comments": 0,
-      "repository": {
-        "name": "docorator",
-        "description": null,
-        "language": "R",
-        "html_url": "https://github.com/GSK-Biostatistics/docorator",
-        "owner": {
-          "login": "GSK-Biostatistics",
-          "avatar_url": "https://avatars.githubusercontent.com/u/87132606?v=4"
-        }
-      }
-    },
-    {
-      "id": 2760288725,
-      "number": 5595,
-      "title": "Disable LDL/STL checks for CTK < 13.1 (nvbug 5243118)",
-      "created_at": "2025-08-20T15:58:10Z",
-      "merged_at": null,
-      "html_url": "https://github.com/NVIDIA/cccl/pull/5595",
-      "state": "open",
-      "additions": 122,
-      "deletions": 16,
-      "comments": 10,
-      "repository": {
-        "name": "cccl",
-        "description": "CUDA Core Compute Libraries",
-        "language": "C++",
-        "html_url": "https://github.com/NVIDIA/cccl",
-        "owner": {
-          "login": "NVIDIA",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1728152?v=4"
-        }
-      }
-    },
-    {
-      "id": 2759515533,
-      "number": 1478,
-      "title": "Return undefined instead of invalid action names for partial matches ",
-      "created_at": "2025-08-20T11:47:09Z",
-      "merged_at": "2025-08-21T22:32:05Z",
-      "html_url": "https://github.com/microsoft/TypeAgent/pull/1478",
-      "state": "merged",
-      "additions": 10,
-      "deletions": 10,
-      "comments": 5,
-      "repository": {
-        "name": "TypeAgent",
-        "description": "Sample code that explores an architecture for using language models to build a personal agent that can work with application agents.",
-        "language": "TypeScript",
-        "html_url": "https://github.com/microsoft/TypeAgent",
-        "owner": {
-          "login": "microsoft",
-          "avatar_url": "https://avatars.githubusercontent.com/u/6154722?v=4"
-        }
-      }
-    },
-    {
-      "id": 2746051142,
-      "number": 232,
-      "title": "Fix: Support `GENERATED ALWAYS AS` columns to reduce migration failures (#212)",
-      "created_at": "2025-08-14T12:36:59Z",
-      "merged_at": "2025-08-27T20:12:01Z",
-      "html_url": "https://github.com/stripe/pg-schema-diff/pull/232",
-      "state": "merged",
-      "additions": 275,
-      "deletions": 37,
-      "comments": 11,
-      "repository": {
-        "name": "pg-schema-diff",
-        "description": "Go library for diffing Postgres schemas and generating SQL migrations",
-        "language": "Go",
-        "html_url": "https://github.com/stripe/pg-schema-diff",
-        "owner": {
-          "login": "stripe",
-          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
-        }
-      }
-    },
-    {
-      "id": 2728241517,
-      "number": 12806,
-      "title": "utils: use `ShardIdentity` in `postgres_client.rs` for improved type safety",
-      "created_at": "2025-08-07T15:42:07Z",
-      "merged_at": null,
-      "html_url": "https://github.com/neondatabase/neon/pull/12806",
-      "state": "open",
-      "additions": 390,
-      "deletions": 164,
-      "comments": 3,
-      "repository": {
-        "name": "neon",
-        "description": "Neon: Serverless Postgres. We separated storage and compute to offer autoscaling, code-like database branching, and scale to zero.",
-        "language": "Rust",
-        "html_url": "https://github.com/neondatabase/neon",
-        "owner": {
-          "login": "neondatabase",
-          "avatar_url": "https://avatars.githubusercontent.com/u/77690634?v=4"
-        }
-      }
-    },
-    {
-      "id": 2696869536,
-      "number": 6982,
-      "title": "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actors",
-      "created_at": "2025-07-26T10:41:46Z",
-      "merged_at": "2025-07-26T12:15:30Z",
-      "html_url": "https://github.com/penpot/penpot/pull/6982",
-      "state": "merged",
-      "additions": 292,
-      "deletions": 17,
-      "comments": 5,
-      "repository": {
-        "name": "penpot",
-        "description": "Penpot: The open-source design tool for design and code collaboration",
-        "language": "Clojure, SQL",
-        "html_url": "https://github.com/penpot/penpot",
-        "owner": {
-          "login": "penpot",
-          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
-        }
+[
+  {
+    "id": 2696869536,
+    "number": 6982,
+    "title": "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actors",
+    "created_at": "2025-07-20T10:00:00Z",
+    "merged_at": "2025-07-26T12:15:30Z",
+    "state": "merged",
+    "html_url": "https://github.com/penpot/penpot/pull/6982",
+    "additions": 500,
+    "deletions": 100,
+    "comments": 15,
+    "repository": {
+      "name": "penpot",
+      "description": "Penpot - The Open-Source design & prototyping platform",
+      "language": "Clojure, SQL",
+      "html_url": "https://github.com/penpot/penpot",
+      "owner": {
+        "login": "penpot",
+        "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
       }
     }
-  ],
-  "meta": {
-    "username": "lmcrean",
-    "count": 17,
-    "pagination": {
-      "page": 1,
-      "per_page": 20,
-      "total_count": 17,
-      "total_pages": 1,
-      "has_next_page": false,
-      "has_previous_page": false
+  },
+  {
+    "id": 2000000001,
+    "number": 120,
+    "title": "Test PR for pipeline",
+    "created_at": "2025-09-14T10:00:00Z",
+    "merged_at": null,
+    "state": "open",
+    "html_url": "https://github.com/lmcrean/developer-portfolio/pull/120",
+    "additions": 50,
+    "deletions": 20,
+    "comments": 3,
+    "repository": {
+      "name": "developer-portfolio",
+      "description": "Personal developer portfolio",
+      "language": "TypeScript",
+      "html_url": "https://github.com/lmcrean/developer-portfolio",
+      "owner": {
+        "login": "lmcrean",
+        "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+      }
     }
   }
-}
+]

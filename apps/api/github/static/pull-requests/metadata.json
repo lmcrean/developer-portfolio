@@ -1,10 +1,6 @@
 {
-  "total_count": 17,
-  "total_pages": 1,
-  "per_page": 20,
-  "last_generated": "2025-09-14T17:17:13.425Z",
-  "generator_version": "2.0.0",
-  "pages_generated": 1,
-  "external_prs_enhanced": 17,
-  "enhancement_enabled": true
+  "total_count": 10,
+  "page_count": 1,
+  "generated_at": "2025-09-14T17:44:03Z",
+  "username": "lmcrean"
 }
