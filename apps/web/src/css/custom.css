@@ -287,6 +287,76 @@ main[class*="docMainContainer"] .container,
   color: #e2e8f0; /* gray-200 for better readability in dark mode */
 }
 
+/* PR Title Fade Effect - prevents overlapping with language label */
+.pr-title-fade {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  flex: 1;
+  /* Mask-based fade for smooth opacity transition */
+  mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 75%,
+    rgba(0, 0, 0, 0.8) 85%,
+    rgba(0, 0, 0, 0.3) 95%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 75%,
+    rgba(0, 0, 0, 0.8) 85%,
+    rgba(0, 0, 0, 0.3) 95%,
+    transparent 100%
+  );
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  transition: mask-image 0.3s ease, -webkit-mask-image 0.3s ease;
+}
+
+/* Hover state - extend visible area smoothly */
+.pr-title-fade:hover {
+  mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 88%,
+    rgba(0, 0, 0, 0.8) 94%,
+    rgba(0, 0, 0, 0.3) 98%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 88%,
+    rgba(0, 0, 0, 0.8) 94%,
+    rgba(0, 0, 0, 0.3) 98%,
+    transparent 100%
+  );
+}
+
+/* Focus state for accessibility */
+.pr-title-fade:focus-within {
+  mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 88%,
+    rgba(0, 0, 0, 0.8) 94%,
+    rgba(0, 0, 0, 0.3) 98%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0%,
+    black 88%,
+    rgba(0, 0, 0, 0.8) 94%,
+    rgba(0, 0, 0, 0.3) 98%,
+    transparent 100%
+  );
+}
+
 /* Secondary text in pull request components */
 .pr-text-secondary {
   color: var(--ifm-font-color-base); /* Default/light mode */
