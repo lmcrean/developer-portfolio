@@ -385,7 +385,26 @@ class StaticDataGenerator {
       // Enhance external PRs with detailed data
       console.log('🔧 Enhancing external PRs with detailed data...');
       const enhancedExternalPRs = await this.enhanceAllExternalPRs(externalPRs);
-      
+
+      // Sort PRs: merged first (by merged_at date desc), then open/closed (by created_at date desc)
+      console.log('📊 Sorting PRs: merged first, then open/closed...');
+      enhancedExternalPRs.sort((a, b) => {
+        // First priority: merged PRs come before non-merged
+        const aMerged = a.merged_at !== null;
+        const bMerged = b.merged_at !== null;
+
+        if (aMerged && !bMerged) return -1;
+        if (!aMerged && bMerged) return 1;
+
+        // If both are merged, sort by merged_at date (most recent first)
+        if (aMerged && bMerged) {
+          return new Date(b.merged_at!).getTime() - new Date(a.merged_at!).getTime();
+        }
+
+        // If neither are merged, sort by created_at date (most recent first)
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
       // Generate pages with external PRs only (20 per page)
       const externalPages = Math.ceil(enhancedExternalPRs.length / this.perPage);
       console.log(`📄 Creating ${externalPages} pages with external PRs only`);
