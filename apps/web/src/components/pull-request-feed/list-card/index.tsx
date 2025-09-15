@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { 
+import React from 'react';
+import {
   PullRequestFeedListCardProps,
-  PullRequestListData 
+  PullRequestListData
 } from '@shared/types/pull-requests';
 import {
-  formatAbsoluteDate,
-  getRelativeTime,
+  formatStaticDate,
   getStatusDisplay,
   formatBytesChange
 } from '@shared/types/pull-requests/utilities';
@@ -17,17 +16,8 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 }) => {
   const status = getStatusDisplay(pullRequest.state, pullRequest.merged_at);
   const bytesChange = formatBytesChange(pullRequest.additions, pullRequest.deletions);
-
-  // Add client-side only time calculation
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Only calculate relative time on client side
-  const relativeTime = isClient ? getRelativeTime(pullRequest.created_at) : 'Loading...';
   const statusDate = pullRequest.merged_at ? pullRequest.merged_at : pullRequest.created_at;
+  const formattedDate = formatStaticDate(statusDate);
 
   return (
     <div 
@@ -41,7 +31,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           onClick();
         }
       }}
-      aria-label={`Pull request #${pullRequest.number}, ${status.text} ${relativeTime}. Opens in new tab.`}
+      aria-label={`Pull request #${pullRequest.number}, ${status.text} ${formattedDate}. Opens in new tab.`}
       data-testid="pull-request-card"
       data-pr-number={pullRequest.number}
       data-pr-title={pullRequest.title}
@@ -88,7 +78,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           {/* Left: Status with date */}
           <div className="flex items-center gap-1">
             <span className="text-xs">
-              {status.text} {relativeTime}
+              {status.text} {formattedDate}
             </span>
           </div>
           
