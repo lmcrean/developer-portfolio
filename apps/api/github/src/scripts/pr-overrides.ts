@@ -40,10 +40,15 @@ export const PR_OVERRIDES: Record<number, PullRequestOverride> = {
   // Penpot milestone lock feature PR - was incorrectly marked as closed, actually merged
   2696869536: {
     id: 2696869536,
-    title: "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actors",
+    title: "Implement milestone lock feature to prevent accidental deletion and bad actors",
     state: "merged",
     merged_at: "2025-07-26T12:15:30Z",
     html_url: "https://github.com/penpot/penpot/pull/6982"
+  },
+  // GoCardless WooCommerce subscription fix
+  2793359837: {
+    id: 2793359837,
+    title: "Fix inconsistent subscriptions after cancellation with centralised logic"
   },
   // Block disableRecycling documentation PR to deter developers from using internal prop
   2742664883: {
