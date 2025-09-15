@@ -35,6 +35,16 @@ export const formatAbsoluteDate = (dateString: string | null | undefined): strin
   });
 };
 
+export const formatStaticDate = (dateString: string | null | undefined): string => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const day = date.getDate();
+  const month = months[date.getMonth()];
+  return `${day} ${month}`;
+};
+
 export const getStatusDisplay = (state: string | null | undefined, mergedAt: string | null, draft?: boolean) => {
   // Dark-first design: dark mode colors are primary, light mode is the exception
   if (draft) return { emoji: '•', text: 'draft', color: 'text-gray-400 light:text-gray-600' };

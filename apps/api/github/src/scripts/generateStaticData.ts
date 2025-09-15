@@ -17,118 +17,25 @@ import * as path from 'path';
 import { GitHubService } from '../github';
 import { Octokit } from '@octokit/rest';
 import { delay } from '../utils/rateLimitUtils';
+import {
+  PullRequestListData,
+  PaginationMeta,
+  StaticDataMetadata,
+  StaticPageData,
+  PullRequestOverride
+} from './types';
+import {
+  HIDDEN_REPOSITORIES,
+  LIMITED_REPOSITORIES,
+  MAX_REPOSITORY_NAME_LENGTH,
+  REPOSITORY_NAME_TRUNCATION_PATTERNS,
+  REPOSITORY_OVERRIDES,
+  PR_OVERRIDES
+} from './pr-overrides';
 
-// Filtering configuration - copied from frontend to ensure consistency
-const HIDDEN_REPOSITORIES = [
-  'team-5',
-  'halloween-hackathon',
-  'vitest-dev',
-  'vitest'
-];
-
-const LIMITED_REPOSITORIES = {
-  'penpot': 'keep-latest-only'
-};
-
-// Maximum allowed length for repository names
-const MAX_REPOSITORY_NAME_LENGTH = 20;
-
-// Repository name truncation patterns
-// These patterns will be used to truncate long repository names at the API layer
-const REPOSITORY_NAME_TRUNCATION_PATTERNS = [
-  {
-    pattern: /^(woocommerce-gateway)-.*$/,
-    replacement: '$1'
-  }
-];
-
-// Repository-level overrides for specific customizations
-const REPOSITORY_OVERRIDES: Record<string, { language?: string }> = {
-  'penpot': {
-    language: 'Clojure, SQL'
-  }
-};
-
-interface PullRequestOverride {
-  id: number;
-  title?: string;
-  state?: 'open' | 'closed' | 'merged';
-  merged_at?: string | null;
-  html_url?: string;
-  blocked?: boolean; // When true, the PR will be filtered out completely
-}
-
-const PR_OVERRIDES: Record<number, PullRequestOverride> = {
-  // Penpot milestone lock feature PR - was incorrectly marked as closed, actually merged
-  2696869536: {
-    id: 2696869536,
-    title: "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actors",
-    state: "merged",
-    merged_at: "2025-07-26T12:15:30Z",
-    html_url: "https://github.com/penpot/penpot/pull/6982"
-  },
-  // Block disableRecycling documentation PR to deter developers from using internal prop
-  2742664883: {
-    id: 2742664883,
-    blocked: true
-  }
-};
 
 // Load environment variables from .env file
 dotenv.config();
-// Define types locally to avoid DOM dependencies in shared types
-interface PullRequestListData {
-  id: number;
-  number: number;
-  title: string;
-  description?: string | null; // Optional since we strip it during processing
-  created_at: string;
-  merged_at: string | null;
-  state: 'open' | 'closed' | 'merged';
-  html_url: string;
-  additions?: number;
-  deletions?: number;
-  comments?: number;
-  repository: {
-    name: string;
-    description: string | null;
-    language: string | null;
-    html_url: string;
-    owner: {
-      login: string;
-      avatar_url: string;
-    };
-  };
-}
-
-interface PaginationMeta {
-  page: number;
-  per_page: number;
-  total_count: number;
-  total_pages: number;
-  has_next_page: boolean;
-  has_previous_page: boolean;
-}
-
-interface StaticDataMetadata {
-  total_count: number;
-  total_pages: number;
-  per_page: number;
-  last_generated: string;
-  generator_version: string;
-  pages_generated: number;
-  external_prs_enhanced?: number;
-  enhancement_enabled?: boolean;
-}
-
-interface StaticPageData {
-  data: PullRequestListData[];
-  meta: {
-    username: string;
-    count: number;
-    pagination: PaginationMeta;
-  };
-}
 
 class StaticDataGenerator {
   private githubService: GitHubService;
@@ -478,7 +385,26 @@ class StaticDataGenerator {
       // Enhance external PRs with detailed data
       console.log('🔧 Enhancing external PRs with detailed data...');
       const enhancedExternalPRs = await this.enhanceAllExternalPRs(externalPRs);
-      
+
+      // Sort PRs: merged first (by merged_at date desc), then open/closed (by created_at date desc)
+      console.log('📊 Sorting PRs: merged first, then open/closed...');
+      enhancedExternalPRs.sort((a, b) => {
+        // First priority: merged PRs come before non-merged
+        const aMerged = a.merged_at !== null;
+        const bMerged = b.merged_at !== null;
+
+        if (aMerged && !bMerged) return -1;
+        if (!aMerged && bMerged) return 1;
+
+        // If both are merged, sort by merged_at date (most recent first)
+        if (aMerged && bMerged) {
+          return new Date(b.merged_at!).getTime() - new Date(a.merged_at!).getTime();
+        }
+
+        // If neither are merged, sort by created_at date (most recent first)
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
       // Generate pages with external PRs only (20 per page)
       const externalPages = Math.ceil(enhancedExternalPRs.length / this.perPage);
       console.log(`📄 Creating ${externalPages} pages with external PRs only`);

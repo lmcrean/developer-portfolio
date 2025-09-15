@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   PullRequestFeedListCardProps,
-  PullRequestListData 
+  PullRequestListData
 } from '@shared/types/pull-requests';
 import {
-  formatAbsoluteDate,
+  formatStaticDate,
   getRelativeTime,
   getStatusDisplay,
   formatBytesChange
@@ -25,9 +25,9 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
     setIsClient(true);
   }, []);
 
-  // Only calculate relative time on client side
-  const relativeTime = isClient ? getRelativeTime(pullRequest.created_at) : 'Loading...';
+  // Use relative time on client, static date as fallback
   const statusDate = pullRequest.merged_at ? pullRequest.merged_at : pullRequest.created_at;
+  const displayTime = isClient ? getRelativeTime(statusDate) : formatStaticDate(statusDate);
 
   return (
     <div 
@@ -41,7 +41,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           onClick();
         }
       }}
-      aria-label={`Pull request #${pullRequest.number}, ${status.text} ${relativeTime}. Opens in new tab.`}
+      aria-label={`Pull request #${pullRequest.number}, ${status.text} ${displayTime}. Opens in new tab.`}
       data-testid="pull-request-card"
       data-pr-number={pullRequest.number}
       data-pr-title={pullRequest.title}
@@ -88,7 +88,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
           {/* Left: Status with date */}
           <div className="flex items-center gap-1">
             <span className="text-xs">
-              {status.text} {relativeTime}
+              {status.text} {displayTime}
             </span>
           </div>
           
