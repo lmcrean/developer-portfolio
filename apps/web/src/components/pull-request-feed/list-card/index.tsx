@@ -62,19 +62,19 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       {/* Right: Content */}
       <div className="flex-1 min-w-0">
         {/* Row 1: Org:Repo:Title and Language */}
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex items-center gap-1">
-            <span className="pr-text-muted text-sm max-lg:hidden">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div className="pr-title-fade flex items-center gap-1 min-w-0">
+            <span className="pr-text-muted text-sm max-lg:hidden flex-shrink-0">
               {pullRequest.repository.owner.login}:
             </span>
-            <span className="font-medium pr-text-secondary text-sm max-sm:hidden">
+            <span className="font-medium pr-text-secondary text-sm max-sm:hidden flex-shrink-0">
               {pullRequest.repository.name}:
             </span>
             <span className="pr-text-primary font-bold text-sm leading-tight">
               {pullRequest.title}
             </span>
           </div>
-          <div className="flex-shrink-0 max-sm:hidden">
+          <div className="flex-shrink-0 max-sm:hidden pl-2">
             {pullRequest.repository.language && (
               <span className="italic text-sm pr-text-muted">
                 {pullRequest.repository.language}
