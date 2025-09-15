@@ -70,7 +70,7 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
     filteredGroups.every(g => !expandedRepos.has(g.repository.full_name));
 
   return (
-    <div className={`w-full p-4 max-sm:px-1 max-sm:py-2 ${className}`} style={{ fontFamily: '"IBM Plex Serif", serif' }}>
+    <div className={`w-full max-sm:px-1 max-sm:py-2 ${className}`} style={{ fontFamily: '"IBM Plex Serif", serif' }}>
       {/* Table Header - Consistent with Pull Request Feed */}
       <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 text-sm font-semibold pr-text-secondary  light:border-gray-200">
         Agile Approach
