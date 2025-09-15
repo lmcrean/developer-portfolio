@@ -168,21 +168,6 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
                 </div>
               </div>
             )}
-            
-            {/* End of list message */}
-            {!hasMoreItems && !isLoadingMore && (
-              <div className="px-4 py-6 text-center">
-                <a 
-                  href="https://github.com/lmcrean" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm font-medium hover:underline"
-                  style={{ color: '#9ca3af' }}
-                >
-                  View all Activity on Github
-                </a>
-              </div>
-            )}
           </>
         )}
       </div>
