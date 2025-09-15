@@ -162,12 +162,6 @@ const config: Config = {
           className: 'navbar-icon-item',
           position: 'right',
         },
-        {
-          href: 'mailto:lmcrean@gmail.com',
-          html: '<i class="fas fa-envelope fa-lg  " title="Email"></i> <b class="navbar__text">Email</b>',
-          className: 'navbar-icon-item',
-          position: 'right',
-        },
       ],
     },
     footer: {
