@@ -89,8 +89,30 @@ const TitleSection: React.FC = () => {
             )
           ))}
         </h1>
-        <div className="text-xl sm:text-2xl md:text-3xl italic text-gray-600 dark:text-amber-400">
+        <div className="mt-8">
+          <a
+            href="mailto:lmcrean@gmail.com"
+            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r !text-white transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl opacity-80"
+          >
+            <i className="fas fa-envelope text-l"></i>
+            <span className="text-lKareng email"> Email / Say Hi </span>
+          </a>
         </div>
+        <style>
+          {`
+            .email {
+             font-family: "funnel display"
+            }
+            @keyframes fadeInButton {
+              from {
+                opacity: 0;
+              }
+              to {
+                opacity: 0.8;
+              }
+            }
+          `}
+        </style>
       </div>
     </>
   );
