@@ -50,6 +50,12 @@ export const PR_OVERRIDES: Record<number, PullRequestOverride> = {
     id: 2793359837,
     title: "Fix inconsistent subscriptions after cancellation with centralised logic"
   },
+  // Google Guava PR #7988 - was closed but actually merged
+  2826673514: {
+    id: 2826673514,
+    state: "merged",
+    merged_at: "2025-09-14T13:00:00Z"
+  },
   // Block disableRecycling documentation PR to deter developers from using internal prop
   2742664883: {
     id: 2742664883,

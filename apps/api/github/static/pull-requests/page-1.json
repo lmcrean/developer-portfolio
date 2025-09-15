@@ -1,6 +1,28 @@
 {
   "data": [
     {
+      "id": 2826673514,
+      "number": 7988,
+      "title": "Add tests demonstrating `Iterators.mergeSorted()` instability",
+      "created_at": "2025-09-14T12:42:05Z",
+      "merged_at": "2025-09-14T13:00:00Z",
+      "html_url": "https://github.com/google/guava/pull/7988",
+      "state": "merged",
+      "additions": 134,
+      "deletions": 0,
+      "comments": 3,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      }
+    },
+    {
       "id": 2787729818,
       "number": 9,
       "title": "Enhance(error handling): improve flush loop and trigger handling in cscdm",
@@ -69,7 +91,7 @@
     {
       "id": 2696869536,
       "number": 6982,
-      "title": "Enhance (version control): Add milestone lock feature to prevent accidental deletion and bad actors",
+      "title": "Implement milestone lock feature to prevent accidental deletion and bad actors",
       "created_at": "2025-07-26T10:41:46Z",
       "merged_at": "2025-07-26T12:15:30Z",
       "html_url": "https://github.com/penpot/penpot/pull/6982",
@@ -121,28 +143,6 @@
       "additions": 167,
       "deletions": 10,
       "comments": 2,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2826673514,
-      "number": 7988,
-      "title": "Add tests demonstrating `Iterators.mergeSorted()` instability",
-      "created_at": "2025-09-14T12:42:05Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7988",
-      "state": "closed",
-      "additions": 134,
-      "deletions": 0,
-      "comments": 3,
       "repository": {
         "name": "guava",
         "description": "Google core libraries for Java",
@@ -289,7 +289,7 @@
     {
       "id": 2793359837,
       "number": 88,
-      "title": "Fix inconsistent subscription status after cancellation with centralized cancellation logic",
+      "title": "Fix inconsistent subscriptions after cancellation with centralised logic",
       "created_at": "2025-09-02T16:50:26Z",
       "merged_at": null,
       "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless/pull/88",
