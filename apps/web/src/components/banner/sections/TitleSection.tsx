@@ -94,13 +94,21 @@ const TitleSection: React.FC = () => {
             href="mailto:lmcrean@gmail.com"
             target="_blank"
             rel="noopener noreferrer"
-            title="lmcrean@gmail.com"
             className="email-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r !text-white transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl opacity-80"
+            draggable="false"
+            onDragStart={(e) => e.preventDefault()}
           >
             <i className="fas fa-envelope text-l mt-0.5"></i>
             <span className="email-text">
               <span className="say-hi">Say Hi</span>
-              <span className="email-address">lmcrean@gmail.com</span>
+              <span
+                className="email-address"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  window.getSelection()?.selectAllChildren(e.currentTarget);
+                }}
+              >lmcrean@gmail.com</span>
             </span>
           </a>
         </div>
@@ -135,12 +143,18 @@ const TitleSection: React.FC = () => {
               transition: opacity 0.3s ease;
             }
 
+            .say-hi {
+              pointer-events: none;
+            }
+
             .email-address {
               position: absolute;
               left: 50%;
               transform: translateX(-50%);
               opacity: 0;
               white-space: nowrap;
+              user-select: none;
+              pointer-events: none;
             }
 
             .email-button:hover .say-hi {
@@ -149,6 +163,9 @@ const TitleSection: React.FC = () => {
 
             .email-button:hover .email-address {
               opacity: 1;
+              user-select: text;
+              pointer-events: auto;
+              cursor: text;
             }
 
             @keyframes fadeInButton {
