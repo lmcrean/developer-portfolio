@@ -92,10 +92,13 @@ const TitleSection: React.FC = () => {
         <div className="mt-8">
           <a
             href="mailto:lmcrean@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="lmcrean@gmail.com"
             className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r !text-white transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl opacity-80"
           >
             <i className="fas fa-envelope text-l"></i>
-            <span className="text-lKareng email"> Email: Say Hi </span>
+            <span className="text-lKareng email"> Say Hi </span>
           </a>
         </div>
         <style>

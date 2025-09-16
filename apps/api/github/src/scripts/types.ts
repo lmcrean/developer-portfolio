@@ -60,5 +60,6 @@ export interface PullRequestOverride {
   state?: 'open' | 'closed' | 'merged';
   merged_at?: string | null;
   html_url?: string;
+  comments?: number;
   blocked?: boolean; // When true, the PR will be filtered out completely
 }

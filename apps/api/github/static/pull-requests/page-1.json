@@ -1,6 +1,28 @@
 {
   "data": [
     {
+      "id": 2826689299,
+      "number": 7989,
+      "title": " Fix `Iterators.mergeSorted()` to preserve stability for equal elements",
+      "created_at": "2025-09-14T13:04:00Z",
+      "merged_at": "2025-09-14T13:04:00Z",
+      "html_url": "https://github.com/google/guava/pull/7989",
+      "state": "merged",
+      "additions": 167,
+      "deletions": 10,
+      "comments": 2,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      }
+    },
+    {
       "id": 2826673514,
       "number": 7988,
       "title": "Add tests demonstrating `Iterators.mergeSorted()` instability",
@@ -11,6 +33,28 @@
       "additions": 134,
       "deletions": 0,
       "comments": 3,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      }
+    },
+    {
+      "id": 2826631136,
+      "number": 7987,
+      "title": "Add test for putIfAbsent to catch implementations that incorrectly ignore null values",
+      "created_at": "2025-09-14T11:44:42Z",
+      "merged_at": "2025-09-14T11:44:42Z",
+      "html_url": "https://github.com/google/guava/pull/7987",
+      "state": "merged",
+      "additions": 14,
+      "deletions": 0,
+      "comments": 1,
       "repository": {
         "name": "guava",
         "description": "Google core libraries for Java",
@@ -121,50 +165,6 @@
       "additions": 100,
       "deletions": 0,
       "comments": 3,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2826689299,
-      "number": 7989,
-      "title": " Fix `Iterators.mergeSorted()` to preserve stability for equal elements",
-      "created_at": "2025-09-14T13:04:00Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7989",
-      "state": "open",
-      "additions": 167,
-      "deletions": 10,
-      "comments": 2,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2826631136,
-      "number": 7987,
-      "title": "Add test for putIfAbsent to catch implementations that incorrectly ignore null values",
-      "created_at": "2025-09-14T11:44:42Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7987",
-      "state": "open",
-      "additions": 14,
-      "deletions": 0,
-      "comments": 0,
       "repository": {
         "name": "guava",
         "description": "Google core libraries for Java",
