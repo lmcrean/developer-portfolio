@@ -21,6 +21,16 @@ const PR_OVERRIDES = {
   2826673514: {
     state: "merged",
     merged_at: "2025-09-14T13:00:00Z"
+  },
+  // Google Guava PR #7989 - was closed but actually merged
+  2826689299: {
+    state: "merged",
+    merged_at: "2025-09-14T13:04:00Z"
+  },
+  // Google Guava PR #7987 - was closed but actually merged
+  2826631136: {
+    state: "merged",
+    merged_at: "2025-09-14T11:44:42Z"
   }
 };
 
