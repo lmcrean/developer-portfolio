@@ -71,6 +71,7 @@ export const PR_OVERRIDES: Record<number, PullRequestOverride> = {
   2826631136: {
     id: 2826631136,
     state: "merged",
-    merged_at: "2025-09-14T11:44:42Z"
+    merged_at: "2025-09-14T11:44:42Z",
+    comments: 1
   }
 };

@@ -130,7 +130,8 @@ class StaticDataGenerator {
       ...(override.title && { title: override.title }),
       ...(override.state && { state: override.state }),
       ...(override.merged_at !== undefined && { merged_at: override.merged_at }),
-      ...(override.html_url && { html_url: override.html_url })
+      ...(override.html_url && { html_url: override.html_url }),
+      ...(override.comments !== undefined && { comments: override.comments })
     };
   }
 
