@@ -155,6 +155,7 @@ const config: Config = {
           html: '<i class="fas fa-envelope fa-lg" title="Email"></i> <b class="navbar__text">Email</b>',
           className: 'navbar-icon-item',
           position: 'right',
+          title: 'lmcrean@gmail.com',
         },
         {
           href: 'https://github.com/lmcrean',
