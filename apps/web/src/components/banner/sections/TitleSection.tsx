@@ -95,7 +95,7 @@ const TitleSection: React.FC = () => {
             className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r !text-white transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl opacity-80"
           >
             <i className="fas fa-envelope text-l"></i>
-            <span className="text-lKareng email"> Email: Say Hi </span>
+            <span className="text-lKareng email"> Say Hi </span>
           </a>
         </div>
         <style>
