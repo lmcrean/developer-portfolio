@@ -209,6 +209,58 @@ main[class*="docMainContainer"] .container,
   margin-left: 0.5rem;
 }
 
+/* Email navbar item hover effect */
+.navbar-email-text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  font-weight: bold;
+  min-width: 40px;
+  transition: min-width 0.3s ease;
+  font-family: 'Funnel Display';
+}
+
+.navbar-email-item:hover .navbar-email-text {
+  min-width: 165px;
+}
+
+.navbar-email-label,
+.navbar-email-address {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  font-family: 'Funnel Display';
+}
+
+.navbar-email-address {
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  white-space: nowrap;
+  user-select: none;
+  font-family: 'Funnel Display';
+}
+
+.navbar-email-item:hover .navbar-email-label {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.navbar-email-item:hover .navbar-email-address {
+  opacity: 1;
+  transform: translateX(0);
+  user-select: text;
+  cursor: text;
+}
+
+/* Disable text decoration on hover for email */
+.navbar-email-item:hover {
+  text-decoration: none !important;
+}
+
+.navbar-email-item a {
+  text-decoration: none !important;
+}
+
 .breadcrumbs {
   display: none;
 }
