@@ -95,17 +95,62 @@ const TitleSection: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             title="lmcrean@gmail.com"
-            className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r !text-white transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl opacity-80"
+            className="email-button inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r !text-white transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl opacity-80"
           >
-            <i className="fas fa-envelope text-l"></i>
-            <span className="text-lKareng email"> Say Hi </span>
+            <i className="fas fa-envelope text-l mt-0.5"></i>
+            <span className="email-text">
+              <span className="say-hi">Say Hi</span>
+              <span className="email-address">lmcrean@gmail.com</span>
+            </span>
           </a>
         </div>
         <style>
           {`
-            .email {
-             font-family: "funnel display"
+            .email-button {
+              text-decoration: none !important;
             }
+
+            .email-button:hover {
+              text-decoration: none !important;
+            }
+
+            .email-button i {
+              text-decoration: none !important;
+            }
+
+            .email-text {
+              font-family: "funnel display";
+              position: relative;
+              display: inline-flex;
+              justify-content: center;
+              min-width: 55px;
+              transition: min-width 0.3s ease;
+            }
+
+            .email-button:hover .email-text {
+              min-width: 165px;
+            }
+
+            .say-hi, .email-address {
+              transition: opacity 0.3s ease;
+            }
+
+            .email-address {
+              position: absolute;
+              left: 50%;
+              transform: translateX(-50%);
+              opacity: 0;
+              white-space: nowrap;
+            }
+
+            .email-button:hover .say-hi {
+              opacity: 0;
+            }
+
+            .email-button:hover .email-address {
+              opacity: 1;
+            }
+
             @keyframes fadeInButton {
               from {
                 opacity: 0;
