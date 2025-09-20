@@ -11,7 +11,7 @@ interface Props {
 }
 
 const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) => {
-  const { repository, issues, openCount, closedCount } = group;
+  const { repository, issues } = group;
 
   return (
     <div className="issue-repo-group">
@@ -41,8 +41,8 @@ const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) 
 
         {/* Right: Content */}
         <div className="flex-1 min-w-0">
-          {/* Row 1: Repository Name and Issue Counts */}
-          <div className="flex items-center justify-between">
+          {/* Row 1: Repository Name */}
+          <div className="flex items-center">
             <div className="flex-1 min-w-0">
               <span className="pr-text-primary font-bold text-sm leading-tight truncate block">
                 {repository.name}
@@ -50,18 +50,6 @@ const IssueRepositoryGroup: React.FC<Props> = ({ group, isExpanded, onToggle }) 
                   {repository.owner.login}
                 </span>
               </span>
-            </div>
-            <div className="flex-shrink-0 flex items-center gap-2">
-              {openCount > 0 && (
-                <span className="px-2 py-0.5 text-gray-400 rounded text-xs font-medium whitespace-nowrap">
-                  {openCount} open
-                </span>
-              )}
-              {closedCount > 0 && (
-                <span className="px-2 py-0.5 border border-gray-200/30 text-gray-400 rounded text-xs font-medium whitespace-nowrap">
-                  {closedCount} closed
-                </span>
-              )}
             </div>
           </div>
 
