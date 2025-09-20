@@ -191,7 +191,7 @@ main[class*="docMainContainer"] .container,
   padding: 0.5rem;
   margin: 0 0.25rem;
   color: var(--ifm-navbar-link-color);
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .navbar-icon-item i {
@@ -200,7 +200,6 @@ main[class*="docMainContainer"] .container,
 
 .navbar-icon-item:hover {
   color: var(--ifm-navbar-link-hover-color);
-  transform: scale(1.1);
   text-decoration: none;
 }
 
