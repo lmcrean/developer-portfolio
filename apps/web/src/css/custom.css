@@ -209,51 +209,6 @@ main[class*="docMainContainer"] .container,
   margin-left: 0.5rem;
 }
 
-/* Email navbar item hover effect */
-.navbar-email-text {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  overflow: hidden;
-  font-weight: bold;
-  width: 165px;
-  font-family: 'Funnel Display';
-}
-
-
-.navbar-email-label,
-.navbar-email-address {
-  transition: opacity 0.3s ease;
-  font-family: 'Funnel Display';
-}
-
-.navbar-email-address {
-  position: absolute;
-  left: 0;
-  opacity: 0;
-  white-space: nowrap;
-  user-select: none;
-  font-family: 'Funnel Display';
-}
-
-.navbar-email-item:hover .navbar-email-label {
-  opacity: 0;
-}
-
-.navbar-email-item:hover .navbar-email-address {
-  opacity: 1;
-  user-select: text;
-  cursor: text;
-}
-
-/* Disable text decoration on hover for email */
-.navbar-email-item:hover {
-  text-decoration: none !important;
-}
-
-.navbar-email-item a {
-  text-decoration: none !important;
-}
 
 .breadcrumbs {
   display: none;
