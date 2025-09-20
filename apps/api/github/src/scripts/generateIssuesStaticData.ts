@@ -82,6 +82,7 @@ class IssuesStaticDataGenerator {
     console.log(`   - ${externalSimplified.length} external issues created`);
     console.log(`   - ${closedSimplified.length} issues closed by user`);
     console.log(`   - ${grouped.groups.length} repositories with issues`);
+    console.log(`   - ${grouped.metadata.total_issues} total issues (including manual)`);
   }
 
   private setupDirectories() {

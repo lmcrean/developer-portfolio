@@ -63,10 +63,11 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
     );
   }
 
+
   // Check if all repos are expanded or collapsed
-  const allReposExpanded = filteredGroups.length > 0 && 
+  const allReposExpanded = filteredGroups.length > 0 &&
     filteredGroups.every(g => expandedRepos.has(g.repository.full_name));
-  const allReposCollapsed = filteredGroups.length > 0 && 
+  const allReposCollapsed = filteredGroups.length > 0 &&
     filteredGroups.every(g => !expandedRepos.has(g.repository.full_name));
 
   return (
@@ -76,7 +77,7 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
         Agile Approach
       </div>
       <div className="px-4 pb-3 text-xs italic text-gray-400 light:text-gray-600 mt-1 border-b border-gray-700">
-        Github Issues
+        <span>Github Issues</span>
       </div>
 
       {/* Filters and Controls - Hidden */}
