@@ -7,7 +7,8 @@ import {
   formatStaticDate,
   getRelativeTime,
   getStatusDisplay,
-  formatBytesChange
+  formatBytesChange,
+  parseTitleWithCode
 } from '@shared/types/pull-requests/utilities';
 
 export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = ({
@@ -71,7 +72,18 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
               {pullRequest.repository.name}:
             </span>
             <span className="pr-text-primary font-bold text-sm leading-tight">
-              {pullRequest.title}
+              {parseTitleWithCode(pullRequest.title).map((part, index) =>
+                part.type === 'code' ? (
+                  <code
+                    key={`code-${index}`}
+                    className="font-mono bg-gray-100 dark:bg-gray-800 light:bg-gray-100 px-1 py-0.5 rounded text-sm"
+                  >
+                    {part.content}
+                  </code>
+                ) : (
+                  part.content
+                )
+              )}
             </span>
           </div>
           <div className="flex-shrink-0 max-sm:hidden pl-2">
