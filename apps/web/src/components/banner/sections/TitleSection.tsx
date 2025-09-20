@@ -27,7 +27,7 @@ const TitleSection: React.FC = () => {
           }
 
           .letter-animate {
-            font-family: 'funnel display';
+            font-family: 'Funnel Display';
             opacity: 0;
             display: inline-block;
             animation: fadeInLetter 0.6s ease-out forwards;
@@ -127,7 +127,7 @@ const TitleSection: React.FC = () => {
             }
 
             .email-text {
-              font-family: "funnel display";
+              font-family: 'Funnel Display';
               position: relative;
               display: inline-flex;
               justify-content: center;
@@ -140,14 +140,17 @@ const TitleSection: React.FC = () => {
             }
 
             .say-hi, .email-address {
+              font-family: 'Funnel Display';
               transition: opacity 0.3s ease;
             }
 
             .say-hi {
+              font-family: 'Funnel Display';
               pointer-events: none;
             }
 
             .email-address {
+              font-family: 'Funnel Display';
               position: absolute;
               left: 50%;
               transform: translateX(-50%);
