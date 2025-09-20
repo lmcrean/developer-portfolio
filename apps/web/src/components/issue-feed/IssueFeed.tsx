@@ -89,7 +89,7 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
         <div className="flex items-center gap-2">
           {cumulativeCounts.open > 0 && (
             <span className="px-2 py-0.5 text-gray-400 rounded text-xs font-medium whitespace-nowrap">
-              {cumulativeCounts.open} open
+              {cumulativeCounts.open} opened
             </span>
           )}
           {cumulativeCounts.closed > 0 && (
