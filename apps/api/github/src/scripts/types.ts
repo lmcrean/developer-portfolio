@@ -63,3 +63,29 @@ export interface PullRequestOverride {
   comments?: number;
   blocked?: boolean; // When true, the PR will be filtered out completely
 }
+
+export interface ManualIssue {
+  id: number;
+  number: number;
+  title: string;
+  html_url: string;
+  state: 'open' | 'closed';
+  created_at: string;
+  closed_at: string | null;
+  updated_at: string;
+  repository_url: string;
+  repository: {
+    owner: string;
+    name: string;
+    full_name: string;
+  };
+  labels?: Array<{
+    id: number;
+    name: string;
+    color: string;
+  }>;
+  user: {
+    login: string;
+    avatar_url: string;
+  };
+}

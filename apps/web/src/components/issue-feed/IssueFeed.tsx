@@ -63,14 +63,6 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
     );
   }
 
-  // Calculate cumulative counts across all filtered groups
-  const cumulativeCounts = filteredGroups.reduce(
-    (acc, group) => ({
-      open: acc.open + group.openCount,
-      closed: acc.closed + group.closedCount
-    }),
-    { open: 0, closed: 0 }
-  );
 
   // Check if all repos are expanded or collapsed
   const allReposExpanded = filteredGroups.length > 0 &&
@@ -84,20 +76,8 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
       <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 text-sm font-semibold pr-text-secondary  light:border-gray-200">
         Agile Approach
       </div>
-      <div className="flex items-center justify-between px-4 pb-3 text-xs italic text-gray-400 light:text-gray-600 mt-1 border-b border-gray-700">
+      <div className="px-4 pb-3 text-xs italic text-gray-400 light:text-gray-600 mt-1 border-b border-gray-700">
         <span>Github Issues</span>
-        <div className="flex items-center gap-2">
-          {cumulativeCounts.open > 0 && (
-            <span className="px-2 py-0.5 text-gray-400 rounded text-xs font-medium whitespace-nowrap">
-              {cumulativeCounts.open} open
-            </span>
-          )}
-          {cumulativeCounts.closed > 0 && (
-            <span className="px-2 py-0.5 border border-gray-200/30 text-gray-400 rounded text-xs font-medium whitespace-nowrap">
-              {cumulativeCounts.closed} closed
-            </span>
-          )}
-        </div>
       </div>
 
       {/* Filters and Controls - Hidden */}
