@@ -152,18 +152,18 @@ const config: Config = {
       items: [
         {
           to: '/contact',
-          html: '<i class="fas fa-envelope fa-lg"></i> Email',
+          html: '<i class="fas fa-envelope"></i> Email',
           position: 'right',
         },
         {
           href: 'https://github.com/lmcrean',
-          html: '<i class="fab fa-github fa-lg" title="GitHub"></i> <b class="navbar__text">GitHub</b>',
+          html: '<i class="fab fa-github" title="GitHub"></i> <b class="navbar__text">GitHub</b>',
           className: 'navbar-icon-item',
           position: 'right',
         },
         {
           href: 'https://www.linkedin.com/in/lcrean/',
-          html: '<i class="fab fa-linkedin fa-lg" title="LinkedIn"></i> <b class="navbar__text">LinkedIn</b>',
+          html: '<i class="fab fa-linkedin" title="LinkedIn"></i> <b class="navbar__text">LinkedIn</b>',
           className: 'navbar-icon-item',
           position: 'right',
         },
