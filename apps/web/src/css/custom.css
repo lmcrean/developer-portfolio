@@ -216,18 +216,14 @@ main[class*="docMainContainer"] .container,
   align-items: center;
   overflow: hidden;
   font-weight: bold;
-  min-width: 40px;
-  transition: min-width 0.3s ease;
+  width: 165px;
   font-family: 'Funnel Display';
 }
 
-.navbar-email-item:hover .navbar-email-text {
-  min-width: 165px;
-}
 
 .navbar-email-label,
 .navbar-email-address {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.3s ease;
   font-family: 'Funnel Display';
 }
 
@@ -242,12 +238,10 @@ main[class*="docMainContainer"] .container,
 
 .navbar-email-item:hover .navbar-email-label {
   opacity: 0;
-  transform: translateX(-10px);
 }
 
 .navbar-email-item:hover .navbar-email-address {
   opacity: 1;
-  transform: translateX(0);
   user-select: text;
   cursor: text;
 }
@@ -453,4 +447,13 @@ main[class*="docMainContainer"] .container,
 
 .animate-code-2 {
   --line-width: 7rem;
+}
+
+/* Inline Code (Backticks) Styling - Monochrome Background for Dark Mode */
+code:not([class*="language-"]) {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--ifm-font-color-base);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
 }
