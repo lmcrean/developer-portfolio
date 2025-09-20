@@ -1,5 +1,5 @@
 import React from 'react';
-import TableSkeleton from './TableSkeleton';
+import LoadingRows from './LoadingRows';
 
 interface LoadingErrorStatesProps {
   loading: boolean;
@@ -22,7 +22,7 @@ export const LoadingErrorStates: React.FC<LoadingErrorStatesProps> = ({
 }) => {
   // Show loading state during SSR and initial client load
   if (!isClient || (loading && pullRequestsLength === 0)) {
-    return <TableSkeleton className={className} />;
+    return <LoadingRows />;
   }
 
   // Error state
