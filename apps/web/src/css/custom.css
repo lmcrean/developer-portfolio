@@ -191,16 +191,15 @@ main[class*="docMainContainer"] .container,
   padding: 0.5rem;
   margin: 0 0.25rem;
   color: var(--ifm-navbar-link-color);
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .navbar-icon-item i {
-  margin-right: 5px;
+  margin-right: 7px;
 }
 
 .navbar-icon-item:hover {
   color: var(--ifm-navbar-link-hover-color);
-  transform: scale(1.1);
   text-decoration: none;
 }
 
@@ -209,57 +208,6 @@ main[class*="docMainContainer"] .container,
   margin-left: 0.5rem;
 }
 
-/* Email navbar item hover effect */
-.navbar-email-text {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  overflow: hidden;
-  font-weight: bold;
-  min-width: 40px;
-  transition: min-width 0.3s ease;
-  font-family: 'Funnel Display';
-}
-
-.navbar-email-item:hover .navbar-email-text {
-  min-width: 165px;
-}
-
-.navbar-email-label,
-.navbar-email-address {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  font-family: 'Funnel Display';
-}
-
-.navbar-email-address {
-  position: absolute;
-  left: 0;
-  opacity: 0;
-  white-space: nowrap;
-  user-select: none;
-  font-family: 'Funnel Display';
-}
-
-.navbar-email-item:hover .navbar-email-label {
-  opacity: 0;
-  transform: translateX(-10px);
-}
-
-.navbar-email-item:hover .navbar-email-address {
-  opacity: 1;
-  transform: translateX(0);
-  user-select: text;
-  cursor: text;
-}
-
-/* Disable text decoration on hover for email */
-.navbar-email-item:hover {
-  text-decoration: none !important;
-}
-
-.navbar-email-item a {
-  text-decoration: none !important;
-}
 
 .breadcrumbs {
   display: none;
@@ -453,4 +401,13 @@ main[class*="docMainContainer"] .container,
 
 .animate-code-2 {
   --line-width: 7rem;
+}
+
+/* Inline Code (Backticks) Styling - Monochrome Background for Dark Mode */
+code:not([class*="language-"]) {
+  background-color: var(--ifm-color-emphasis-20) !important;
+  color: var(--ifm-font-color-base);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
 }

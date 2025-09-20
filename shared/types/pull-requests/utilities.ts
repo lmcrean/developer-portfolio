@@ -120,4 +120,38 @@ export const parseOwnerAndRepo = (htmlUrl: string): { owner: string; repo: strin
     owner: urlParts[3],
     repo: urlParts[4]
   };
+};
+
+export interface TitlePart {
+  type: 'text' | 'code';
+  content: string;
+}
+
+export const parseTitleWithCode = (title: string | null | undefined): TitlePart[] => {
+  if (!title) return [];
+
+  // Split by backticks, every odd index will be code
+  const parts = title.split('`');
+
+  // If no backticks found, return plain text
+  if (parts.length === 1) {
+    return [{ type: 'text', content: title }];
+  }
+
+  // Build array with alternating text and code elements
+  const elements: TitlePart[] = [];
+
+  parts.forEach((part, index) => {
+    if (part) { // Only add non-empty parts
+      if (index % 2 === 0) {
+        // Even indices are regular text
+        elements.push({ type: 'text', content: part });
+      } else {
+        // Odd indices are code (between backticks)
+        elements.push({ type: 'code', content: part });
+      }
+    }
+  });
+
+  return elements;
 }; 

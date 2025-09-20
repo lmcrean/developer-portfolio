@@ -151,20 +151,20 @@ const config: Config = {
       },
       items: [
         {
-          href: 'mailto:lmcrean@gmail.com',
-          html: '<i class="fas fa-envelope fa-lg"></i> <span class="navbar-email-text"><span class="navbar-email-label">Email</span><span class="navbar-email-address">lmcrean@gmail.com</span></span>',
-          className: 'navbar-icon-item navbar-email-item',
+          to: '/contact',
+          html: '<i class="fas fa-envelope"></i> Email',
+          className: 'navbar-icon-item',
           position: 'right',
         },
         {
           href: 'https://github.com/lmcrean',
-          html: '<i class="fab fa-github fa-lg" title="GitHub"></i> <b class="navbar__text">GitHub</b>',
+          html: '<i class="fab fa-github" title="GitHub"></i> <b class="navbar__text">GitHub</b>',
           className: 'navbar-icon-item',
           position: 'right',
         },
         {
           href: 'https://www.linkedin.com/in/lcrean/',
-          html: '<i class="fab fa-linkedin fa-lg" title="LinkedIn"></i> <b class="navbar__text">LinkedIn</b>',
+          html: '<i class="fab fa-linkedin" title="LinkedIn"></i> <b class="navbar__text">LinkedIn</b>',
           className: 'navbar-icon-item',
           position: 'right',
         },

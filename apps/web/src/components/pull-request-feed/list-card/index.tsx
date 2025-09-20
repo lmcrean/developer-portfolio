@@ -7,7 +7,8 @@ import {
   formatStaticDate,
   getRelativeTime,
   getStatusDisplay,
-  formatBytesChange
+  formatBytesChange,
+  parseTitleWithCode
 } from '@shared/types/pull-requests/utilities';
 
 export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = ({
@@ -63,15 +64,27 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
       <div className="flex-1 min-w-0">
         {/* Row 1: Org:Repo:Title and Language */}
         <div className="flex items-start justify-between gap-3 mb-2">
-          <div className="pr-title-fade flex items-center gap-1 min-w-0">
+          <div className="pr-title-fade flex items-baseline gap-1 min-w-0">
             <span className="pr-text-muted text-sm max-lg:hidden flex-shrink-0">
               {pullRequest.repository.owner.login}:
             </span>
             <span className="font-medium pr-text-secondary text-sm max-sm:hidden flex-shrink-0">
               {pullRequest.repository.name}:
             </span>
-            <span className="pr-text-primary font-bold text-sm leading-tight">
-              {pullRequest.title}
+            <span className="pr-text-primary font-bold text-sm leading-tight inline-flex items-baseline">
+              {parseTitleWithCode(pullRequest.title).map((part, index) =>
+                part.type === 'code' ? (
+                  <code
+                    key={`code-${index}`}
+                    className="font-mono bg-gray-100 dark:bg-gray-800 light:bg-gray-100 mx-1 px-1 rounded text-xs inline-block"
+                    style={{ verticalAlign: 'baseline' }}
+                  >
+                    {part.content}
+                  </code>
+                ) : (
+                  <span key={`text-${index}`} className="inline-block">{part.content}</span>
+                )
+              )}
             </span>
           </div>
           <div className="flex-shrink-0 max-sm:hidden pl-2">
