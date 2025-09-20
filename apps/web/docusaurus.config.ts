@@ -153,6 +153,7 @@ const config: Config = {
         {
           to: '/contact',
           html: '<i class="fas fa-envelope"></i> Email',
+          className: 'navbar-icon-item',
           position: 'right',
         },
         {

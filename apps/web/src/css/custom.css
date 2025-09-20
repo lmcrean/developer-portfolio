@@ -195,7 +195,7 @@ main[class*="docMainContainer"] .container,
 }
 
 .navbar-icon-item i {
-  margin-right: 5px;
+  margin-right: 7px;
 }
 
 .navbar-icon-item:hover {
@@ -406,7 +406,7 @@ main[class*="docMainContainer"] .container,
 
 /* Inline Code (Backticks) Styling - Monochrome Background for Dark Mode */
 code:not([class*="language-"]) {
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: var(--ifm-color-emphasis-20) !important;
   color: var(--ifm-font-color-base);
   padding: 0.1rem 0.3rem;
   border-radius: 0.25rem;
