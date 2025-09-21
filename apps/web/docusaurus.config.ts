@@ -158,13 +158,13 @@ const config: Config = {
         },
         {
           href: 'https://github.com/lmcrean',
-          html: '<i class="fab fa-github" title="GitHub"></i> <b class="navbar__text">GitHub</b>',
+          html: '<i class="fab fa-github" title="GitHub"></i>GitHub',
           className: 'navbar-icon-item',
           position: 'right',
         },
         {
           href: 'https://www.linkedin.com/in/lcrean/',
-          html: '<i class="fab fa-linkedin" title="LinkedIn"></i> <b class="navbar__text">LinkedIn</b>',
+          html: '<i class="fab fa-linkedin" title="LinkedIn"></i> LinkedIn',
           className: 'navbar-icon-item',
           position: 'right',
         },
