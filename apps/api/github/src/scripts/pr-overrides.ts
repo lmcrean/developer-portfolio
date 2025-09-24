@@ -73,5 +73,11 @@ export const PR_OVERRIDES: Record<number, PullRequestOverride> = {
     state: "merged",
     merged_at: "2025-09-14T11:44:42Z",
     comments: 1
+  },
+  // Google Guava PR #7974 - was closed but actually merged
+  2805908000: {
+    id: 2805908000,
+    state: "merged",
+    merged_at: "2025-09-24T12:00:00Z"
   }
 };
