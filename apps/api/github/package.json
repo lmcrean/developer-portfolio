@@ -13,7 +13,8 @@
     "deploy": "vercel --prod",
     "test": "echo \"No tests yet\" && exit 0",
     "generate-static-data": "ts-node src/scripts/generateStaticData.ts",
-    "generate-issues-data": "ts-node src/scripts/generateIssuesStaticData.ts"
+    "generate-issues-data": "ts-node src/scripts/generateIssuesStaticData.ts",
+    "extract-prs-with-descriptions": "ts-node src/scripts/generatePRsWithDescriptions.ts"
   },
   "dependencies": {
     "@octokit/rest": "^20.0.2",

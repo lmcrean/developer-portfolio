@@ -1,0 +1,430 @@
+{
+  "data": [
+    {
+      "id": 2826689299,
+      "number": 7989,
+      "title": " Fix `Iterators.mergeSorted()` to preserve stability for equal elements",
+      "created_at": "2025-09-14T13:04:00Z",
+      "merged_at": "2025-09-14T13:04:00Z",
+      "html_url": "https://github.com/google/guava/pull/7989",
+      "state": "merged",
+      "additions": 167,
+      "deletions": 10,
+      "comments": 2,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      },
+      "description": "## Problem\r\n\r\n`Iterators.mergeSorted()` returns equal elements in unstable order. When merging iterators containing elements that compare as equal, the order depends on heap implementation details rather than maintaining a predictable, stable merge.\r\n\r\n## Solution\r\n\r\nTrack the insertion order of iterators and use it as a tiebreaker when elements compare as equal. Elements from earlier iterators will always appear before equal elements from later iterators.\r\n\r\n## Changes\r\n\r\n- Added `IndexedIterator` wrapper class to track iterator position\r\n- Modified heap comparator to use insertion order as tiebreaker for equal elements\r\n- Updated Javadoc to document the stable behavior guarantee\r\n- Changed queue type from `Queue<PeekingIterator<T>>` to `Queue<IndexedIterator<T>>`\r\n\r\n## Testing\r\n\r\nAll are passing on local machine\r\n\r\n```bash\r\n# Compile the changes\r\n./mvnw clean compile -pl guava\r\n\r\n# Run all Iterators tests (583 tests including stability tests from PR #1)\r\n./mvnw test -pl guava-tests -Dtest=IteratorsTest\r\n\r\n# Run stability tests specifically\r\n./mvnw test -pl guava-tests -Dtest=\"IteratorsTest#testMergeSorted_demonstratesInstability*\"\r\n```\r\n\r\n## Breaking Changes\r\n\r\nNone. This change only makes the ordering deterministic for equal elements, which was previously undefined.\r\n\r\nFixes #5773\r\nRelated to #7988 which is a reproduction of the issue (fails intentionally) and now passes in this PR"
+    },
+    {
+      "id": 2826673514,
+      "number": 7988,
+      "title": "Add tests demonstrating `Iterators.mergeSorted()` instability",
+      "created_at": "2025-09-14T12:42:05Z",
+      "merged_at": "2025-09-14T13:00:00Z",
+      "html_url": "https://github.com/google/guava/pull/7988",
+      "state": "merged",
+      "additions": 134,
+      "deletions": 0,
+      "comments": 3,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      },
+      "description": "## Purpose\n\nThis PR adds test cases that **demonstrate the instability problem** in `Iterators.mergeSorted()` as requested by @kevinb9n in [issue #5773](https://github.com/google/guava/issues/5773#issuecomment-1581520295).\n\n> The first PR that would be useful would have test cases that illustrate the problem -- this is unorthodox, but yes, I mean they actually verify that the problem *does* exist.\n\n## What these tests show\n\nThe tests demonstrate that when `mergeSorted()` encounters equal elements from different iterators, it returns them in **unstable order** (dependent on heap implementation details) rather than maintaining a stable merge.\n\n### Example from the issue:\n- Input: `[B1, C1]` and `[A2, C2]` (comparing by letter only)\n- Expected (stable): `[A2, B1, C1, C2]` - C1 before C2\n- Actual (unstable): Sometimes `[A2, B1, C2, C1]` - C2 before C1\n\n## Test failures\n\n**These tests are expected to FAIL** with the current implementation. They verify that:\n1. Equal elements don't maintain iterator order\n2. The merge is unstable for equal elements\n\n## Next steps\n\nOnce this PR is merged, a follow-up PR will:\n1. Fix the stability issue in `mergeSorted()`\n2. Verify these tests now pass with the fix (no changes needed to the tests themselves)\n\n## Testing\n\n```bash\n# Compile the test module\n./mvnw compile -pl guava-tests\n\n# Run both new tests together (they will fail, demonstrating the problem)\n./mvnw test -pl guava-tests -Dtest=\"IteratorsTest#testMergeSorted_demonstratesInstability*\"\n\n# Or run individually:\n./mvnw test -pl guava-tests -Dtest=IteratorsTest#testMergeSorted_demonstratesInstability_issue5773Example\n./mvnw test -pl guava-tests -Dtest=IteratorsTest#testMergeSorted_demonstratesInstability_allEqual\n```\n\nRelated to #5773"
+    },
+    {
+      "id": 2826631136,
+      "number": 7987,
+      "title": "Add test for putIfAbsent to catch implementations that incorrectly ignore null values",
+      "created_at": "2025-09-14T11:44:42Z",
+      "merged_at": "2025-09-14T11:44:42Z",
+      "html_url": "https://github.com/google/guava/pull/7987",
+      "state": "merged",
+      "additions": 14,
+      "deletions": 0,
+      "comments": 1,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      },
+      "description": "\nFixes #6217\n\n## Problem\n\nMultiple map implementations (e.g., fastutils' `Object2ObjectOpenHashMap`) incorrectly pass Guava's testlib suite despite not properly implementing `Map.putIfAbsent` behavior with null values. The JavaDoc specifies that putIfAbsent should replace a null value, but the testlib doesn't verify this edge case, allowing non-compliant implementations to pass.\n\n## Solution\n\nAdd `testPutIfAbsent_replacesNullValue()` to verify that `putIfAbsent` correctly replaces existing null values with new values, returning null as specified in the Map interface documentation.\n\n## Changes\n\n- Added new test method in `MapPutIfAbsentTester.java` that:\n  - Sets an existing key's value to null\n  - Calls putIfAbsent with a new value\n  - Verifies it returns null (the old value)\n  - Confirms the key now maps to the new value\n\n## Testing\n\n```bash\n# Compile the testlib\n./mvnw compile -pl guava-testlib\n\n# Run tests that exercise MapPutIfAbsentTester with null-supporting maps\n./mvnw test -Dtest=OpenJdk6MapTests -pl guava-testlib\n./mvnw test -Dtest=HashMapTest -pl guava-tests\n./mvnw test -Dtest=LinkedHashMapTest -pl guava-tests\n```\n\n## Breaking Changes\n\nNone. This only adds a new test case to catch non-compliant Map implementations."
+    },
+    {
+      "id": 2787729818,
+      "number": 9,
+      "title": "Enhance(error handling): improve flush loop and trigger handling in cscdm",
+      "created_at": "2025-08-31T13:37:08Z",
+      "merged_at": "2025-09-10T02:45:42Z",
+      "html_url": "https://github.com/rropen/terraform-provider-cscdm/pull/9",
+      "state": "merged",
+      "additions": 483,
+      "deletions": 19,
+      "comments": 3,
+      "repository": {
+        "name": "terraform-provider-c",
+        "description": "Terraform Provider for CSC Domain Manager.",
+        "language": "Go",
+        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
+        "owner": {
+          "login": "rropen",
+          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
+        }
+      },
+      "description": "\r\n## Problem Statement\r\nThe flush loop creates a new goroutine on every iteration that blocks on `sync.Cond.Wait()`. When `return` is removed to fix error resilience, this causes a goroutine leak as abandoned goroutines accumulate. See #8.\r\n\r\nInspecting `internal\\cscdm\\cscdm.go`:\r\n1. **Error kills loop**: `return` on error terminates goroutine permanently\r\n2. **Goroutine leak**: Each iteration creates new goroutine that blocks on `Wait()`\r\n3. **Tooling**: `sync.Cond` with select requires a goroutine-bridge pattern that causes the leak\r\n\r\n##  Solution\r\n1. **Replace sync.Cond with buffered channel**: Simpler, cleaner concurrency\r\n2. **Remove goroutine creation in loop**: No more leaks\r\n3. **Remove `return` on error**: Allows recovery from transient failures\r\n4. **Add `sync.Once` to Stop()**: Prevents panic from multiple closes\r\n\r\n## Impact\r\n\r\n**Before**: Any error leads to permanent death, silent failures\r\n**After**: Errors logged, processing continues, transient failures recover\r\n\r\n## Testing\r\n- [x] Build successful - `terraform-provider-cscdm.exe`\r\n  created\r\n- [x] Static analysis passed - go vet found no issues.\r\n- [x] Unit and integration tests added as sibling files in line with go conventions\r\n\r\n### How to test\r\nModerators can confirm the fix has 100% pass rate with `make testacc` or `make test` cmd\r\n\r\n## Breaking changes\r\nnone - API functions unchanged, the provider still works exactly the same in success scenarios, it just becomes more resilient in realistic error scenarios."
+    },
+    {
+      "id": 2746051142,
+      "number": 232,
+      "title": "Fix: Support `GENERATED ALWAYS AS` columns to reduce migration failures (#212)",
+      "created_at": "2025-08-14T12:36:59Z",
+      "merged_at": "2025-08-27T20:12:01Z",
+      "html_url": "https://github.com/stripe/pg-schema-diff/pull/232",
+      "state": "merged",
+      "additions": 275,
+      "deletions": 37,
+      "comments": 11,
+      "repository": {
+        "name": "pg-schema-diff",
+        "description": "Go library for diffing Postgres schemas and generating SQL migrations",
+        "language": "Go",
+        "html_url": "https://github.com/stripe/pg-schema-diff",
+        "owner": {
+          "login": "stripe",
+          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
+        }
+      },
+      "description": "## Problem Statement (#212)\r\n\r\npg-schema-diff incorrectly treats `GENERATED ALWAYS AS (expression) STORED` columns as `DEFAULT` columns, causing migration failures:\r\n\r\n```\r\nERROR: cannot use column reference in DEFAULT expression (SQLSTATE 0A000)\r\n```\r\n\r\n**Example**: A `tsvector` column with `GENERATED ALWAYS AS (to_tsvector('simple', title || ' ' || coalesce(artist, ''))) STORED` gets incorrectly converted to `DEFAULT to_tsvector(...)`, which fails because DEFAULT expressions cannot reference other columns.\r\n\r\n## Root Cause Analysis\r\n\r\n1. **Schema Introspection** (`internal/queries/queries.sql:91-151`): \r\n   - The `GetColumnsForTable` query doesn't check `pg_attribute.attgenerated` \r\n   - It treats all columns with expressions as DEFAULT columns\r\n\r\n2. **DDL Generation** (`pkg/diff/sql_generator.go:2671`):\r\n   - The `buildColumnDefinition` function only handles DEFAULT expressions\r\n   - No support for `GENERATED ALWAYS AS ... STORED` syntax\r\n\r\n## Solution\r\n\r\n### 1. Update Schema Introspection ✅\r\n**Modified** `internal/queries/queries.sql:94-106`:\r\n- Added `pg_attribute.attgenerated` detection ('s' = STORED generated column)\r\n- Split default and generation expressions using CASE statements:\r\n  ```sql\r\n  -- Only populate default_value for non-generated columns\r\n  COALESCE(\r\n      CASE \r\n          WHEN a.attgenerated = 's' THEN ''\r\n          ELSE pg_catalog.pg_get_expr(d.adbin, d.adrelid)\r\n      END, ''\r\n  )::TEXT AS default_value,\r\n  -- Only populate generation_expression for generated columns\r\n  COALESCE(\r\n      CASE\r\n          WHEN a.attgenerated = 's' THEN pg_catalog.pg_get_expr(d.adbin, d.adrelid)\r\n          ELSE ''\r\n      END, ''\r\n  )::TEXT AS generation_expression,\r\n  (a.attgenerated = 's') AS is_generated,\r\n  ```\r\n\r\n**Updated** `internal/queries/queries.sql.go` with new struct fields:\r\n- Added `GenerationExpression string`\r\n- Added `IsGenerated bool`\r\n- Updated row scanning to handle new fields\r\n\r\n### 2. Extend Column Model ✅\r\n**Enhanced** `internal/schema/schema.go:268-275`:\r\n```go\r\nColumn struct {\r\n    Name      string\r\n    Type      string\r\n    Collation SchemaQualifiedName\r\n    Default   string\r\n    // NEW: Generated column support\r\n    IsGenerated          bool\r\n    GenerationExpression string\r\n    IsNullable bool\r\n    Size     int\r\n    Identity *ColumnIdentity\r\n}\r\n```\r\n\r\n**Updated** `internal/schema/schema.go:992-996` column building logic:\r\n```go\r\ncolumns = append(columns, Column{\r\n    // ... existing fields ...\r\n    Default:             column.DefaultValue,\r\n    IsGenerated:         column.IsGenerated,\r\n    GenerationExpression: column.GenerationExpression,\r\n    // ... rest of fields ...\r\n})\r\n```\r\n\r\n### 3. Fix DDL Generation ✅\r\n**Fixed** `pkg/diff/sql_generator.go:2677-2681`:\r\n```go\r\nfunc buildColumnDefinition(column schema.Column) (string, error) {\r\n    sb := strings.Builder{}\r\n    sb.WriteString(fmt.Sprintf(\"%s %s\", schema.EscapeIdentifier(column.Name), column.Type))\r\n    if column.IsCollated() {\r\n        sb.WriteString(fmt.Sprintf(\" COLLATE %s\", column.Collation.GetFQEscapedName()))\r\n    }\r\n    // NEW: Handle generated columns first\r\n    if column.IsGenerated {\r\n        sb.WriteString(fmt.Sprintf(\" GENERATED ALWAYS AS (%s) STORED\", column.GenerationExpression))\r\n    } else if len(column.Default) > 0 {\r\n        sb.WriteString(fmt.Sprintf(\" DEFAULT %s\", column.Default))\r\n    }\r\n    if !column.IsNullable {\r\n        sb.WriteString(\" NOT NULL\")\r\n    }\r\n    // ... identity handling ...\r\n    return sb.String(), nil\r\n}\r\n```\r\n\r\n## Test Plan for Reviewers\r\n\r\n### 1. Automated Test Validation (Required)\r\n\r\nRun the automated test suite to verify all generated column functionality:\r\n\r\n```bash\r\n# Test generated column functionality (~6 seconds)\r\nPATH=\"/usr/lib/postgresql/16/bin:$PATH\" go test ./internal/migration_acceptance_tests -run \"TestColumnTestCases/.*[Gg]enerated.*\" -v\r\n\r\n# Test DDL generation unit tests (instant, no PostgreSQL needed)\r\ngo test ./pkg/diff -run \"TestBuildColumnDefinition\" -v\r\n\r\n# Verify no regressions in unit tests (instant)\r\ngo test ./pkg/diff -run \"TestBuild|TestTransform|TestPlan\"\r\n```\r\n\r\n**Success Criteria:**\r\n- All 5 generated column integration tests pass\r\n- All 4 column definition unit tests pass  \r\n- No unit test failures\r\n\r\n### 2. Manual End-to-End Validation (Optional)\r\n\r\nTo manually verify the fix resolves the original issue:\r\n\r\n<details><summary>Manual Test Steps</summary>\r\n\r\n```bash\r\n# 1. Start test database\r\ndocker run -d --name pg-test-generated \\\r\n  -e POSTGRES_PASSWORD=postgres \\\r\n  -e POSTGRES_DB=testdb \\\r\n  -p 5433:5432 postgres:15\r\n\r\n# 2. Create initial table\r\ndocker exec pg-test-generated psql -U postgres -d testdb -c \"\r\nCREATE TABLE public.tabs (\r\n    id serial PRIMARY KEY,\r\n    title text NOT NULL,\r\n    artist text\r\n);\"\r\n\r\n# 3. Create target schema with generated column\r\nmkdir test_schema_generated\r\ncat > test_schema_generated/tabs.sql << 'EOF'\r\nCREATE TABLE public.tabs (\r\n    id serial PRIMARY KEY,\r\n    title text NOT NULL,\r\n    artist text,\r\n    search_vector tsvector GENERATED ALWAYS AS (\r\n        to_tsvector('simple', title || ' ' || coalesce(artist, ''))\r\n    ) STORED\r\n);\r\nEOF\r\n\r\n# 4. Build and test pg-schema-diff  \r\ngo build -o pg-schema-diff ./cmd/pg-schema-diff\r\n\r\n# 5. Generate and apply migration (should succeed without errors)\r\n./pg-schema-diff apply \\\r\n  --from-dsn \"postgres://postgres:postgres@localhost:5433/testdb?sslmode=disable\" \\\r\n  --to-dir test_schema_generated\r\n\r\n# 6. Verify generated column works\r\ndocker exec pg-test-generated psql -U postgres -d testdb -c \"\r\nINSERT INTO public.tabs (title, artist) VALUES ('Hello World', 'Test Artist');\r\nSELECT title, artist, search_vector FROM public.tabs;\r\n\"\r\n\r\n# 7. Cleanup\r\ndocker stop pg-test-generated && docker rm pg-test-generated\r\nrm -rf test_schema_generated\r\n```\r\n\r\n**Expected Behavior:**\r\n- Migration applies successfully (no SQLSTATE 0A000 error)\r\n- Generated column automatically populates with tsvector data\r\n- DDL contains `GENERATED ALWAYS AS ... STORED` (not `DEFAULT`)\r\n\r\n</details>\r\n\r\n### 3. Regression Testing (Required)\r\n\r\nVerify existing functionality remains intact:\r\n\r\n```bash\r\n# Build verification (instant)\r\ngo build ./... && go vet ./...\r\n\r\n# Unit test verification (instant, no PostgreSQL needed)\r\ngo test ./pkg/diff -run \"TestBuild|TestTransform|TestPlan\"\r\n```\r\n\r\n**Full Regression Testing (Recommended):**\r\n```bash\r\n# Run complete test suite in Docker environment (as documented in CONTRIBUTING.md)\r\ndocker build -t pg-schema-diff-test-runner -f ./build/Dockerfile.test --build-arg POSTGRES_PACKAGE=postgresql16 .\r\ndocker run pg-schema-diff-test-runner\r\n```\r\n\r\n**Note**: Docker-based testing provides consistent environment and runs all integration tests including schema hash validations. This is the same test suite used in CI.\r\n\r\n## Impact\r\n\r\nThis fix properly supports PostgreSQL's generated columns feature (PostgreSQL 12+), commonly used for:\r\n- ✅ Full-text search vectors (`tsvector` columns)\r\n- ✅ Computed/derived columns (`price * tax_rate`)\r\n- ✅ JSON field extraction (`(data->>'field')::type`)\r\n- ✅ Automatic transformations (`upper(name)`, `lower(email)`)\r\n\r\n**Docs:**\r\nhttps://www.postgresql.org/docs/current/ddl-generated-columns.html"
+    },
+    {
+      "id": 2759515533,
+      "number": 1478,
+      "title": "Return undefined instead of invalid action names for partial matches ",
+      "created_at": "2025-08-20T11:47:09Z",
+      "merged_at": "2025-08-21T22:32:05Z",
+      "html_url": "https://github.com/microsoft/TypeAgent/pull/1478",
+      "state": "merged",
+      "additions": 10,
+      "deletions": 10,
+      "comments": 5,
+      "repository": {
+        "name": "TypeAgent",
+        "description": "Sample code that explores an architecture for using language models to build a personal agent that can work with application agents.",
+        "language": "TypeScript",
+        "html_url": "https://github.com/microsoft/TypeAgent",
+        "owner": {
+          "login": "microsoft",
+          "avatar_url": "https://avatars.githubusercontent.com/u/6154722?v=4"
+        }
+      },
+      "description": "Partially fixes #1474 - Prevents exception when typing partial cached commands by properly handling undefined action names.\r\n\r\n### Problem\r\nCache contains \"open bbc webpage\" → \"browser.openWebPage\". Typing just \"open\" throws exception because:\r\n1. `constructionValue.ts` returns `{ fullActionName: \"unknown.unknown\" }` \r\n2. `fromJsonAction` tries to parse \"unknown.unknown\" and fails\r\n\r\n### Solution\r\nTwo coordinated changes to handle partial matches gracefully:\r\n\r\n**1. constructionValue.ts**: Return `undefined` instead of \"unknown.unknown\" for partial matches\r\n```diff\r\n- return { fullActionName: \"unknown.unknown\" };\r\n+ return { fullActionName: undefined }; // Return undefined for partial matches\r\n```\r\n\r\n**2. requestAction.ts**: Handle undefined `fullActionName` in `fromJsonAction`\r\n```typescript\r\nconst { schemaName, actionName } =\r\n    actionJSON.fullActionName !== undefined\r\n        ? parseFullActionNameParts(actionJSON.fullActionName)\r\n        : { schemaName: undefined as any, actionName: undefined as any };\r\n```\r\n\r\n### Testing\r\n1. Execute: `open bbc webpage` (populates cache)  \r\n2. Type: `open` (partial match triggers completion)\r\n3. **Before**: Throws exception attempting to parse \"unknown.unknown\"\r\n4. **After**: No exception - returns undefined gracefully, preventing crash"
+    },
+    {
+      "id": 2696869536,
+      "number": 6982,
+      "title": "Implement milestone lock feature to prevent accidental deletion and bad actors",
+      "created_at": "2025-07-26T10:41:46Z",
+      "merged_at": "2025-07-26T12:15:30Z",
+      "html_url": "https://github.com/penpot/penpot/pull/6982",
+      "state": "merged",
+      "additions": 292,
+      "deletions": 17,
+      "comments": 5,
+      "repository": {
+        "name": "penpot",
+        "description": "Penpot: The open-source design tool for design and code collaboration",
+        "language": "Clojure, SQL",
+        "html_url": "https://github.com/penpot/penpot",
+        "owner": {
+          "login": "penpot",
+          "avatar_url": "https://avatars.githubusercontent.com/u/30179644?v=4"
+        }
+      },
+      "description": "# Screenshots\r\n\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/0b2800e3-4643-42d8-a235-3cf4c03333f0\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/0d465303-17c0-44cd-b867-53a86d698d44\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/7a0203aa-ee30-4e7f-a696-d5c2a6783ca7\" /><img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/83ff07d4-e5a1-45ac-9f72-feb9140aa5e3\" />\r\n<i><b>Current (problem):</b> Point of view of user LC. important milestones are able to be deleted accidentally or intentionally by other user's. LC can delete MC's work, after 7 days it is lost forever. </i>\r\n\r\n---\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/be501f4f-462f-453e-8db5-896ce93ed9b4\" />\r\n<img width=\"175\" height=\"auto\" alt=\"final2\" src=\"https://github.com/user-attachments/assets/2268d10c-d512-4ef2-a29d-ef63770fb04b\" />\r\n<img width=\"175\" height=\"auto\" alt=\"image\" src=\"https://github.com/user-attachments/assets/4785c480-9f8c-4ad0-911d-49f682c74b7a\" />\r\n<img width=\"174\" height=\"auto\" alt=\"final1\" src=\"https://github.com/user-attachments/assets/bbdd8cd5-4033-4e02-9c24-5f071a3a0aed\" /><br>\r\n<i><b>Enhancement (new):</b> Point of view of user UB. Important milestones are now protected with a simple lock feature. UB cannot delete (or rename) LC's work when it is locked. </i>\r\n\r\n---\r\n\r\nThis PR implements a comprehensive version locking system that allows users to \"lock\" their saved versions to prevent deletion by other team members. The enhancement was requested on #6763. \r\n\r\n## Problem statement\r\n\r\n- The need for good Version Control has been an significant theme in the penpot community -- see https://community.penpot.app/t/using-version-control-to-collaboratively-work-on-penpot/633/3 and https://tree.taiga.io/project/penpot/us/187?milestone=262806. Currently there has been a milestone system implemented that enables user's to save important versions of the project. This is a highly valuable feature, however there are scenarios where it can be lost:\r\n- User A has saved a crucial \"milestone\" of a project. User B accidentally deletes it when meaning to restore the version. After 7 days, no records remain of User A's milestone and it is lost forever.\r\n- User A has saved a crucial \"milestone\" of a project. User B is a bad actor and intentionally deletes the version. After 7 days, no records remain of User A's milestone and it is lost forever.\r\n- Penpot's key competitor, Figma offers a git-style \"branching\" feature as a solution to the accidental deletion/ bad actor problem on their premium paid tier -- even if this feature were copied this could not be implemented without dramatic file changes -- leaving vulnerability to unforseen bugs.\r\n\r\n## Solution\r\n- The simplest solution is best. A \"lock\" feature for milestones. Now User A's \"milestone\" can be locked and it is protected from accidental deletion and bad actors.\r\n\r\n### Key Features\r\n- ✅ Only version creators can lock/unlock their own version milestones\r\n- ✅ Only version creators can rename their own version\r\n- ✅ Locked versions cannot be deleted by anyone except the creator  \r\n- ✅ System snapshots cannot be locked (only user-created versions)\r\n- ✅ Clear visual indicators and menu options in the UI, reuse of the \"lock\" icon\r\n- ✅ Comprehensive authorization checks and error handling in the frontend and backend\r\n\r\n\r\n### Implementation Overview\r\n- **Database**: Added `locked_by` column to `file_change` table in new migration file `backend/src/app/migrations/sql/0140-add-locked-by-column-to-file-change-table.sql`\r\n- **Backend**: New RPC endpoints for lock/unlock operations with authorization in `backend/src/app/rpc/commands/files_snapshot.clj`\r\n- **Frontend**: Lock/unlock UI in version history sidebar with visual indicators gracefully handles conditional rendering of lock and rename features.\r\n\r\n## Testing Instructions\r\n\r\n### Core Functionality Tests\r\n\r\n**Version Locking**\r\n1. Create a user version (\"Save Version\")\r\n2. Lock it via menu → \"Lock\"\r\n3. Verify lock indicator appears\r\n4. Unlock via menu → \"Unlock\"\r\n5. **Expected**: Lock/unlock works, visual indicators update correctly\r\n\r\n**Delete Protection**\r\n1. Lock a version you created\r\n2. Attempt to delete it\r\n3. **Expected**: Deletion blocked with clear error message\r\n\r\n**Authorization**\r\n1. User A creates and locks a version\r\n2. User B tries to lock/unlock/delete it\r\n3. **Expected**: User B's options to rename and delete are hidden.\r\n\r\n**System Snapshots**\r\n1. Try to lock an auto-saved system snapshot\r\n2. **Expected**: Operation fails with \"system snapshots cannot be locked\" error\r\n\r\n**UI Verification**\r\n- [x] Lock/unlock options appear only for your own user versions\r\n- [x] Locked versions display lock icon consistently\r\n- [x] Menu text changes appropriately (\"Lock\" ↔ \"Unlock\")\r\n- [x] Error messages are clear and actionable (ensured backend prevents user B deleting User A locked milestone) -- frontend handles gracefully with hidden buttons, leads to gateway error pages if forced."
+    },
+    {
+      "id": 2826947611,
+      "number": 7990,
+      "title": "Add Gradle capability declarations to detect duplicate Guava artifacts",
+      "created_at": "2025-09-14T17:38:07Z",
+      "merged_at": null,
+      "html_url": "https://github.com/google/guava/pull/7990",
+      "state": "open",
+      "additions": 100,
+      "deletions": 0,
+      "comments": 3,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      },
+      "description": "fixes #6666\r\n\r\n## Problem\r\n\r\nUsers can accidentally include duplicate Guava artifacts (guava-jdk5, guava-base, sisu-guava, etc.) alongside the main Guava library, causing classpath conflicts and runtime issues that are difficult to debug.\r\n\r\n## Solution\r\nDeclare that Guava provides the capabilities of known duplicate artifacts in module.json, following the existing google-collections pattern. This enables Gradle to detect and report conflicts at build time.\r\n\r\n## Changes\r\n- Added capability declarations for 4 duplicate Guava artifacts in all 4 variant sections of module.json:\r\n  - com.google.guava:guava-base\r\n  - com.google.guava:guava-jdk5\r\n  - org.sonatype.sisu:sisu-guava\r\n  - org.hudsonci.lib.guava:guava\r\n\r\nNote: The servicemix capability was removed after testing revealed it caused conflicts between Gradle variants.\r\n\r\n## Testing\r\n```bash\r\n# Build and install locally with module metadata\r\n./mvnw install -pl guava -DskipTests -q\r\n\r\n# Verify module metadata contains capability declarations\r\ngrep -E \"(guava-base|guava-jdk5|sisu-guava|hudsonci)\" \\\r\n  ~/.m2/repository/com/google/guava/guava/999.0.0-HEAD-jre-SNAPSHOT/guava-999.0.0-HEAD-jre-SNAPSHOT.module\r\n# Expected: 20 lines (3 artifacts × 4 = 12, hudsonci × 4 = 4, total = 16 capability lines + 4 group lines)\r\n\r\n# For Gradle users - test conflict detection after release\r\n# Note: This will only show conflicts once the changes are in a released version\r\n# The SNAPSHOT version may not resolve correctly from mavenLocal()\r\nmkdir test-guava-conflict && cd test-guava-conflict\r\ncat > build.gradle << 'EOF'\r\nplugins { id 'java' }\r\nrepositories { mavenCentral() }\r\ndependencies {\r\n    implementation 'com.google.guava:guava:NEXT_RELEASE_VERSION'\r\n    implementation 'com.google.guava:guava-jdk5:17.0'\r\n}\r\nEOF\r\ngradle dependencies --configuration compileClasspath\r\n# Expected after release: Capability conflict error\r\n# Current behavior (without these changes): Both dependencies resolve without conflict\r\n```\r\n\r\n## Breaking Changes\r\nBuilds that currently (incorrectly) include both Guava and duplicate artifacts will now fail with a capability conflict error. Users must resolve by excluding the duplicate artifact or using Gradle's capability resolution.\r\n\r\n**Why this breaking change is necessary:**\r\n- Prevents silent runtime failures (NoSuchMethodError, ClassNotFoundException)\r\n- Having duplicate Guava classes leads to unpredictable classloading behavior\r\n- Build-time failure is preferable to production runtime failure\r\n- Follows the established pattern already used for google-collections\r\n- Simple fix: exclude the duplicate or explicitly choose which one to use\r\n- \"Fail fast, fail loud, fail at build time - not in production\""
+    },
+    {
+      "id": 2826605057,
+      "number": 7986,
+      "title": "Fix resource leak in FileBackedOutputStream to prevent file handle exhaustion",
+      "created_at": "2025-09-14T11:18:16Z",
+      "merged_at": null,
+      "html_url": "https://github.com/google/guava/pull/7986",
+      "state": "open",
+      "additions": 98,
+      "deletions": 5,
+      "comments": 0,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      },
+      "description": "## Problem\nFileBackedOutputStream leaks file handles when an IOException occurs during the transition from memory to file storage. The FileOutputStream created at line 242 is never closed if `write()` or `flush()` fails, leading to resource exhaustion.\n\n## Solution\nUse a success-flag pattern with nested try-finally to ensure the stream is closed only on failure, preserving it on success when it becomes the active output stream.\n\n## Changes\n- Added conditional cleanup logic in `FileBackedOutputStream.java`\n- Stream is closed only when an exception occurs\n- Original IOException is preserved and rethrown\n- No changes to public API or behavior\n\n## Testing\n```bash\n# Run specific tests\n./mvnw test -Dtest=FileBackedOutputStreamTest -pl guava-tests\n\n# Run with coverage for the affected class\n./mvnw test -Dtest=FileBackedOutputStream* -pl guava-tests\n```\n\nAll existing tests pass. Added regression tests to verify correct threshold-crossing behavior.\n\nFixes #5756"
+    },
+    {
+      "id": 2826428657,
+      "number": 6396,
+      "title": "Make bind address configurable for app dev server",
+      "created_at": "2025-09-14T07:48:19Z",
+      "merged_at": null,
+      "html_url": "https://github.com/Shopify/cli/pull/6396",
+      "state": "open",
+      "additions": 93,
+      "deletions": 9,
+      "comments": 0,
+      "repository": {
+        "name": "cli",
+        "description": "Build apps, themes, and hydrogen storefronts for Shopify",
+        "language": "TypeScript",
+        "html_url": "https://github.com/Shopify/cli",
+        "owner": {
+          "login": "Shopify",
+          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
+        }
+      },
+      "description": "Adds configurable bind address support to the `shopify app dev` command to enable Docker container development workflows.\r\n\r\n### Problem\r\n- Fixes #6355\r\n- Recent CLI versions hardcode `localhost` binding for app dev servers for security\r\n- Docker containers require `0.0.0.0` binding to accept connections from host machine\r\n- Theme dev server already supports `--host` flag, but app dev server does not\r\n- Breaks containerized development setups (working version was 3.83.3)\r\n\r\n### Solution\r\n- Add `--host` flag to `shopify app dev` command with `SHOPIFY_FLAG_HOST` env var support\r\n- Update proxy server setup to use configurable host instead of hardcoded `'localhost'`\r\n- Maintain secure default (`localhost`) while enabling Docker flexibility\r\n- Match existing theme dev server pattern for consistency\r\n\r\n## Changes Made\r\n\r\n### 1. Added host flag to app dev command\r\n- **File**: `packages/app/src/cli/commands/app/dev.ts`\r\n- Added `--host` flag with environment variable support\r\n- Default: `localhost` (maintains security)\r\n- Override: `0.0.0.0` (enables Docker containers)\r\n\r\n### 2. Updated proxy server to use configurable host\r\n- **File**: `packages/app/src/cli/services/dev/processes/setup-dev-processes.ts`\r\n- Changed hardcoded `'localhost'` to use passed host parameter\r\n- Added host parameter to proxy server setup function\r\n\r\n## Usage Examples\r\n\r\n### For Docker containers:\r\n```bash\r\nSHOPIFY_FLAG_HOST=0.0.0.0 shopify app dev\r\n# or\r\nshopify app dev --host=0.0.0.0\r\n```\r\n\r\n### For normal development (default):\r\n```bash\r\nshopify app dev  # Still binds to localhost by default\r\n```\r\n\r\n## Testing\r\n\r\n### Unit Tests\r\nAdded comprehensive unit test coverage in `packages/app/src/cli/services/dev/processes/setup-dev-processes.test.ts`:\r\n\r\n#### New Test: `proxy server process includes host parameter when configured for Docker`\r\n- **Purpose**: Verifies that the proxy server correctly uses the host parameter when set to `0.0.0.0` for Docker compatibility\r\n- **Test setup**: Creates a dev configuration with `host: '0.0.0.0'` simulating Docker usage\r\n- **Verification**: Confirms the proxy server process options include the correct host value\r\n- **Location**: Lines 85-150 in the test file\r\n\r\n#### Updated Existing Tests\r\nAll existing tests were updated to include the required `host: 'localhost'` parameter in `commandOptions` to satisfy TypeScripts' requirements for the Devoptions interface. Users get localhost by default so no action needed.\r\n\r\n### Test Commands\r\n```bash\r\n# Run unit tests for the setup-dev-processes module\r\npnpm test packages/app/src/cli/services/dev/processes/setup-dev-processes.test.ts\r\n```\r\n\r\n### Manual Testing\r\n- [x] Verify default behavior unchanged (binds to localhost)\r\n- [x] Verify `--host=0.0.0.0` enables external connections\r\n- [x] Verify `SHOPIFY_FLAG_HOST` environment variable works\r\n- [x] Test Docker container setup with port forwarding\r\n- [x] Ensure backwards compatibility\r\n\r\n## No Breaking Changes\r\n\r\nThis is a feature addition that maintains 100% backward compatibility. Users who don't need Docker support will see zero changes in behavior. Only users who specifically want to bind to a different network interface need to use the new --host flag.\r\n"
+    },
+    {
+      "id": 2812657547,
+      "number": 6371,
+      "title": "Feat: Git Multi-Environment Theme Conflict Resolution ",
+      "created_at": "2025-09-09T16:50:52Z",
+      "merged_at": null,
+      "html_url": "https://github.com/Shopify/cli/pull/6371",
+      "state": "open",
+      "additions": 1553,
+      "deletions": 1,
+      "comments": 0,
+      "repository": {
+        "name": "cli",
+        "description": "Build apps, themes, and hydrogen storefronts for Shopify",
+        "language": "TypeScript",
+        "html_url": "https://github.com/Shopify/cli",
+        "owner": {
+          "login": "Shopify",
+          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
+        }
+      },
+      "description": "Unique store settings are preserved via configured Git merge drivers.\r\n\r\n## Problem\r\n\r\nFixes #3509\r\n\r\nWhen working with themes across multiple stores, developers encounter merge conflicts in `config/settings_data.json` and other configuration files because each store has different settings (store names, payment configs, branding, regional preferences, app configurations).\r\n\r\n**Problematic workflow (before this fix):**\r\n\r\n```bash\r\n# Work on theme improvements in dev branch\r\ngit checkout dev\r\ngit commit -m \"Add new product grid layout to be used across our stores\"\r\n\r\n# Deploy to first store - conflicts with Shopify's auto-pushed settings\r\ngit checkout red-tie-store\r\ngit merge dev  # Conflict! Shopify modified store settings\r\n\r\n# Manually resolve conflicts, commit\r\n# Results in conflicts requiring manual resolution:\r\n# <<<<<<< HEAD\r\n# {\"store_name\": \"Red Tie Clothing\", \"announcement_text\": \"SALE: 50% off winter coats!\"}\r\n# =======\r\n# {\"store_name\": \"Dev Store\", \"announcement_text\": \"Test announcement\"}\r\n# >>>>>>> dev\r\n\r\n# Deploy to second store\r\ngit checkout blue-dress-store\r\ngit merge dev  # Another conflict! Different store settings. Same time-consuming process again\r\n\r\n# Deploy to third store\r\ngit checkout green-shoes-store\r\ngit merge dev # Another conflict! Manually resolve the SAME type of conflicts again. This is getting painful...\r\n\r\n# Repeat for every store... Yellow Store, Purple Store, etc.\r\n```\r\n\r\nUsers are forced into the complex separate-branch approach because Shopify's GitHub integration pushes store-specific customizations (made by store admins) back to branches, making a unified single-branch workflow impossible. The result: developers must manually resolve the same settings conflicts repeatedly across multiple stores.\r\n\r\nThese conflicts require manual resolution every time, which is time-consuming and error-prone.\r\n\r\n## Solution\r\n\r\nCustom Git merge drivers that automatically preserve the current branch's settings during merges:\r\n\r\n- **Custom Merge Driver**: Preserves current branch settings for JSON config files\r\n- **Selective Application**: Only affects settings files, code files merge normally\r\n- **Universal**: Works for multiple stores, environments, or any branching strategy\r\n- **Git-Native**: Uses Git's built-in merge driver system\r\n\r\n## Usage\r\n\r\n```bash\r\n# Setup (one time required to avoid merge conflicts)\r\nshopify theme git-setup --multi-environment\r\ngit add .gitattributes && git commit -m \"Add Git merge config\" # preserves branch-specific files during merges \r\n# e.g. red-tie-store keeps it's store name, branding...\r\n\r\n# Verify setup:\r\nshopify theme git-setup --status\r\n\r\n# Multi-store workflow (Same commands as before)\r\ngit checkout main\r\ngit commit -m \"Add new product grid layout\"\r\n\r\ngit checkout red-tie-store\r\ngit merge main  # No conflicts. Red Store settings automatically preserved\r\n\r\ngit checkout blue-dress-store\r\ngit merge main  # No conflicts. Blue Store settings automatically preserved\r\n\r\ngit checkout green-shoes-store\r\ngit merge main  # No conflicts. Green Store settings automatically preserved\r\n\r\n# New layout efficiently pushed across all stores\r\n```\r\n\r\n**Note:** This solution makes the separate-branch approach work smoothly. While users ideally want a single branch for all stores, our solution makes the current multi-branch reality much more manageable by eliminating manual conflict resolution.\r\n\r\n\r\n## Implementation\r\n\r\n**New Commands:**\r\n- `shopify theme git-setup --multi-environment` - Configure merge strategies\r\n- `shopify theme git-setup --status` - Check configuration\r\n- `shopify theme git-setup --reset` - Remove configuration\r\n- `shopify theme git-merge-preserve` - Internal merge driver\r\n\r\n**Files:**\r\n- `git-setup.ts` - CLI command for setup\r\n- `git-merge-preserve.ts` - Git merge driver\r\n- `git-config.ts` - Git configuration management\r\n- `theme-merge.ts` - Custom merge logic\r\n\r\n## Testing\r\n\r\n✅ 53 comprehensive tests covering all functionality\r\n✅ Build, lint, and type checking pass\r\n✅ Manual testing with real Git repositories validates merge preservation\r\n\r\n## Benefits\r\n\r\n- **Eliminates manual conflict resolution** for store settings files\r\n- **Preserves store-specific settings** automatically during merges\r\n- **Enables confident theme deployment** without fear of breaking store configurations\r\n- **Backwards compatible** - only activates when configured\r\n- **Git-native solution** using standard merge driver functionality\r\n\r\n## Future Considerations\r\n\r\n- Support for additional file types (deployment configs, robots.txt, store policies)\r\n- Store-specific validation rules and deployment workflows\r\n- Integration with multi-store theme management pipelines\r\n"
+    },
+    {
+      "id": 2805908000,
+      "number": 7974,
+      "title": "Improve error messages for annotation methods on synthetic TypeVariables",
+      "created_at": "2025-09-07T09:30:27Z",
+      "merged_at": null,
+      "html_url": "https://github.com/google/guava/pull/7974",
+      "state": "open",
+      "additions": 17,
+      "deletions": 5,
+      "comments": 3,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      },
+      "description": "\r\n## Problem\r\n\r\nSynthetic TypeVariables created by `TypeResolver` throw unhelpful `UnsupportedOperationException(\"methodName\")` when annotation methods are called.\r\n\r\nAddresses TODO b/147144588 in `TypeResolver.java:371-374`.\r\n\r\n## Solution\r\n\r\nAdd helpful error messages explaining why annotations aren't supported and what to do instead.\r\n\r\n**Changes:**\r\n1. Convert TODO to NOTE documenting the intentional limitation\r\n2. Add descriptive error for annotation methods with bug reference\r\n\r\n## Impact\r\n\r\n- Better developer experience through clear error messages\r\n- No functional changes\r\n- 2 files modified\r\n\r\n## Testing\r\n\r\n```bash\r\n# Verify existing tests still pass\r\n./mvnw test -f guava-tests/pom.xml -Dtest=\"TypeResolverTest,TypesTest\"\r\n```\r\n\r\nAll existing tests pass without modification, confirming backward compatibility.\r\n\r\n## Example Error Message\r\n\r\nBefore:\r\n```\r\nUnsupportedOperationException: isAnnotationPresent\r\n```\r\n\r\nAfter:\r\n```\r\nUnsupportedOperationException: Annotation methods are not supported on synthetic\r\nTypeVariables created during type resolution. The semantics of annotations on\r\nresolved types with modified bounds are undefined. See b/147144588.\r\n```\r\n\r\n## Breaking Changes\r\n\r\n**None.** This change only improves error messages. All existing behavior is preserved:\r\n- Same exceptions thrown\r\n- Same methods unsupported\r\n- No new TypeVariable creation\r\n- No API changes"
+    },
+    {
+      "id": 2804990483,
+      "number": 7973,
+      "title": "Fix TypeToken hashCode contract violation ",
+      "created_at": "2025-09-06T14:42:10Z",
+      "merged_at": null,
+      "html_url": "https://github.com/google/guava/pull/7973",
+      "state": "closed",
+      "additions": 53,
+      "deletions": 1,
+      "comments": 3,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      },
+      "description": "## Problem Statement\r\n\r\n#7958: TypeToken violates the fundamental Object.hashCode() contract when wrapping Type instances from different implementations. The issue occurs when:\r\n\r\n1. Two Type instances are semantically equivalent (Type.equals() returns true)\r\n2. But come from different libraries/implementations (e.g., Guava vs Apache Commons Lang3)\r\n3. These implementations have different hashCode() behaviors\r\n\r\nThis results in equal TypeToken instances having different hash codes, violating the contract:\r\n> If two objects are equal according to equals(), then calling hashCode() on each must produce the same integer result.\r\n\r\n## Solution\r\n\r\nNormalize input Types in `TypeToken.of(Type)` using the existing TypeResolver infrastructure:\r\n\r\n```java\r\n// Before:\r\nreturn new SimpleTypeToken<>(type);\r\n\r\n// After:\r\nreturn new SimpleTypeToken<>(new TypeResolver().resolveType(type));\r\n```\r\n\r\nTypeResolver.resolveType() reconstructs Types using Guava's consistent implementations, ensuring all TypeToken instances wrap Types with compatible equals/hashCode behavior.\r\n\r\n## Impact\r\n\r\n**Benefits:**\r\n- [x] Fixes fundamental hashCode contract violation\r\n- [x] Ensures HashMap/HashSet safety for TypeToken usage\r\n- [x] Provides consistent behavior regardless of Type source\r\n- [x] Uses existing, well-tested TypeResolver infrastructure\r\n\r\n**Risk Assessment:**\r\n- **Performance:** Minimal - TypeResolver is lightweight and already used in TypeToken\r\n- **Compatibility:** 100% backward compatible - existing usage unaffected\r\n\r\n## Testing for Maintainers\r\n\r\n**New Test Coverage:**\r\n- `TypeTokenTest.testHashCodeContractWithExternalTypes()` reproduces the original issue\r\n- Creates external ParameterizedType with different hashCode implementation\r\n- Verifies equals() works and hashCode contract is respected\r\n- Test fails without fix, passes with fix\r\n\r\n**Regression Testing:**\r\n- All existing TypeToken tests continue to pass\r\n- No changes to TypeToken's public API or documented behavior\r\n- TypeResolver normalization is transparent to users\r\n\r\n**Manual Verification:**\r\n```bash\r\n# Run the specific test\r\nmvn test -Dtest=TypeTokenTest#testHashCodeContractWithExternalTypes\r\n\r\n# Run full TypeToken test suite\r\nmvn test -Dtest=TypeTokenTest\r\n```\r\n\r\n## Breaking Changes\r\n\r\n**None.** \r\n\r\nThis is a pure bug fix that:\r\n- Maintains identical external API\r\n- Preserves all existing TypeToken behavior\r\n- Only affects the internal Type representation (normalized to consistent implementations)\r\n- Has no user-visible changes except fixing the hashCode contract violation\r\n\r\nThe fix is invisible to correctly functioning code and only resolves the underlying contract violation that could cause issues in hash-based collections."
+    },
+    {
+      "id": 2793359837,
+      "number": 88,
+      "title": "Fix inconsistent subscriptions after cancellation with centralised logic",
+      "created_at": "2025-09-02T16:50:26Z",
+      "merged_at": null,
+      "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless/pull/88",
+      "state": "open",
+      "additions": 89,
+      "deletions": 5,
+      "comments": 1,
+      "repository": {
+        "name": "woocommerce-gateway",
+        "description": "A GoCardless payments integration for WooCommerce",
+        "language": "PHP",
+        "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless",
+        "owner": {
+          "login": "gocardless",
+          "avatar_url": "https://avatars.githubusercontent.com/u/790629?v=4"
+        }
+      },
+      "description": "## Issue #78 \r\nAfter cancelling a subscription, the status is inconsistent across different areas (#78):\r\n- Backend Orders: shows \"pending subscription\" (Wrong)\r\n- My Account > Subscriptions: shows \"pending subscription\" (Wrong) \r\n- My Account > Orders: shows \"cancelled\" (Correct)\r\n\r\n## Root Cause\r\nSubscription cancellation events weren't properly synchronized between orders, subscriptions, and renewal orders. The gateway was missing status propagation logic.\r\n\r\n## Solution\r\nAdd centralized cancellation handling and status synchronization:\r\n\r\n1. **Unified cancellation handler** - Single method to handle all cancellation scenarios (payment cancelled, billing request cancelled, subscription cancelled)\r\n\r\n2. **Status synchronization hooks** - Ensure parent orders reflect subscription status changes and vice versa\r\n\r\n3. **Metadata cleanup** - Clear pending payment flags when cancellation occurs\r\n\r\n## Changes\r\n- `class-wc-gocardless-gateway.php`: Add `handle_subscription_cancellation()` method\r\n- `class-wc-gocardless-gateway-addons.php`: Add `sync_parent_order_status()` hook\r\n- Update webhook handlers to use centralized cancellation logic\r\n\r\n## Testing\r\n1. Create subscription order\r\n2. Cancel subscription from frontend/backend\r\n3. Verify all areas show \"cancelled\" status consistently\r\n\r\n## Unit Test Instructions\r\n\r\n```bash\r\n# Install dependencies\r\ncomposer install\r\n\r\n# Run cancellation tests\r\nvendor/bin/phpunit --testdox --filter=\"Test_Cancellation_Simplified|Test_Parent_Order_Sync\"\r\n```\r\n\r\n**Expected:** 13/13 tests pass validating subscription cancellation logic"
+    },
+    {
+      "id": 2790279129,
+      "number": 16,
+      "title": "Fix NumberFormatException vulnerability in Content-Length header parsing",
+      "created_at": "2025-09-01T16:06:23Z",
+      "merged_at": null,
+      "html_url": "https://github.com/hsbc/cranker-connector/pull/16",
+      "state": "open",
+      "additions": 18,
+      "deletions": 2,
+      "comments": 0,
+      "repository": {
+        "name": "cranker-connector",
+        "description": "A Cranker connector for Java as a library that has no external dependencies.",
+        "language": "Java",
+        "html_url": "https://github.com/hsbc/cranker-connector",
+        "owner": {
+          "login": "hsbc",
+          "avatar_url": "https://avatars.githubusercontent.com/u/48318517?v=4"
+        }
+      },
+      "description": "#15  Malformed `Content-Length` headers cause unhandled `NumberFormatException`, crashing the WebSocket handler thread and enabling trivial DoS attacks. A DoS vulnerability that can crash these connections with a single malformed header is definitely worth fixing.\r\n\r\n**Attack vector:** `curl -H \"Content-Length: not-a-number\" http://target/api`\r\n\r\n## Solution\r\nAdded try-catch blocks around `Long.parseLong()` calls in:\r\n- `CrankerRequestParser.java:61`\r\n- `ConnectorSocketV3.java:701`\r\n\r\nInvalid values now return `-1` and log warnings instead of throwing exceptions.\r\n\r\n## Impact\r\n\r\n### Before (Vulnerable)\r\n- `Long.parseLong(\"abc\")` throws uncaught `NumberFormatException`\r\n → Thread crashes, WebSocket connection drops, request fails\r\n → Single malformed request can disrupt service\r\n → Recovery Depends on thread pool size; \r\n → if repeated attacks exhaust pool → full outage\r\n\r\n### After (Fixed)  \r\n- Invalid Content-Length returns `-1` (same as missing header)\r\n → Request processed normally, treated as having unknown body length\r\n → Malformed headers handled gracefully, no service impact\r\n → Recovery: Not needed; service remains fully operational\r\n\r\n\r\n\r\n## Testing Guide\r\n```bash\r\n# Test malformed values (should return HTTP error, not crash)\r\ncurl -H \"Content-Length: abc\" http://localhost:8080/api\r\ncurl -H \"Content-Length: 12.5\" http://localhost:8080/api\r\ncurl -H \"Content-Length: \" http://localhost:8080/api\r\n\r\n# Verify service still running\r\ncurl -I http://localhost:8080/health\r\n```\r\n\r\n## Breaking Changes\r\nNone. Invalid Content-Length headers already violated HTTP spec - this change makes handling RFC-compliant by treating malformed values as missing headers.\r\n\r\n### Why This Is Not \"False Passing\":\r\n- **-1 means \"unknown length\"**, not \"no body\" - per Java HttpClient spec\r\n- **Body still transmitted:** Actual content flows through WebSocket binary messages regardless of Content-Length\r\n- **Request validation continues:** Other security checks and validations still apply"
+    },
+    {
+      "id": 2786918386,
+      "number": 17,
+      "title": "Add Code Coverage Infrastructure",
+      "created_at": "2025-08-30T16:26:40Z",
+      "merged_at": null,
+      "html_url": "https://github.com/GSK-Biostatistics/docorator/pull/17",
+      "state": "open",
+      "additions": 55,
+      "deletions": 1,
+      "comments": 0,
+      "repository": {
+        "name": "docorator",
+        "description": null,
+        "language": "R",
+        "html_url": "https://github.com/GSK-Biostatistics/docorator",
+        "owner": {
+          "login": "GSK-Biostatistics",
+          "avatar_url": "https://avatars.githubusercontent.com/u/87132606?v=4"
+        }
+      },
+      "description": "Adds code coverage reporting infrastructure to docorator using covr and Codecov integration. This establishes the foundation for tracking test coverage metrics without modifying any package functionality.\r\n\r\n## Changes\r\n- **DESCRIPTION**: Added `covr` to Suggests\r\n- **README.md**: Added Codecov badge \r\n- **.github/workflows/test-coverage.yml**: New GitHub Actions workflow for coverage reporting\r\n\r\n## Testing for Reviewers\r\n```r\r\n# Install package with suggests\r\ndevtools::install(dependencies = TRUE)\r\n\r\n# Verify covr can be loaded\r\nlibrary(covr)\r\n\r\n# Run coverage (will work locally)\r\npackage_coverage()\r\n```\r\n\r\n## Prerequisites for Full Functionality\r\n**Repository admin must enable Codecov:**\r\n1. Visit https://github.com/apps/codecov\r\n2. Grant access to GSK-Biostatistics/docorator\r\n\r\nWithout this, the workflow will run but fail at the upload step (expected).\r\n\r\n## Notes\r\n- Workflow triggers on PRs and pushes to main/master\r\n- Uses standard r-lib/actions templates\r\n- No breaking changes -- safe to implement\r\n- Coverage percentages will be available after Codecov activation\r\n\r\naddresses #16 "
+    },
+    {
+      "id": 2760288725,
+      "number": 5595,
+      "title": "Disable LDL/STL checks for CTK < 13.1 (nvbug 5243118)",
+      "created_at": "2025-08-20T15:58:10Z",
+      "merged_at": null,
+      "html_url": "https://github.com/NVIDIA/cccl/pull/5595",
+      "state": "open",
+      "additions": 122,
+      "deletions": 16,
+      "comments": 10,
+      "repository": {
+        "name": "cccl",
+        "description": "CUDA Core Compute Libraries",
+        "language": "C++",
+        "html_url": "https://github.com/NVIDIA/cccl",
+        "owner": {
+          "login": "NVIDIA",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1728152?v=4"
+        }
+      },
+      "description": "## Problem statement\r\n\r\nIssue #5560: c.parallel tests incorrectly perform SASS validation for LDL/STL instructions on CTK < 13.1, causing false positives due to nvbug 5243118 where nvrtc generates these instructions when nvcc would not.\r\n\r\n## Solution\r\n\r\nSince c.parallel **always** uses nvrtc internally for kernel compilation (not nvcc), the fix unconditionally applies CTK version checks:\r\n\r\n### C++ Changes\r\n- Added `is_ctk_version_allows_sass_check()` helper function in `test_util.h` that checks CTK version using `__CUDACC_VER_MAJOR__` and `__CUDACC_VER_MINOR__` macros\r\n- Returns `true` for CTK ≥ 13.1 (where bug is fixed), `false` otherwise\r\n- Updated `should_check_sass()` in `test_scan.cpp` and `test_unique_by_key.cpp` to use this helper\r\n\r\n### Python Changes  \r\n- Added `_should_check_sass_for_ctk_version()` in `_cccl_interop.py` that checks runtime CTK version\r\n- Modified `call_build()` to only perform SASS checks when both `_check_sass` is enabled AND CTK ≥ 13.1\r\n- Updated `conftest.py` fixture to emit warning when SASS checks are disabled due to CTK version\r\n- Simplified `test_scan.py` to remove CC 9.0+ check (now handled by CTK version check)\r\n\r\n## Testing guide\r\n\r\n**Expected behavior:**\r\n- CTK < 13.1: SASS validation disabled (with warning), tests pass without false positives\r\n- CTK ≥ 13.1: SASS validation enabled, properly catches real LDL/STL issues\r\n- Complex types still skip SASS checks via existing logic\r\n\r\n## Breaking Changes\r\n\r\n**None** - This is a backward-compatible fix that only affects internal test validation logic. No changes to public APIs, library functionality, build system, or dependencies.\r\n\r\n## Checklist\r\n- [x] I am familiar with the [Contributing Guidelines]().\r\n- [x] New or existing tests cover these changes.\r\n- [x] The documentation is up to date with these changes.\r\n"
+    },
+    {
+      "id": 2728241517,
+      "number": 12806,
+      "title": "utils: use `ShardIdentity` in `postgres_client.rs` for improved type safety",
+      "created_at": "2025-08-07T15:42:07Z",
+      "merged_at": null,
+      "html_url": "https://github.com/neondatabase/neon/pull/12806",
+      "state": "open",
+      "additions": 390,
+      "deletions": 164,
+      "comments": 3,
+      "repository": {
+        "name": "neon",
+        "description": "Neon: Serverless Postgres. We separated storage and compute to offer autoscaling, code-like database branching, and scale to zero.",
+        "language": "Rust",
+        "html_url": "https://github.com/neondatabase/neon",
+        "owner": {
+          "login": "neondatabase",
+          "avatar_url": "https://avatars.githubusercontent.com/u/77690634?v=4"
+        }
+      },
+      "description": "## Summary\r\n\r\nThis PR refactors `postgres_client.rs` to use the existing `ShardIdentity` type instead of individual primitive shard fields, improving type safety and reducing code duplication.\r\n\r\n**Fixes #9823**\r\n\r\n## Problem\r\n\r\nThe `ConnectionConfigArgs` struct in `utils/postgres_client.rs` was manually tracking shard information using individual primitive fields:\r\n\r\n```rust\r\npub struct ConnectionConfigArgs<'a> {\r\n    pub shard_number: Option<u8>,        // ❌ Primitive types\r\n    pub shard_count: Option<u8>,         // ❌ No type safety\r\n    pub shard_stripe_size: Option<u32>,  // ❌ Manual validation \r\n    // ...\r\n}\r\n```\r\n\r\nThis approach had several issues:\r\n- **Type Safety**: Primitive types allowed mixing up parameters (e.g., passing shard_count where shard_number expected)\r\n- **Manual Validation**: Required runtime assertions to ensure all three fields were consistent\r\n- **Code Duplication**: Reinvented shard representation instead of using existing `ShardIdentity` type\r\n- **API Complexity**: Three separate `Option<T>` fields instead of one cohesive parameter\r\n\r\n## Solution\r\n\r\n### Phase 1: Move `ShardIdentity` to `utils`\r\n\r\n- [x] Moved `ShardIdentity` struct from `pageserver_api/shard.rs` to `utils/shard.rs`\r\n- [x] Moved related types: `ShardLayout`, `ShardConfigError`, `DEFAULT_STRIPE_SIZE`\r\n- [x] Updated `pageserver_api` to re-export from `utils` for backward compatibility\r\n- [x] Preserved pageserver-specific extension methods in `pageserver_api`\r\n\r\n### Phase 2: Refactor `ConnectionConfigArgs`\r\n\r\n- [x] Replace three individual fields with single `shard: Option<ShardIdentity>` field\r\n- [x] Update `options()` method to extract values from `ShardIdentity`\r\n- [x] Update all callers to use the unified type\r\n\r\n## Changes Made\r\n\r\n### Core Infrastructure\r\n- **`libs/utils/src/shard.rs`**: Added `ShardIdentity` struct with all core methods\r\n- **`libs/pageserver_api/src/shard.rs`**: Now re-exports from utils with pageserver-specific extensions  \r\n- **`libs/utils/src/postgres_client.rs`**: Refactored to use `Option<ShardIdentity>`\r\n\r\n### Updated Files\r\n- **`safekeeper/src/recovery.rs`**: Updated `ConnectionConfigArgs` constructor\r\n- **`pageserver/src/tenant/timeline/walreceiver/connection_manager.rs`**: Updated constructor\r\n\r\n## Benefits\r\n\r\n### **Type Safety**\r\n```rust\r\n// Before: Runtime assertions and unsafe unwraps\r\nif self.shard_number.is_some() {\r\n    assert!(self.shard_count.is_some());      // Runtime check\r\n    options.push(format!(\"shard_count={}\", self.shard_count.unwrap())); // Panic risk\r\n}\r\n\r\n// After: Compile-time guarantees\r\nif let Some(shard) = &self.shard {\r\n    options.push(format!(\"shard_count={}\", shard.count.literal())); // Type safe\r\n}\r\n```\r\n\r\n### **Simplified API**\r\n```rust\r\n// Before: 3 separate parameters\r\nConnectionConfigArgs {\r\n    shard_number: Some(0),\r\n    shard_count: Some(4), \r\n    shard_stripe_size: Some(2048),\r\n    // ...\r\n}\r\n\r\n// After: 1 unified parameter\r\nConnectionConfigArgs {\r\n    shard: Some(ShardIdentity::new(\r\n        ShardNumber(0), \r\n        ShardCount(4), \r\n        ShardStripeSize(2048)\r\n    ).unwrap()),\r\n    // ...\r\n}\r\n```\r\n\r\n### **Code Consistency**\r\n- Now uses the same `ShardIdentity` type as the rest of the codebase\r\n- Leverages existing validation and utility methods\r\n- Eliminates duplicate shard representation\r\n\r\n## Testing\r\n\r\n- [x] Added 6 comprehensive unit tests to verify identical option string generation\r\n- [x] Integration tests confirm WAL streaming functionality unchanged  \r\n- [x] All affected crates build successfully\r\n- [x] Existing test suite passes without modification\r\n- [x] Manual testing with local sharded tenants\r\n\r\n## Performance Impact\r\n\r\nNone - this is a purely structural refactoring with no runtime performance implications. The generated connection options remain identical.\r\n\r\n## Migration Guide\r\n\r\nFor code outside this repository using `ConnectionConfigArgs`:\r\n\r\n```rust\r\n// Before\r\nConnectionConfigArgs {\r\n    shard_number: Some(0),\r\n    shard_count: Some(4),\r\n    shard_stripe_size: Some(2048),\r\n    // ... other fields\r\n}\r\n\r\n// After  \r\nConnectionConfigArgs {\r\n    shard: Some(ShardIdentity::new(\r\n        ShardNumber(0),\r\n        ShardCount::new(4), \r\n        ShardStripeSize(2048)\r\n    ).unwrap()),\r\n    // ... other fields\r\n}\r\n```\r\n\r\nOr for unsharded connections:\r\n```rust\r\nConnectionConfigArgs {\r\n    shard: None,  // Replaces three None fields\r\n    // ... other fields\r\n}\r\n```\r\n\r\n## Backward Compatibility\r\n\r\n- [x] All existing imports of `ShardIdentity` continue to work via re-exports\r\n- [x] No breaking changes to public APIs outside of `ConnectionConfigArgs`\r\n- [x] Migration was designed to be incremental and reversible\r\n\r\n## Related\r\n\r\n- **Original Discussion**: https://github.com/neondatabase/neon/pull/9746#discussion_r1846338796\r\n- **Architecture Decision**: Move `ShardIdentity` to `utils` to avoid circular dependencies #9823 \r\n\r\n## Review Notes\r\n\r\nThis refactoring demonstrates several Rust best practices:\r\n1. **\"Make invalid states unrepresentable\"** - Use the type system to prevent bugs\r\n2. **DRY principle** - Reuse existing well-designed types instead of duplicating concepts  \r\n3. **Type safety over runtime checks** - Catch errors at compile time, not runtime\r\n4. **Proper encapsulation** - Group related data together in meaningful abstractions\r\n\r\nThe changes are purely structural with no behavioral modifications, making this a safe refactoring that improves code quality without affecting functionality."
+    }
+  ],
+  "meta": {
+    "username": "lmcrean",
+    "count": 18,
+    "pagination": {
+      "page": 1,
+      "per_page": 18,
+      "total_count": 18,
+      "total_pages": 1,
+      "has_next_page": false,
+      "has_previous_page": false
+    }
+  }
+}
