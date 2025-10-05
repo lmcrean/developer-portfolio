@@ -43,7 +43,6 @@ export class GitHubIssuesService {
             const [, owner, name] = repoMatch;
             const fullName = `${owner}/${name}`;
             if (isRepositoryExcluded(name, fullName)) {
-              console.log(`⏭️ Filtering out issue from excluded repo: ${fullName}`);
               return false;
             }
           }
@@ -53,7 +52,6 @@ export class GitHubIssuesService {
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
-      console.error('Error fetching external issues:', error);
       return [];
     }
   }
@@ -83,7 +81,6 @@ export class GitHubIssuesService {
             const [, owner, name] = repoMatch;
             const fullName = `${owner}/${name}`;
             if (isRepositoryExcluded(name, fullName)) {
-              console.log(`⏭️ Filtering out closed issue from excluded repo: ${fullName}`);
               return false;
             }
           }
@@ -93,7 +90,6 @@ export class GitHubIssuesService {
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
-      console.error('Error fetching closed issues:', error);
       return [];
     }
   }
@@ -109,7 +105,6 @@ export class GitHubIssuesService {
 
     // Transform manual issues to GitHubIssue format
     const manualIssues = MANUAL_ISSUES.map(issue => this.transformManualIssueToGitHubIssue(issue));
-    console.log(`📝 Adding ${manualIssues.length} manual issues from issue-overrides.ts`);
 
     // Combine and deduplicate issues (including manual issues)
     const allIssues = this.deduplicateIssues([...externalCreated, ...closedByUser, ...manualIssues]);
@@ -189,7 +184,6 @@ export class GitHubIssuesService {
       
       // Skip excluded repositories
       if (isRepositoryExcluded(name, repoKey)) {
-        console.log(`⏭️ Skipping excluded repository: ${repoKey}`);
         continue;
       }
       
@@ -256,7 +250,6 @@ export class GitHubIssuesService {
       const response = await this.octokit.rest.repos.get({ owner, repo });
       return response.data;
     } catch (error) {
-      console.error(`Error fetching repo ${owner}/${repo}:`, error);
       return {
         id: 0,
         name: repo,
