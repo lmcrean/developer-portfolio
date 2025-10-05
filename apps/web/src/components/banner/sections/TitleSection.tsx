@@ -121,7 +121,7 @@ const TitleSection: React.FC = () => {
 
             .email-button:hover {
               text-decoration: none !important;
-              background-color: rgba(20, 61, 196, 0.2) !important; /* Faint blue hover */
+              background-color: rgba(52, 123, 170, 0.6) !important;
               border-radius:2px;
             }
 
