@@ -2,6 +2,63 @@
   "groups": [
     {
       "repository": {
+        "id": 1003925498,
+        "name": "terraform-provider-cscdm",
+        "full_name": "rropen/terraform-provider-cscdm",
+        "owner": {
+          "login": "rropen",
+          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
+        },
+        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
+        "description": "Terraform Provider for CSC Domain Manager.",
+        "is_external": true
+      },
+      "issues": [
+        {
+          "id": 3465794566,
+          "number": 17,
+          "title": "Provider hangs indefinitely when CSC Domain Manager API accepts connections but fails to respond",
+          "html_url": "https://github.com/rropen/terraform-provider-cscdm/issues/17",
+          "state": "open",
+          "created_at": "2025-09-29T16:43:28Z",
+          "closed_at": null,
+          "updated_at": "2025-09-29T16:50:16Z",
+          "repository_url": "https://api.github.com/repos/rropen/terraform-provider-cscdm",
+          "labels": [],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        },
+        {
+          "id": 3369295026,
+          "number": 8,
+          "title": "Aggressive Goroutine Termination in Flush Loop",
+          "html_url": "https://github.com/rropen/terraform-provider-cscdm/issues/8",
+          "state": "closed",
+          "created_at": "2025-08-30T16:47:02Z",
+          "closed_at": "2025-09-10T02:45:43Z",
+          "updated_at": "2025-09-10T02:45:43Z",
+          "repository_url": "https://api.github.com/repos/rropen/terraform-provider-cscdm",
+          "labels": [
+            {
+              "id": 8798746979,
+              "name": "platform",
+              "color": "0052CC"
+            }
+          ],
+          "user": {
+            "login": "lmcrean",
+            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
+          }
+        }
+      ],
+      "openCount": 1,
+      "closedCount": 1,
+      "lastActivityDate": "2025-09-29T16:50:16.000Z"
+    },
+    {
+      "repository": {
         "id": 20300177,
         "name": "guava",
         "full_name": "google/guava",
@@ -72,47 +129,6 @@
       "openCount": 0,
       "closedCount": 2,
       "lastActivityDate": "2025-09-16T15:45:00.000Z"
-    },
-    {
-      "repository": {
-        "id": 1003925498,
-        "name": "terraform-provider-cscdm",
-        "full_name": "rropen/terraform-provider-cscdm",
-        "owner": {
-          "login": "rropen",
-          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
-        },
-        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
-        "description": "Terraform Provider for CSC Domain Manager.",
-        "is_external": true
-      },
-      "issues": [
-        {
-          "id": 3369295026,
-          "number": 8,
-          "title": "Aggressive Goroutine Termination in Flush Loop",
-          "html_url": "https://github.com/rropen/terraform-provider-cscdm/issues/8",
-          "state": "closed",
-          "created_at": "2025-08-30T16:47:02Z",
-          "closed_at": "2025-09-10T02:45:43Z",
-          "updated_at": "2025-09-10T02:45:43Z",
-          "repository_url": "https://api.github.com/repos/rropen/terraform-provider-cscdm",
-          "labels": [
-            {
-              "id": 8798746979,
-              "name": "platform",
-              "color": "0052CC"
-            }
-          ],
-          "user": {
-            "login": "lmcrean",
-            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
-          }
-        }
-      ],
-      "openCount": 0,
-      "closedCount": 1,
-      "lastActivityDate": "2025-09-10T02:45:43.000Z"
     },
     {
       "repository": {
@@ -606,9 +622,9 @@
     }
   ],
   "metadata": {
-    "total_issues": 19,
+    "total_issues": 20,
     "total_repositories": 10,
     "external_repositories": 6,
-    "last_updated": "2025-09-20T21:38:47.884Z"
+    "last_updated": "2025-10-05T12:23:08.688Z"
   }
 }
