@@ -1,6 +1,8 @@
 import { Octokit } from '@octokit/rest';
 import { GitHubIssue, Repository, IssueGroup, IssuesApiResponse } from '@shared/types/issues';
 import { isRepositoryExcluded } from './excludedRepositories';
+import { MANUAL_ISSUES } from '../scripts/issue-overrides';
+import { ManualIssue } from '../scripts/types';
 
 interface CachedData {
   data: any;
@@ -41,7 +43,6 @@ export class GitHubIssuesService {
             const [, owner, name] = repoMatch;
             const fullName = `${owner}/${name}`;
             if (isRepositoryExcluded(name, fullName)) {
-              console.log(`⏭️ Filtering out issue from excluded repo: ${fullName}`);
               return false;
             }
           }
@@ -51,7 +52,6 @@ export class GitHubIssuesService {
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
-      console.error('Error fetching external issues:', error);
       return [];
     }
   }
@@ -81,7 +81,6 @@ export class GitHubIssuesService {
             const [, owner, name] = repoMatch;
             const fullName = `${owner}/${name}`;
             if (isRepositoryExcluded(name, fullName)) {
-              console.log(`⏭️ Filtering out closed issue from excluded repo: ${fullName}`);
               return false;
             }
           }
@@ -91,7 +90,6 @@ export class GitHubIssuesService {
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
-      console.error('Error fetching closed issues:', error);
       return [];
     }
   }
@@ -105,9 +103,12 @@ export class GitHubIssuesService {
       this.getIssuesClosedByUser(username)
     ]);
 
-    // Combine and deduplicate issues
-    const allIssues = this.deduplicateIssues([...externalCreated, ...closedByUser]);
-    
+    // Transform manual issues to GitHubIssue format
+    const manualIssues = MANUAL_ISSUES.map(issue => this.transformManualIssueToGitHubIssue(issue));
+
+    // Combine and deduplicate issues (including manual issues)
+    const allIssues = this.deduplicateIssues([...externalCreated, ...closedByUser, ...manualIssues]);
+
     // Group by repository
     const groups = await this.groupIssuesByRepository(allIssues, username);
 
@@ -149,6 +150,25 @@ export class GitHubIssuesService {
   }
 
   /**
+   * Transform ManualIssue to GitHubIssue type
+   */
+  private transformManualIssueToGitHubIssue(manualIssue: ManualIssue): GitHubIssue {
+    return {
+      id: manualIssue.id,
+      number: manualIssue.number,
+      title: manualIssue.title,
+      html_url: manualIssue.html_url,
+      state: manualIssue.state,
+      created_at: manualIssue.created_at,
+      closed_at: manualIssue.closed_at,
+      updated_at: manualIssue.updated_at,
+      repository_url: manualIssue.repository_url,
+      labels: manualIssue.labels || [],
+      user: manualIssue.user
+    };
+  }
+
+  /**
    * Group issues by repository with counts
    */
   private async groupIssuesByRepository(issues: GitHubIssue[], username: string): Promise<IssueGroup[]> {
@@ -164,7 +184,6 @@ export class GitHubIssuesService {
       
       // Skip excluded repositories
       if (isRepositoryExcluded(name, repoKey)) {
-        console.log(`⏭️ Skipping excluded repository: ${repoKey}`);
         continue;
       }
       
@@ -231,7 +250,6 @@ export class GitHubIssuesService {
       const response = await this.octokit.rest.repos.get({ owner, repo });
       return response.data;
     } catch (error) {
-      console.error(`Error fetching repo ${owner}/${repo}:`, error);
       return {
         id: 0,
         name: repo,
