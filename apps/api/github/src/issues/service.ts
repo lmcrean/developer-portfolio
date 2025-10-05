@@ -1,6 +1,8 @@
 import { Octokit } from '@octokit/rest';
 import { GitHubIssue, Repository, IssueGroup, IssuesApiResponse } from '@shared/types/issues';
 import { isRepositoryExcluded } from './excludedRepositories';
+import { MANUAL_ISSUES } from '../scripts/issue-overrides';
+import { ManualIssue } from '../scripts/types';
 
 interface CachedData {
   data: any;
@@ -105,9 +107,13 @@ export class GitHubIssuesService {
       this.getIssuesClosedByUser(username)
     ]);
 
-    // Combine and deduplicate issues
-    const allIssues = this.deduplicateIssues([...externalCreated, ...closedByUser]);
-    
+    // Transform manual issues to GitHubIssue format
+    const manualIssues = MANUAL_ISSUES.map(issue => this.transformManualIssueToGitHubIssue(issue));
+    console.log(`📝 Adding ${manualIssues.length} manual issues from issue-overrides.ts`);
+
+    // Combine and deduplicate issues (including manual issues)
+    const allIssues = this.deduplicateIssues([...externalCreated, ...closedByUser, ...manualIssues]);
+
     // Group by repository
     const groups = await this.groupIssuesByRepository(allIssues, username);
 
@@ -145,6 +151,25 @@ export class GitHubIssuesService {
         login: item.user.login,
         avatar_url: item.user.avatar_url
       }
+    };
+  }
+
+  /**
+   * Transform ManualIssue to GitHubIssue type
+   */
+  private transformManualIssueToGitHubIssue(manualIssue: ManualIssue): GitHubIssue {
+    return {
+      id: manualIssue.id,
+      number: manualIssue.number,
+      title: manualIssue.title,
+      html_url: manualIssue.html_url,
+      state: manualIssue.state,
+      created_at: manualIssue.created_at,
+      closed_at: manualIssue.closed_at,
+      updated_at: manualIssue.updated_at,
+      repository_url: manualIssue.repository_url,
+      labels: manualIssue.labels || [],
+      user: manualIssue.user
     };
   }
 

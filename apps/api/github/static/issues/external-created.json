@@ -1,6 +1,16 @@
 {
-  "count": 7,
+  "count": 8,
   "issues": [
+    {
+      "id": 3465794566,
+      "number": 17,
+      "title": "Provider hangs indefinitely when CSC Domain Manager API accepts connections but fails to respond",
+      "url": "https://github.com/rropen/terraform-provider-cscdm/issues/17",
+      "state": "open",
+      "date_opened": "2025-09-29T16:43:28Z",
+      "date_closed": null,
+      "repository": "rropen/terraform-provider-cscdm"
+    },
     {
       "id": 3372594989,
       "number": 15,
@@ -72,5 +82,5 @@
       "repository": "penpot/penpot"
     }
   ],
-  "generated_at": "2025-09-20T21:38:47.884Z"
+  "generated_at": "2025-10-05T12:23:08.688Z"
 }
