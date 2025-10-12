@@ -1,7 +1,54 @@
 import { Octokit } from '@octokit/rest';
+import { graphql } from '@octokit/graphql';
 import { DetailedPullRequestResponse } from '../../types';
 import { retryApiCall, ensureSufficientRateLimit } from '../../utils/rateLimitUtils';
 import { validatePullRequestParams, formatPRStats } from './helpers';
+
+/**
+ * Fetch closing issues for a pull request using GraphQL API
+ * Returns an array of issues that will be closed when the PR is merged
+ */
+async function fetchClosingIssues(
+  token: string,
+  owner: string,
+  repo: string,
+  pullNumber: number
+): Promise<Array<{ number: number; url: string }>> {
+  try {
+    const graphqlWithAuth = graphql.defaults({
+      headers: {
+        authorization: `token ${token}`,
+      },
+    });
+
+    const query = `
+      query getClosingIssues($owner: String!, $repo: String!, $prNumber: Int!) {
+        repository(owner: $owner, name: $repo) {
+          pullRequest(number: $prNumber) {
+            closingIssuesReferences(first: 10) {
+              nodes {
+                number
+                url
+              }
+            }
+          }
+        }
+      }
+    `;
+
+    const result: any = await graphqlWithAuth(query, {
+      owner,
+      repo,
+      prNumber: pullNumber,
+    });
+
+    return result.repository?.pullRequest?.closingIssuesReferences?.nodes || [];
+  } catch (error) {
+    // If GraphQL query fails, log warning but don't fail the entire request
+    console.log(`⚠️  Could not fetch closing issues for PR #${pullNumber}: ${error}`);
+    return [];
+  }
+}
 
 /**
  * Fetch detailed information for a specific pull request
@@ -9,9 +56,10 @@ import { validatePullRequestParams, formatPRStats } from './helpers';
  */
 export async function fetchPullRequestDetails(
   octokit: Octokit,
-  owner: string, 
-  repo: string, 
-  pullNumber: number
+  owner: string,
+  repo: string,
+  pullNumber: number,
+  token?: string
 ): Promise<DetailedPullRequestResponse> {
   console.log(`🔍 Fetching PR #${pullNumber} from ${owner}/${repo}`);
   
@@ -71,6 +119,12 @@ export async function fetchPullRequestDetails(
   const pr = prResponse.data;
   const commentsCount = commentsResponse.data.length;
 
+  // Fetch closing issues if token is provided
+  let closingIssues: Array<{ number: number; url: string }> = [];
+  if (token) {
+    closingIssues = await fetchClosingIssues(token, owner, repo, pullNumber);
+  }
+
   const detailedPR: DetailedPullRequestResponse = {
     id: pr.id,
     number: pr.number,
@@ -88,6 +142,7 @@ export async function fetchPullRequestDetails(
     deletions: pr.deletions,
     changed_files: pr.changed_files,
     comments: commentsCount, // Include comments count for 💬 display
+    closingIssues: closingIssues.length > 0 ? closingIssues : undefined, // Only include if there are closing issues
     author: {
       login: pr.user?.login || 'unknown',
       avatar_url: pr.user?.avatar_url || '',

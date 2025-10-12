@@ -17,6 +17,7 @@
     "extract-prs-with-descriptions": "ts-node src/scripts/generatePRsWithDescriptions.ts"
   },
   "dependencies": {
+    "@octokit/graphql": "^9.0.2",
     "@octokit/rest": "^20.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.0.0",

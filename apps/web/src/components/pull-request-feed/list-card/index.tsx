@@ -114,6 +114,21 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
               </span>
             )}
 
+            {/* Closing Issues - hidden on mobile */}
+            {pullRequest.closingIssues && pullRequest.closingIssues.length > 0 && (
+              <span className="text-xs opacity-70 max-sm:hidden">
+                <a
+                  href={pullRequest.closingIssues[0].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  fixes #{pullRequest.closingIssues[0].number}
+                </a>
+              </span>
+            )}
+
             {/* Comments - hidden on mobile */}
             {pullRequest.comments !== undefined && pullRequest.comments > 0 && (
               <span className="text-xs opacity-70 max-sm:hidden">
@@ -121,7 +136,7 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
                 {pullRequest.comments}
               </span>
             )}
-            
+
             {/* Changes - hidden on mobile */}
             {bytesChange.hasData && (
               <span className="font-mono text-xs max-sm:hidden">

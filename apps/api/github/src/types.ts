@@ -61,4 +61,8 @@ export interface DetailedPullRequestResponse extends PullRequestResponse {
   deletions: number;
   changed_files: number;
   comments: number; // Comments count for 💬 display
+  closingIssues?: Array<{
+    number: number;
+    url: string;
+  }>; // Issues that will be closed by this PR
 } 

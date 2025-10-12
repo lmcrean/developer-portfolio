@@ -7,9 +7,11 @@ import { PaginationMeta } from './types';
 
 export class GitHubService {
   private octokit: Octokit;
+  private apiToken: string;
 
   constructor(apiToken: string) {
     this.octokit = new Octokit({ auth: apiToken });
+    this.apiToken = apiToken;
   }
 
   /**
@@ -41,19 +43,19 @@ export class GitHubService {
   async getPullRequestDetails(owner: string, repo: string, pullNumber: number) {
     try {
       console.log(`🔍 Fetching PR details for ${owner}/${repo}#${pullNumber}`);
-      
-      const pullRequest = await fetchPullRequestDetails(this.octokit, owner, repo, pullNumber);
-      
+
+      const pullRequest = await fetchPullRequestDetails(this.octokit, owner, repo, pullNumber, this.apiToken);
+
       return { data: pullRequest };
     } catch (error) {
       // Check if it's a test case (common test patterns) - handle this first
       const isTestCase = owner === 'invalid-user' || repo === 'invalid-repo' || pullNumber === 999;
-      
+
       if (!isTestCase) {
         // Only log errors for non-test cases
         console.error('❌ Error fetching pull request details:', error);
       }
-      
+
       throw error;
     }
   }
