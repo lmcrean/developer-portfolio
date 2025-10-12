@@ -64,6 +64,13 @@ export interface PullRequestOverride {
   blocked?: boolean; // When true, the PR will be filtered out completely
 }
 
+export interface IssueOverride {
+  url?: string;  // Full issue URL for easy identification
+  repository?: string;  // e.g., "AstraZeneca/cellatria"
+  number?: number;  // Issue number
+  blocked?: boolean;  // When true, issue will be filtered out
+}
+
 export interface ManualIssue {
   id: number;
   number: number;

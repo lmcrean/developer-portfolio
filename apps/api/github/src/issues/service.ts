@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import { GitHubIssue, Repository, IssueGroup, IssuesApiResponse } from '@shared/types/issues';
-import { isRepositoryExcluded } from './excludedRepositories';
+import { isRepositoryExcluded, isIssueBlocked } from './excludedRepositories';
 import { MANUAL_ISSUES } from '../scripts/issue-overrides';
 import { ManualIssue } from '../scripts/types';
 
@@ -48,7 +48,13 @@ export class GitHubIssuesService {
           }
           return true;
         })
-        .map(item => this.transformToGitHubIssue(item));
+        .map(item => this.transformToGitHubIssue(item))
+        .filter(issue => {
+          // Extract repo name from repository URL for issue blocking
+          const repoMatch = issue.repository_url.match(/repos\/([^\/]+)\/([^\/]+)$/);
+          const repoFullName = repoMatch ? `${repoMatch[1]}/${repoMatch[2]}` : undefined;
+          return !isIssueBlocked(issue.html_url, repoFullName, issue.number);
+        });
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
@@ -86,7 +92,13 @@ export class GitHubIssuesService {
           }
           return true;
         })
-        .map(item => this.transformToGitHubIssue(item));
+        .map(item => this.transformToGitHubIssue(item))
+        .filter(issue => {
+          // Extract repo name from repository URL for issue blocking
+          const repoMatch = issue.repository_url.match(/repos\/([^\/]+)\/([^\/]+)$/);
+          const repoFullName = repoMatch ? `${repoMatch[1]}/${repoMatch[2]}` : undefined;
+          return !isIssueBlocked(issue.html_url, repoFullName, issue.number);
+        });
       this.setCache(cacheKey, issues);
       return issues;
     } catch (error) {
@@ -106,8 +118,17 @@ export class GitHubIssuesService {
     // Transform manual issues to GitHubIssue format
     const manualIssues = MANUAL_ISSUES.map(issue => this.transformManualIssueToGitHubIssue(issue));
 
-    // Combine and deduplicate issues (including manual issues)
-    const allIssues = this.deduplicateIssues([...externalCreated, ...closedByUser, ...manualIssues]);
+    // Combine all issues and apply blocking filter before deduplication
+    const combinedIssues = [...externalCreated, ...closedByUser, ...manualIssues];
+    const filteredIssues = combinedIssues.filter(issue => {
+      // Extract repo name from repository URL for issue blocking
+      const repoMatch = issue.repository_url.match(/repos\/([^\/]+)\/([^\/]+)$/);
+      const repoFullName = repoMatch ? `${repoMatch[1]}/${repoMatch[2]}` : undefined;
+      return !isIssueBlocked(issue.html_url, repoFullName, issue.number);
+    });
+
+    // Deduplicate issues after filtering
+    const allIssues = this.deduplicateIssues(filteredIssues);
 
     // Group by repository
     const groups = await this.groupIssuesByRepository(allIssues, username);

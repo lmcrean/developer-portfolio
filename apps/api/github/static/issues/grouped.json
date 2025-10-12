@@ -292,41 +292,6 @@
     },
     {
       "repository": {
-        "id": 1028549924,
-        "name": "cellatria",
-        "full_name": "AstraZeneca/cellatria",
-        "owner": {
-          "login": "AstraZeneca",
-          "avatar_url": "https://avatars.githubusercontent.com/u/16338928?v=4"
-        },
-        "html_url": "https://github.com/AstraZeneca/cellatria",
-        "description": "An Agentic AI Framework for Ingestion and Standardization of Single-Cell RNA-seq Data Analysis",
-        "is_external": true
-      },
-      "issues": [
-        {
-          "id": 3366738470,
-          "number": 2,
-          "title": "Enabled README png to work in github dark mode with gray on black text",
-          "html_url": "https://github.com/AstraZeneca/cellatria/issues/2",
-          "state": "closed",
-          "created_at": "2025-08-29T12:35:36Z",
-          "closed_at": "2025-08-29T22:44:28Z",
-          "updated_at": "2025-08-29T22:44:28Z",
-          "repository_url": "https://api.github.com/repos/AstraZeneca/cellatria",
-          "labels": [],
-          "user": {
-            "login": "lmcrean",
-            "avatar_url": "https://avatars.githubusercontent.com/u/133490867?v=4"
-          }
-        }
-      ],
-      "openCount": 0,
-      "closedCount": 1,
-      "lastActivityDate": "2025-08-29T22:44:28.000Z"
-    },
-    {
-      "repository": {
         "id": 946796949,
         "name": "dottie",
         "full_name": "lmcrean/dottie",
@@ -622,9 +587,9 @@
     }
   ],
   "metadata": {
-    "total_issues": 20,
-    "total_repositories": 10,
-    "external_repositories": 6,
-    "last_updated": "2025-10-05T12:23:08.688Z"
+    "total_issues": 19,
+    "total_repositories": 9,
+    "external_repositories": 5,
+    "last_updated": "2025-10-12T11:58:10.971Z"
   }
 }

@@ -1,7 +1,7 @@
 // Issue overrides and manual issue configuration
 // Similar to pr-overrides.ts but for issues
 
-import { ManualIssue } from './types';
+import { ManualIssue, IssueOverride } from './types';
 
 // Manual issues to add to the portfolio that don't appear via GitHub API
 export const MANUAL_ISSUES: ManualIssue[] = [
@@ -70,6 +70,16 @@ export const MANUAL_ISSUES: ManualIssue[] = [
       login: "lmcrean",
       avatar_url: "https://avatars.githubusercontent.com/u/133490867?v=4"
     }
+  }
+];
+
+// Issue-level overrides for blocking specific issues
+export const ISSUE_OVERRIDES: IssueOverride[] = [
+  {
+    url: "https://github.com/AstraZeneca/cellatria/issues/2",
+    repository: "AstraZeneca/cellatria",
+    number: 2,
+    blocked: true
   }
 ];
 

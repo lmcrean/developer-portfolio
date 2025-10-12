@@ -1,3 +1,6 @@
+import { IssueOverride } from '../scripts/types';
+import { ISSUE_OVERRIDES } from '../scripts/issue-overrides';
+
 /**
  * List of repositories to exclude from issue tracking
  * These are typically learning projects or test repositories
@@ -44,4 +47,38 @@ export function isRepositoryExcluded(repoName: string, fullName?: string): boole
   }
   
   return false;
+}
+
+/**
+ * Check if an issue should be blocked based on issue-level overrides
+ * @param issueUrl - Full URL of the issue
+ * @param repoFullName - Full repository name (owner/repo)
+ * @param issueNumber - Issue number
+ */
+export function isIssueBlocked(issueUrl: string, repoFullName?: string, issueNumber?: number): boolean {
+  const result = ISSUE_OVERRIDES.some(override => {
+    if (!override.blocked) return false;
+    
+    // Check by URL (most specific)
+    if (override.url && issueUrl === override.url) {
+      console.log(`🚫 BLOCKING ISSUE: ${issueUrl} (URL match)`);
+      return true;
+    }
+    
+    // Check by repository + number combination
+    if (override.repository && override.number && 
+        repoFullName === override.repository && 
+        issueNumber === override.number) {
+      console.log(`🚫 BLOCKING ISSUE: ${repoFullName}#${issueNumber} (repo+number match)`);
+      return true;
+    }
+    
+    return false;
+  });
+  
+  if (result) {
+    console.log(`✅ Issue blocked: ${issueUrl}`);
+  }
+  
+  return result;
 }
