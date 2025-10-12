@@ -12,6 +12,10 @@ export interface PullRequestResponse {
   additions?: number;
   deletions?: number;
   comments?: number;
+  closingIssues?: Array<{
+    number: number;
+    url: string;
+  }>; // Issues that will be closed by this PR
   repository: {
     name: string;
     description: string | null;

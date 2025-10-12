@@ -20,9 +20,9 @@ export class GitHubService {
   async getPullRequests(username: string, page: number = 1, perPage: number = 10) {
     try {
       console.log(`🔍 Fetching PRs for ${username} (page ${page}, ${perPage} per page)`);
-      
-      const result = await fetchPullRequests(this.octokit, username, page, perPage);
-      
+
+      const result = await fetchPullRequests(this.octokit, username, page, perPage, this.apiToken);
+
       return {
         data: result.pullRequests,
         meta: {
