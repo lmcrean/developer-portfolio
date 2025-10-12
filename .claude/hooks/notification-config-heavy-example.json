@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -ExecutionPolicy Bypass -File \".claude/hooks/heavy-notification.ps1\"",
+            "timeout": 310
+          }
+        ]
+      }
+    ]
+  }
+}

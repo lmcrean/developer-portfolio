@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * PR Data Extractor with Descriptions
+ * PR Data Extractor with Descriptions, Diffs, and Comments
  *
  * Generates a standalone JSON file containing external GitHub pull request data
- * with descriptions included. This script is independent of the developer portfolio
- * and won't affect existing functionality.
+ * with full details including descriptions, diffs, and all comments. This script
+ * is independent of the developer portfolio and won't affect existing functionality.
  *
  * Usage:
  *   npm run extract-prs-with-descriptions
@@ -35,9 +35,23 @@ import {
 // Load environment variables from .env file
 dotenv.config();
 
+interface Comment {
+  id: number;
+  user: {
+    login: string;
+    avatar_url: string;
+    html_url: string;
+  } | null;
+  body: string;
+  created_at: string;
+  updated_at: string;
+  html_url: string;
+}
+
 interface PRDataWithDescriptions extends PullRequestListData {
   description: string | null; // Always include description field
   diff?: string | null; // Include diff data
+  comments_data?: Comment[]; // Include comment details
 }
 
 interface PRPageDataWithDescriptions {
@@ -222,10 +236,10 @@ class PRExtractorWithDescriptions {
   }
 
   /**
-   * Enhance existing PRs with descriptions and diffs from GitHub API
+   * Enhance existing PRs with descriptions, diffs, and comments from GitHub API
    */
   private async enhanceExistingPRsWithDescriptions(prs: PRDataWithDescriptions[]): Promise<PRDataWithDescriptions[]> {
-    console.log(`🔄 Enhancing ${prs.length} PRs with descriptions and diffs from GitHub API...`);
+    console.log(`🔄 Enhancing ${prs.length} PRs with descriptions, diffs, and comments from GitHub API...`);
 
     let enhancedCount = 0;
     const enhancedPRs = [...prs];
@@ -238,7 +252,7 @@ class PRExtractorWithDescriptions {
         const owner = urlParts[3];
         const repo = urlParts[4];
 
-        console.log(`📡 [${i + 1}/${prs.length}] Fetching description and diff for ${owner}/${repo}#${pr.number}...`);
+        console.log(`📡 [${i + 1}/${prs.length}] Fetching details, diff, and comments for ${owner}/${repo}#${pr.number}...`);
 
         // Fetch detailed data directly using GitHub API
         const { data: prDetail } = await this.octokit.rest.pulls.get({
@@ -258,11 +272,34 @@ class PRExtractorWithDescriptions {
           }
         });
 
-        // Update the PR with description and diff
+        // Fetch comments for the PR (PRs use issue comments API)
+        console.log(`💬 Fetching comments for ${owner}/${repo}#${pr.number}...`);
+        const { data: prComments } = await this.octokit.rest.issues.listComments({
+          owner,
+          repo,
+          issue_number: pr.number
+        });
+
+        // Map comments to our Comment interface
+        const mappedComments: Comment[] = prComments.map(comment => ({
+          id: comment.id,
+          user: comment.user ? {
+            login: comment.user.login,
+            avatar_url: comment.user.avatar_url,
+            html_url: comment.user.html_url
+          } : null,
+          body: comment.body || '',
+          created_at: comment.created_at,
+          updated_at: comment.updated_at,
+          html_url: comment.html_url
+        }));
+
+        // Update the PR with description, diff, and comments
         enhancedPRs[i] = {
           ...enhancedPRs[i],
           description: prDetail.body || null,
           diff: prDiff as unknown as string || null, // Cast since mediaType changes return type
+          comments_data: mappedComments,
           // Also update other fields if they're missing (for consistency)
           additions: enhancedPRs[i].additions || prDetail.additions,
           deletions: enhancedPRs[i].deletions || prDetail.deletions,
@@ -274,10 +311,11 @@ class PRExtractorWithDescriptions {
           ? `"${prDetail.body.substring(0, 50)}${prDetail.body.length > 50 ? '...' : ''}"`
           : 'No description';
         const diffSize = prDiff ? `${(prDiff as unknown as string).length} chars` : 'No diff';
-        console.log(`✅ Enhanced ${owner}/${repo}#${pr.number} - ${descriptionPreview} + diff (${diffSize})`);
+        const commentsCount = mappedComments.length;
+        console.log(`✅ Enhanced ${owner}/${repo}#${pr.number} - ${descriptionPreview} + diff (${diffSize}) + ${commentsCount} comments`);
 
-        // Add longer delay between API calls since we're making 2 calls per PR
-        await delay(300);
+        // Add longer delay between API calls since we're making 3 calls per PR
+        await delay(500);
 
       } catch (error) {
         console.warn(`⚠️ Failed to enhance PR ${pr.number}:`, error);
@@ -285,7 +323,7 @@ class PRExtractorWithDescriptions {
       }
     }
 
-    console.log(`🎉 Successfully enhanced ${enhancedCount}/${prs.length} PRs with descriptions and diffs`);
+    console.log(`🎉 Successfully enhanced ${enhancedCount}/${prs.length} PRs with descriptions, diffs, and comments`);
     return enhancedPRs;
   }
 
@@ -385,7 +423,7 @@ class PRExtractorWithDescriptions {
    */
   async generatePRDataWithDescriptions(): Promise<void> {
     try {
-      console.log('🔄 Starting efficient PR data extraction with descriptions...');
+      console.log('🔄 Starting efficient PR data extraction with descriptions, diffs, and comments...');
       console.log('💡 Using existing website static data to avoid fetching unwanted PRs');
 
       this.setupDirectory();
@@ -393,14 +431,14 @@ class PRExtractorWithDescriptions {
       // Read existing static data from the website (already filtered)
       const existingPRs = this.readExistingStaticData();
 
-      // Enhance each PR with description and diff data
-      console.log('🔧 Enhancing each PR with description and diff data from GitHub API...');
+      // Enhance each PR with description, diff, and comment data
+      console.log('🔧 Enhancing each PR with description, diff, and comment data from GitHub API...');
       const enhancedPRs = await this.enhanceExistingPRsWithDescriptions(existingPRs);
 
       // Generate a single comprehensive file (data is already sorted in static file)
       await this.generatePRDataFile(enhancedPRs);
 
-      console.log('✅ Efficient PR data extraction with descriptions and diffs completed successfully!');
+      console.log('✅ Efficient PR data extraction with descriptions, diffs, and comments completed successfully!');
       console.log(`📁 Generated file in: ${this.outputDir}`);
       console.log(`📊 Total external PRs: ${enhancedPRs.length}`);
 
@@ -436,7 +474,7 @@ class PRExtractorWithDescriptions {
         }
       };
 
-      const filePath = path.join(this.outputDir, 'external-prs-with-descriptions-and-diffs.json');
+      const filePath = path.join(this.outputDir, 'external-prs-details-diffs-comments.json');
       fs.writeFileSync(filePath, JSON.stringify(pageData, null, 2), 'utf8');
 
       console.log(`✅ Generated PR data file with ${prs.length} pull requests`);
@@ -460,7 +498,7 @@ async function main() {
   try {
     const extractor = new PRExtractorWithDescriptions();
     await extractor.generatePRDataWithDescriptions();
-    console.log('🎉 PR data extraction with descriptions and diffs completed successfully!');
+    console.log('🎉 PR data extraction with descriptions, diffs, and comments completed successfully!');
   } catch (error) {
     console.error('💥 PR data extraction failed:', error);
     process.exit(1);
