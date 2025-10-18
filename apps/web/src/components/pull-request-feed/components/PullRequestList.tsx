@@ -110,7 +110,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
             <>
               <div className="px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200">
                 <div className="text-sm font-semibold pr-text-secondary">
-                  Enterprise Solutions
+                  Open Source Contributions
                 </div>
                 <div className="text-xs italic text-gray-400 light:text-gray-600 mt-1">
                   Approved in production
