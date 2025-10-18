@@ -71,7 +71,7 @@ class StaticClient {
     }
 
     try {
-      const url = `${this.baseURL}/pr-metadata.json`;
+      const url = `${this.baseURL}/metadata.json`;
       console.log('📋 Fetching static data metadata from:', url);
       
       const response = await axios.get<StaticDataMetadata>(url, {
@@ -98,7 +98,7 @@ class StaticClient {
    */
   private async fetchPage(page: number): Promise<StaticPageData> {
     try {
-      const url = `${this.baseURL}/pr-page-${page}.json`;
+      const url = `${this.baseURL}/page-${page}.json`;
       console.log(`📄 Fetching static page ${page} from:`, url);
       
       const response = await axios.get<StaticPageData>(url, {
@@ -138,7 +138,15 @@ class StaticClient {
       
       // Fetch the requested page
       const pageData = await this.fetchPage(page);
-      
+
+      console.log('📄 Static page data loaded:', {
+        page,
+        dataCount: pageData.data.length,
+        meta: pageData.meta,
+        firstThreePRs: pageData.data.slice(0, 3).map(pr => ({ id: pr.id, title: pr.title.substring(0, 50), repo: pr.repository.name })),
+        lastThreePRs: pageData.data.slice(-3).map(pr => ({ id: pr.id, title: pr.title.substring(0, 50), repo: pr.repository.name }))
+      });
+
       // Transform to match live API response format
       const response: ApiResponse = {
         data: pageData.data,

@@ -71,6 +71,16 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
   const mergedPRs = pullRequests.filter(pr => pr.merged_at);
   const openPRs = pullRequests.filter(pr => !pr.merged_at && pr.state === 'open');
 
+  console.log('📊 PullRequestList rendering:', {
+    totalPRs: pullRequests.length,
+    mergedPRs: mergedPRs.length,
+    openPRs: openPRs.length,
+    loading,
+    error,
+    hasMoreItems,
+    sampleOpenPRs: openPRs.slice(0, 5).map(pr => ({ title: pr.title.substring(0, 40), repo: pr.repository.name }))
+  });
+
   // Helper function to render PR cards
   const renderPRCards = (prs: PullRequestListData[], hoverBgColor: 'teal' | 'orange' = 'teal') => {
     return prs.map((pr) => (
