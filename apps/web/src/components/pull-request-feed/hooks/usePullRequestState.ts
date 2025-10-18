@@ -10,7 +10,7 @@ export const usePullRequestState = () => {
   
   // Infinite scroll state
   const [allPullRequests, setAllPullRequests] = useState<PullRequestListData[]>([]);
-  const [displayedCount, setDisplayedCount] = useState(5); // Start by showing 5 items (data is pre-filtered)
+  const [displayedCount, setDisplayedCount] = useState(100); // Show all items at once (we have ~23 external PRs total)
   const [loading, setLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +27,8 @@ export const usePullRequestState = () => {
     } else {
       // Replace existing data (initial load)
       setAllPullRequests(data);
-      // Data is pre-filtered at API level, so we can show fewer items initially
-      setDisplayedCount(Math.min(5, data.length)); // Show first 5 items (data is pre-filtered)
+      // Show all items immediately - no need for progressive loading with only ~23 PRs
+      setDisplayedCount(data.length);
     }
     setTotalItemsAvailable(paginationData.total_count);
     setHasMoreItems(paginationData.has_next_page || data.length > displayedCount);
