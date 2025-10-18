@@ -71,7 +71,7 @@ class StaticClient {
     }
 
     try {
-      const url = `${this.baseURL}/pr-metadata.json`;
+      const url = `${this.baseURL}/metadata.json`;
       console.log('📋 Fetching static data metadata from:', url);
       
       const response = await axios.get<StaticDataMetadata>(url, {
@@ -98,7 +98,7 @@ class StaticClient {
    */
   private async fetchPage(page: number): Promise<StaticPageData> {
     try {
-      const url = `${this.baseURL}/pr-page-${page}.json`;
+      const url = `${this.baseURL}/page-${page}.json`;
       console.log(`📄 Fetching static page ${page} from:`, url);
       
       const response = await axios.get<StaticPageData>(url, {

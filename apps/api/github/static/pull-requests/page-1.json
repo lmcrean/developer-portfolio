@@ -1,6 +1,28 @@
 {
   "data": [
     {
+      "id": 2805908000,
+      "number": 7974,
+      "title": "Improve error messages for annotation methods on synthetic TypeVariables",
+      "created_at": "2025-09-07T09:30:27Z",
+      "merged_at": "2025-09-24T12:00:00Z",
+      "html_url": "https://github.com/google/guava/pull/7974",
+      "state": "merged",
+      "additions": 19,
+      "deletions": 5,
+      "comments": 3,
+      "repository": {
+        "name": "guava",
+        "description": "Google core libraries for Java",
+        "language": "Java",
+        "html_url": "https://github.com/google/guava",
+        "owner": {
+          "login": "google",
+          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
+        }
+      }
+    },
+    {
       "id": 2826689299,
       "number": 7989,
       "title": " Fix `Iterators.mergeSorted()` to preserve stability for equal elements",
@@ -155,6 +177,116 @@
       }
     },
     {
+      "id": 2914709829,
+      "number": 2180,
+      "title": "Implement typed enums for request parameters to improve type safety",
+      "created_at": "2025-10-14T18:57:29Z",
+      "merged_at": null,
+      "html_url": "https://github.com/stripe/stripe-go/pull/2180",
+      "state": "closed",
+      "additions": 1188,
+      "deletions": 605,
+      "comments": 3,
+      "repository": {
+        "name": "stripe-go",
+        "description": "Go library for the Stripe API.    ",
+        "language": "Go",
+        "html_url": "https://github.com/stripe/stripe-go",
+        "owner": {
+          "login": "stripe",
+          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
+        }
+      }
+    },
+    {
+      "id": 2907947745,
+      "number": 2178,
+      "title": "Add context-aware logging interface and update logger usage",
+      "created_at": "2025-10-12T16:22:45Z",
+      "merged_at": null,
+      "html_url": "https://github.com/stripe/stripe-go/pull/2178",
+      "state": "open",
+      "additions": 544,
+      "deletions": 17,
+      "comments": 0,
+      "repository": {
+        "name": "stripe-go",
+        "description": "Go library for the Stripe API.    ",
+        "language": "Go",
+        "html_url": "https://github.com/stripe/stripe-go",
+        "owner": {
+          "login": "stripe",
+          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
+        }
+      }
+    },
+    {
+      "id": 2907654120,
+      "number": 2177,
+      "title": "Add OpenTelemetry tracing support for Stripe API calls",
+      "created_at": "2025-10-12T12:52:23Z",
+      "merged_at": null,
+      "html_url": "https://github.com/stripe/stripe-go/pull/2177",
+      "state": "open",
+      "additions": 506,
+      "deletions": 11,
+      "comments": 0,
+      "repository": {
+        "name": "stripe-go",
+        "description": "Go library for the Stripe API.    ",
+        "language": "Go",
+        "html_url": "https://github.com/stripe/stripe-go",
+        "owner": {
+          "login": "stripe",
+          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
+        }
+      }
+    },
+    {
+      "id": 2906897445,
+      "number": 6505,
+      "title": "Feat(multi-store users): Deploy theme changes across multiple stores without manual conflict resolution ",
+      "created_at": "2025-10-11T18:06:33Z",
+      "merged_at": null,
+      "html_url": "https://github.com/Shopify/cli/pull/6505",
+      "state": "open",
+      "additions": 2867,
+      "deletions": 1131,
+      "comments": 1,
+      "repository": {
+        "name": "cli",
+        "description": "Build apps, themes, and hydrogen storefronts for Shopify",
+        "language": "TypeScript",
+        "html_url": "https://github.com/Shopify/cli",
+        "owner": {
+          "login": "Shopify",
+          "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
+        }
+      }
+    },
+    {
+      "id": 2867917251,
+      "number": 16,
+      "title": " Fix: Add HTTP timeout to prevent Terraform from hanging indefinitely",
+      "created_at": "2025-09-28T14:16:39Z",
+      "merged_at": null,
+      "html_url": "https://github.com/rropen/terraform-provider-cscdm/pull/16",
+      "state": "open",
+      "additions": 11,
+      "deletions": 8,
+      "comments": 0,
+      "repository": {
+        "name": "terraform-provider-c",
+        "description": "Terraform Provider for CSC Domain Manager.",
+        "language": "Go",
+        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
+        "owner": {
+          "login": "rropen",
+          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
+        }
+      }
+    },
+    {
       "id": 2826947611,
       "number": 7990,
       "title": "Add Gradle capability declarations to detect duplicate Guava artifacts",
@@ -162,9 +294,9 @@
       "merged_at": null,
       "html_url": "https://github.com/google/guava/pull/7990",
       "state": "open",
-      "additions": 100,
+      "additions": 126,
       "deletions": 0,
-      "comments": 3,
+      "comments": 6,
       "repository": {
         "name": "guava",
         "description": "Google core libraries for Java",
@@ -184,8 +316,8 @@
       "merged_at": null,
       "html_url": "https://github.com/google/guava/pull/7986",
       "state": "open",
-      "additions": 98,
-      "deletions": 5,
+      "additions": 96,
+      "deletions": 1,
       "comments": 0,
       "repository": {
         "name": "guava",
@@ -206,9 +338,9 @@
       "merged_at": null,
       "html_url": "https://github.com/Shopify/cli/pull/6396",
       "state": "open",
-      "additions": 93,
-      "deletions": 9,
-      "comments": 0,
+      "additions": 111,
+      "deletions": 12,
+      "comments": 1,
       "repository": {
         "name": "cli",
         "description": "Build apps, themes, and hydrogen storefronts for Shopify",
@@ -223,13 +355,13 @@
     {
       "id": 2812657547,
       "number": 6371,
-      "title": "Feat: Git Multi-Environment Theme Conflict Resolution ",
+      "title": "Feat(multi-store users): Deploy theme changes across multiple stores without manual conflict resolution",
       "created_at": "2025-09-09T16:50:52Z",
       "merged_at": null,
       "html_url": "https://github.com/Shopify/cli/pull/6371",
-      "state": "open",
-      "additions": 1553,
-      "deletions": 1,
+      "state": "closed",
+      "additions": 2876,
+      "deletions": 1159,
       "comments": 0,
       "repository": {
         "name": "cli",
@@ -239,28 +371,6 @@
         "owner": {
           "login": "Shopify",
           "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
-        }
-      }
-    },
-    {
-      "id": 2805908000,
-      "number": 7974,
-      "title": "Improve error messages for annotation methods on synthetic TypeVariables",
-      "created_at": "2025-09-07T09:30:27Z",
-      "merged_at": null,
-      "html_url": "https://github.com/google/guava/pull/7974",
-      "state": "open",
-      "additions": 17,
-      "deletions": 5,
-      "comments": 3,
-      "repository": {
-        "name": "guava",
-        "description": "Google core libraries for Java",
-        "language": "Java",
-        "html_url": "https://github.com/google/guava",
-        "owner": {
-          "login": "google",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
         }
       }
     },
@@ -294,9 +404,9 @@
       "merged_at": null,
       "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless/pull/88",
       "state": "open",
-      "additions": 89,
-      "deletions": 5,
-      "comments": 1,
+      "additions": 117,
+      "deletions": 0,
+      "comments": 2,
       "repository": {
         "name": "woocommerce-gateway",
         "description": "A GoCardless payments integration for WooCommerce",
@@ -329,83 +439,17 @@
           "avatar_url": "https://avatars.githubusercontent.com/u/48318517?v=4"
         }
       }
-    },
-    {
-      "id": 2786918386,
-      "number": 17,
-      "title": "Add Code Coverage Infrastructure",
-      "created_at": "2025-08-30T16:26:40Z",
-      "merged_at": null,
-      "html_url": "https://github.com/GSK-Biostatistics/docorator/pull/17",
-      "state": "open",
-      "additions": 55,
-      "deletions": 1,
-      "comments": 0,
-      "repository": {
-        "name": "docorator",
-        "description": null,
-        "language": "R",
-        "html_url": "https://github.com/GSK-Biostatistics/docorator",
-        "owner": {
-          "login": "GSK-Biostatistics",
-          "avatar_url": "https://avatars.githubusercontent.com/u/87132606?v=4"
-        }
-      }
-    },
-    {
-      "id": 2760288725,
-      "number": 5595,
-      "title": "Disable LDL/STL checks for CTK < 13.1 (nvbug 5243118)",
-      "created_at": "2025-08-20T15:58:10Z",
-      "merged_at": null,
-      "html_url": "https://github.com/NVIDIA/cccl/pull/5595",
-      "state": "open",
-      "additions": 122,
-      "deletions": 16,
-      "comments": 10,
-      "repository": {
-        "name": "cccl",
-        "description": "CUDA Core Compute Libraries",
-        "language": "C++",
-        "html_url": "https://github.com/NVIDIA/cccl",
-        "owner": {
-          "login": "NVIDIA",
-          "avatar_url": "https://avatars.githubusercontent.com/u/1728152?v=4"
-        }
-      }
-    },
-    {
-      "id": 2728241517,
-      "number": 12806,
-      "title": "utils: use `ShardIdentity` in `postgres_client.rs` for improved type safety",
-      "created_at": "2025-08-07T15:42:07Z",
-      "merged_at": null,
-      "html_url": "https://github.com/neondatabase/neon/pull/12806",
-      "state": "open",
-      "additions": 390,
-      "deletions": 164,
-      "comments": 3,
-      "repository": {
-        "name": "neon",
-        "description": "Neon: Serverless Postgres. We separated storage and compute to offer autoscaling, code-like database branching, and scale to zero.",
-        "language": "Rust",
-        "html_url": "https://github.com/neondatabase/neon",
-        "owner": {
-          "login": "neondatabase",
-          "avatar_url": "https://avatars.githubusercontent.com/u/77690634?v=4"
-        }
-      }
     }
   ],
   "meta": {
     "username": "lmcrean",
-    "count": 18,
+    "count": 20,
     "pagination": {
       "page": 1,
       "per_page": 20,
-      "total_count": 18,
-      "total_pages": 1,
-      "has_next_page": false,
+      "total_count": 23,
+      "total_pages": 2,
+      "has_next_page": true,
       "has_previous_page": false
     }
   }
