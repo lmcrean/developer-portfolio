@@ -43,7 +43,8 @@ class StaticDataGenerator {
   private staticDir: string;
   private pullRequestsDir: string;
   private username: string;
-  private perPage: number = 20;
+  private perPage: number = 20; // For GitHub API pagination
+  private outputPerPage: number = 100; // For output file pagination (large enough for all external PRs)
   private enhanceExternalPRs: boolean = true;
   private maxExternalPRsPerPage: number = 10;
 
@@ -406,8 +407,8 @@ class StaticDataGenerator {
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
 
-      // Generate pages with external PRs only (20 per page)
-      const externalPages = Math.ceil(enhancedExternalPRs.length / this.perPage);
+      // Generate pages with external PRs only (all on one page with outputPerPage=100)
+      const externalPages = Math.ceil(enhancedExternalPRs.length / this.outputPerPage);
       console.log(`📄 Creating ${externalPages} pages with external PRs only`);
       
       let totalEnhancedCount = 0;
@@ -437,20 +438,20 @@ class StaticDataGenerator {
   private async generateExternalPRPageFile(page: number, allExternalPRs: PullRequestListData[]): Promise<number> {
     try {
       console.log(`📄 Generating external PR page ${page}...`);
-      
+
       // Calculate start and end indices for this page
-      const startIndex = (page - 1) * this.perPage;
-      const endIndex = startIndex + this.perPage;
+      const startIndex = (page - 1) * this.outputPerPage;
+      const endIndex = startIndex + this.outputPerPage;
       const pageExternalPRs = allExternalPRs.slice(startIndex, endIndex);
-      
+
       // Count enhanced PRs in this page
       const enhancedCount = pageExternalPRs.filter(pr => this.hasDetailedData(pr)).length;
-      
+
       // Create pagination metadata for external PRs
-      const totalExternalPages = Math.ceil(allExternalPRs.length / this.perPage);
+      const totalExternalPages = Math.ceil(allExternalPRs.length / this.outputPerPage);
       const pagination: PaginationMeta = {
         page: page,
-        per_page: this.perPage,
+        per_page: this.outputPerPage,
         total_count: allExternalPRs.length,
         total_pages: totalExternalPages,
         has_next_page: page < totalExternalPages,
