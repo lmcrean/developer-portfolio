@@ -21,6 +21,13 @@ export const usePullRequestState = () => {
 
   // Handlers for list operations
   const handleListSuccess = useCallback((data: PullRequestListData[], paginationData: PaginationMeta, isAppending = false) => {
+    console.log('🎯 handleListSuccess called:', {
+      dataLength: data.length,
+      isAppending,
+      pagination: paginationData,
+      samplePRs: data.slice(0, 3).map(pr => ({ id: pr.id, title: pr.title.substring(0, 50), repo: pr.repository.name }))
+    });
+
     if (isAppending) {
       // Append new data to existing data
       setAllPullRequests(prev => [...prev, ...data]);
@@ -29,6 +36,7 @@ export const usePullRequestState = () => {
       setAllPullRequests(data);
       // Show all items immediately - no need for progressive loading with only ~23 PRs
       setDisplayedCount(data.length);
+      console.log('✅ Set displayedCount to:', data.length);
     }
     setTotalItemsAvailable(paginationData.total_count);
     setHasMoreItems(paginationData.has_next_page || data.length > displayedCount);

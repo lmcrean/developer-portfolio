@@ -138,7 +138,15 @@ class StaticClient {
       
       // Fetch the requested page
       const pageData = await this.fetchPage(page);
-      
+
+      console.log('📄 Static page data loaded:', {
+        page,
+        dataCount: pageData.data.length,
+        meta: pageData.meta,
+        firstThreePRs: pageData.data.slice(0, 3).map(pr => ({ id: pr.id, title: pr.title.substring(0, 50), repo: pr.repository.name })),
+        lastThreePRs: pageData.data.slice(-3).map(pr => ({ id: pr.id, title: pr.title.substring(0, 50), repo: pr.repository.name }))
+      });
+
       // Transform to match live API response format
       const response: ApiResponse = {
         data: pageData.data,
