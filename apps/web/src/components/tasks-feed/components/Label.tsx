@@ -24,7 +24,10 @@ export const Label: React.FC<LabelProps> = ({ label, onRemove, onEdit }) => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    e.stopPropagation(); // Prevent bubbling to card's keydown handler
+
     if (e.key === 'Enter') {
+      e.preventDefault(); // Prevent default form submission behavior
       handleSave();
     } else if (e.key === 'Escape') {
       setEditText(label.text);
@@ -47,15 +50,18 @@ export const Label: React.FC<LabelProps> = ({ label, onRemove, onEdit }) => {
           onBlur={handleSave}
           onClick={(e) => e.stopPropagation()}
           className="bg-gray-700 text-white text-xs px-1 py-0.5 rounded w-32 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          placeholder="Label name"
+          title="Press Enter to save, Esc to cancel"
           autoFocus
         />
         <input
           type="color"
           value={editColor}
           onChange={(e) => setEditColor(e.target.value)}
+          onKeyDown={handleKeyDown}
           onClick={(e) => e.stopPropagation()}
           className="w-6 h-6 rounded cursor-pointer"
-          title="Choose color"
+          title="Choose color (press Enter to save)"
         />
         <button
           onClick={(e) => {
