@@ -6,15 +6,15 @@
 
 ```bash
 # 1. Build from monorepo root
-docker build -f Dockerfile.api -t gcr.io/dottie-app-37930/api-github:latest .
+docker build -f Dockerfile.api -t gcr.io/lauriecrean-free-38256/api-github:latest .
 
 # 2. Push to Google Container Registry
-docker push gcr.io/dottie-app-37930/api-github:latest
+docker push gcr.io/lauriecrean-free-38256/api-github:latest
 
 # 3. Deploy to Cloud Run with env vars
-gcloud run deploy api-gh-actions \
-  --image gcr.io/dottie-app-37930/api-github:latest \
-  --region europe-west2 \
+gcloud run deploy api-github-main \
+  --image gcr.io/lauriecrean-free-38256/api-github:latest \
+  --region us-central1 \
   --set-env-vars="NEONDB_KEY=psql 'postgresql://neondb_owner:npg_DU5gpAmZVxb4@ep-little-hall-abkslt8a-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require'" \
   --allow-unauthenticated
 ```

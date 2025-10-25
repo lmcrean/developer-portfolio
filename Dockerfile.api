@@ -16,8 +16,8 @@ COPY apps/api/github/tsconfig.json ./apps/api/github/
 COPY apps/api/github/src ./apps/api/github/src/
 COPY apps/api/github/static ./apps/api/github/static/
 
-# Copy shared types if they exist
-COPY shared ./shared/ 2>/dev/null || true
+# Copy shared types
+COPY shared ./shared/
 
 # Install and build db package
 WORKDIR /app/apps/db
@@ -26,6 +26,9 @@ RUN npm ci && npm run build
 # Install and build api package
 WORKDIR /app/apps/api/github
 RUN npm ci && npm run build
+
+# Debug: Find all JS files to locate index.js
+RUN find dist -type f -name "*.js" | head -20
 
 # Remove dev dependencies
 RUN npm prune --production
@@ -41,4 +44,4 @@ EXPOSE 8080
 
 ENV NODE_ENV=production
 
-CMD ["node", "dist/index.js"]
+CMD ["node", "dist/src/index.js"]
