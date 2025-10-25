@@ -68,6 +68,7 @@ export interface PullRequestFeedListCardProps {
   pullRequest: PullRequestListData;
   onClick: () => void;
   hoverBgColor?: 'teal' | 'orange';
+  additionalBottomContent?: React.ReactNode; // Optional content to render next to "opened X time ago"
 }
 
 export interface PullRequestFeedDetailCardProps {

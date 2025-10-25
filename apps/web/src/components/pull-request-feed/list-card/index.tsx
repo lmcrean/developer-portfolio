@@ -14,7 +14,8 @@ import {
 export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = ({
   pullRequest,
   onClick,
-  hoverBgColor = 'teal'
+  hoverBgColor = 'teal',
+  additionalBottomContent
 }) => {
   const status = getStatusDisplay(pullRequest.state, pullRequest.merged_at);
   const bytesChange = formatBytesChange(pullRequest.additions, pullRequest.deletions);
@@ -98,11 +99,12 @@ export const PullRequestFeedListCard: React.FC<PullRequestFeedListCardProps> = (
 
         {/* Row 2: Status Date and Changes/Time */}
         <div className="flex items-center justify-between text-sm pr-text-muted">
-          {/* Left: Status with date */}
-          <div className="flex items-center gap-1">
+          {/* Left: Status with date + additional content */}
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs">
               {status.text} {displayTime}
             </span>
+            {additionalBottomContent}
           </div>
           
           {/* Right: Changes on desktop, Language on mobile */}
