@@ -23,7 +23,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
     saveTemplate,
     addLabelToPR,
     removeLabelFromPR,
-    getLabelsForPR
+    getLabelsForPR,
+    deleteTemplate
   } = useTaskLabels();
 
   const [showDropdown, setShowDropdown] = useState(false);
@@ -76,6 +77,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             templates={labelTemplates}
             onSelect={handleAddLabel}
             onCreateNew={handleCreateLabel}
+            onDeleteTemplate={deleteTemplate}
             onClose={() => setShowDropdown(false)}
           />
         )}
