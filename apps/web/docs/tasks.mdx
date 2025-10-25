@@ -1,0 +1,19 @@
+---
+slug: /tasks
+title: "Task Management"
+sidebar_label: Tasks
+sidebar_position: 2
+hide_table_of_contents: true
+description: Manage pending PR approvals
+---
+
+import TasksFeed from '../src/components/tasks-feed/TasksFeed';
+
+<div className="pt-22 md:pt-8 m-auto">
+  <div className="mb-4 m-auto">
+    <h1 className="text-2xl font-bold mb-2">Tasks - Pending PR Approvals</h1>
+    <p className="text-gray-400 mb-4">Manage and organize open pull requests awaiting review</p>
+  </div>
+
+  <TasksFeed username="lmcrean" className="mb-8" />
+</div>
