@@ -235,9 +235,6 @@ export const TasksList: React.FC<TasksListProps> = ({
         {/* Header */}
         <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-xl font-bold pr-text-primary">
-              Pending Approvals
-            </h2>
             {pullRequests.length > 0 && (
               <span className="text-sm pr-text-muted">
                 {pullRequests.length} open {pullRequests.length === 1 ? 'PR' : 'PRs'}
