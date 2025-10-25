@@ -35,13 +35,17 @@ export const Label: React.FC<LabelProps> = ({ label, onRemove, onEdit }) => {
 
   if (isEditing) {
     return (
-      <div className="inline-flex items-center gap-1 bg-gray-800 rounded px-2 py-1">
+      <div
+        className="inline-flex items-center gap-1 bg-gray-800 rounded px-2 py-1"
+        onClick={(e) => e.stopPropagation()}
+      >
         <input
           type="text"
           value={editText}
           onChange={(e) => setEditText(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleSave}
+          onClick={(e) => e.stopPropagation()}
           className="bg-gray-700 text-white text-xs px-1 py-0.5 rounded w-32 focus:outline-none focus:ring-1 focus:ring-blue-500"
           autoFocus
         />
@@ -49,11 +53,15 @@ export const Label: React.FC<LabelProps> = ({ label, onRemove, onEdit }) => {
           type="color"
           value={editColor}
           onChange={(e) => setEditColor(e.target.value)}
+          onClick={(e) => e.stopPropagation()}
           className="w-6 h-6 rounded cursor-pointer"
           title="Choose color"
         />
         <button
-          onClick={onRemove}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
           className="text-red-400 hover:text-red-300 text-xs"
           title="Delete label"
         >
@@ -71,7 +79,10 @@ export const Label: React.FC<LabelProps> = ({ label, onRemove, onEdit }) => {
         borderLeft: `3px solid ${label.color}`,
         color: '#fff'
       }}
-      onClick={() => setIsEditing(true)}
+      onClick={(e) => {
+        e.stopPropagation();
+        setIsEditing(true);
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       title="Click to edit"

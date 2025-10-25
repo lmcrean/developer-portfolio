@@ -48,7 +48,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
   // Render labels content to pass to card
   const labelsContent = (
-    <div className="flex items-center gap-2 flex-wrap">
+    <div
+      className="flex items-center gap-2 flex-wrap"
+      onClick={(e) => e.stopPropagation()} // Prevent clicks from bubbling to card
+    >
       {/* Display existing labels */}
       {prLabels.map((label) => (
         <Label
