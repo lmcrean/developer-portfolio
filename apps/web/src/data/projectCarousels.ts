@@ -263,6 +263,18 @@ const projectCarousels: ProjectCarousels = {
         alt: 'Dottie Landing'
       },
       {
+        src: '/screenshots/dottie/assessment_detail.png',
+        alt: 'Dottie Assessment Detail'
+      },
+      {
+        src: '/screenshots/dottie/chat_detail.png',
+        alt: 'Dottie Chat Detail'
+      },
+      {
+        src: '/screenshots/dottie/assessment_chat_detail.png',
+        alt: 'Dottie Assessment Detail'
+      },
+      {
         src: '/screenshots/dottie/assessment_step3.png',
         alt: 'Dottie Assessment Step 3'
       },
@@ -270,30 +282,7 @@ const projectCarousels: ProjectCarousels = {
         src: '/screenshots/dottie/assessment_list.png',
         alt: 'Dottie Assessment List'
       },
-      {
-        src: '/screenshots/dottie/assessment_detail.png',
-        alt: 'Dottie Assessment Detail'
-      },
-      {
-        src: '/screenshots/dottie/chat_detail_closed.png',
-        alt: 'Dottie Chat Detail Closed'
-      },
-      {
-        src: '/screenshots/dottie/chat_detail.png',
-        alt: 'Dottie Chat Detail'
-      },
-      {
-        src: '/screenshots/dottie/dottie6.png',
-        alt: 'Dottie Screenshot 6'
-      },
-      {
-        src: '/screenshots/dottie/dottie7.png',
-        alt: 'Dottie Screenshot 7'
-      },
-      {
-        src: '/screenshots/dottie/dottie8.png',
-        alt: 'Dottie Screenshot 8'
-      }
+
     ]
   }
 };
