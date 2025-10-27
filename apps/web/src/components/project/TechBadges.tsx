@@ -8,9 +8,9 @@ interface TechBadgesProps {
   className?: string;
 }
 
-const TechBadges: React.FC<TechBadgesProps> = ({ 
-  values, 
-  color = '1C1C1C', 
+const TechBadges: React.FC<TechBadgesProps> = ({
+  values,
+  color = '1C1C1C',
   logoColor = 'white',
   className = 'tech-badges'
 }) => {
@@ -18,8 +18,7 @@ const TechBadges: React.FC<TechBadgesProps> = ({
   const techList = values.split(',').map(tech => tech.trim()).filter(tech => tech);
 
   return (
-    <div className={className}>
-      <span>Technologies: </span>
+    <div className={className} style={{display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center'}}>
       {techList.map((tech) => {
         const { url, alt } = generateBadgeUrl(tech, color, logoColor);
         return (

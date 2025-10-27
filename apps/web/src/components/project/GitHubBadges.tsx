@@ -16,6 +16,18 @@ interface GitHubBadgesProps {
 }
 
 const GITHUB_BADGE_CONFIGS: Record<string, GitHubBadgeConfig> = {
+  'contributors': {
+    type: 'contributors',
+    alt: 'GitHub Contributors',
+    shieldPath: 'contributors',
+    linkPath: 'graphs/contributors'
+  },
+  'contributors-anon': {
+    type: 'contributors-anon',
+    alt: 'GitHub Contributors (Anonymous)',
+    shieldPath: 'contributors-anon',
+    linkPath: 'graphs/contributors'
+  },
   'last-commit': {
     type: 'last-commit',
     alt: 'Last Commit',
@@ -62,24 +74,12 @@ const GITHUB_BADGE_CONFIGS: Record<string, GitHubBadgeConfig> = {
     alt: 'GitHub Stars',
     shieldPath: 'stars',
     linkPath: 'stargazers'
-  },
-  'contributors': {
-    type: 'contributors',
-    alt: 'GitHub Contributors',
-    shieldPath: 'contributors',
-    linkPath: 'graphs/contributors'
-  },
-  'contributors-anon': {
-    type: 'contributors-anon',
-    alt: 'GitHub Contributors (Anonymous)',
-    shieldPath: 'contributors-anon',
-    linkPath: 'graphs/contributors'
   }
 };
 
-const GitHubBadges: React.FC<GitHubBadgesProps> = ({ 
-  repo, 
-  badges, 
+const GitHubBadges: React.FC<GitHubBadgesProps> = ({
+  repo,
+  badges,
   color = '1C1C1C',
   style = 'flat',
   className = 'github-badges'
@@ -95,8 +95,7 @@ const GitHubBadges: React.FC<GitHubBadgesProps> = ({
   };
 
   return (
-    <div className={className}>
-      <span>Github: </span>
+    <div className={className} style={{display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center'}}>
       {badgeTypes.map((badgeType) => {
         const config = GITHUB_BADGE_CONFIGS[badgeType];
         

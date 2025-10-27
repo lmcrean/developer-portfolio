@@ -326,8 +326,16 @@
   background-color: #1C1C1C !important;
 }
 
+.live-demo-btn {
+  background-color: #1C1C1C !important;
+}
+
 .live-demo-btn:hover {
-  background-color: #e03730 !important;
+  background-color: #D946EF !important;
+}
+
+.discord-btn {
+  background-color: #1C1C1C !important;
 }
 
 .discord-btn:hover {

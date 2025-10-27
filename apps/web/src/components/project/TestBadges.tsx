@@ -38,17 +38,16 @@ const parseTestString = (tests: string): TestBadge[] => {
     });
 };
 
-const TestBadges: React.FC<TestBadgesProps> = ({ 
-  tests, 
-  color = '1C1C1C', 
+const TestBadges: React.FC<TestBadgesProps> = ({
+  tests,
+  color = '1C1C1C',
   logoColor = 'white',
   className = 'test-badges'
 }) => {
   const testBadges = parseTestString(tests);
 
   return (
-    <div className={className}>
-      <span>Testing: </span>
+    <div className={className} style={{display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center'}}>
       {testBadges.map((test, index) => {
         const badgeText = `${test.framework}-${test.count}_Passed`;
         const url = `https://img.shields.io/badge/${badgeText}-${color}?style=flat-square&logo=${test.logo}&logoColor=${logoColor}`;
