@@ -1,7 +1,7 @@
 /* ProjectCarousel component styles */
 
 .splide-container {
-  margin: 3rem;
+  margin: 1rem 3rem 3rem 3rem;
   max-width: 700px !important;
   display: block;
   height: fit-content;
