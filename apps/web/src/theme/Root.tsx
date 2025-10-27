@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import SplideInit from '../components/archive/SplideInit';
+import { LoadingProvider } from '../contexts/LoadingContext';
+import LoadingOverlay from '../components/loading/LoadingOverlay';
 
 interface RootProps {
   children: React.ReactNode;
@@ -43,12 +45,13 @@ const Root: React.FC<RootProps> = ({children}) => {
   }, []);
 
   return (
-    <>
+    <LoadingProvider>
+      <LoadingOverlay />
       {children}
       <BrowserOnly>
         {() => <SplideInit />}
       </BrowserOnly>
-    </>
+    </LoadingProvider>
   );
 };
 

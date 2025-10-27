@@ -471,3 +471,34 @@ code:not([class*="language-"]) {
     display: none;
   }
 }
+
+/* Loading Overlay Animations */
+/* Pulsing animation for loading logo */
+@keyframes loading-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+}
+
+.loading-overlay__logo {
+  animation: loading-pulse 2s ease-in-out infinite;
+}
+
+/* Fade-out animation for overlay */
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.loading-overlay--fade-out {
+  animation: fade-out 0.5s ease-out forwards;
+}

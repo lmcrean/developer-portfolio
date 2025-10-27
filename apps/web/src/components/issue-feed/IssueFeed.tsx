@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IssuesApiResponse, IssueGroup } from '@shared/types/issues';
 import IssueRepositoryGroup from './components/IssueRepositoryGroup';
 import IssueFilters from './components/IssueFilters';
 import LoadingState from './components/LoadingState';
 import { useIssuesApi } from './hooks/useIssuesApi';
+import { useLoadingContext } from '../../contexts/LoadingContext';
 
 interface IssueFeedProps {
   username?: string;
@@ -16,7 +17,9 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
 }) => {
   const [expandedRepos, setExpandedRepos] = useState<Set<string>>(new Set());
   const [selectedRepos, setSelectedRepos] = useState<string[]>([]);
-  
+  const hasNotifiedLoadingRef = useRef(false);
+  const { setIssuesLoaded } = useLoadingContext();
+
   const { data, loading, error, refetch } = useIssuesApi({
     username
   });
@@ -28,6 +31,14 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
       setExpandedRepos(new Set(allRepos));
     }
   }, [data]);
+
+  // Notify loading context when issues are loaded
+  useEffect(() => {
+    if (!loading && !hasNotifiedLoadingRef.current) {
+      hasNotifiedLoadingRef.current = true;
+      setIssuesLoaded(true);
+    }
+  }, [loading, setIssuesLoaded]);
 
   const toggleRepo = (repoName: string) => {
     setExpandedRepos(prev => {
