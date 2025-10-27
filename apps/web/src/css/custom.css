@@ -412,14 +412,132 @@ code:not([class*="language-"]) {
   font-size: 0.9em;
 }
 
-/* Open Source Contributions Glow Effect - Soft ellipse with hard bottom cutoff */
+/* Glow Effect System - Soft ellipse with hard bottom cutoff */
+/* Base glow effect class - shared structure */
+.glow-effect {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+  background-color: var(--ifm-background-color);
+}
+
+/* Soft elliptical glow */
+.glow-effect::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 35px;
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* Hard rectangle to cut off bottom */
+.glow-effect::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 500px;
+  background: var(--ifm-background-color);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Color Variants - Light Mode */
+.glow-teal::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(20, 184, 166, 0.6) 0%,
+    rgba(20, 184, 166, 0.3) 30%,
+    rgba(20, 184, 166, 0.1) 60%,
+    transparent 100%
+  );
+}
+
+.glow-amber::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(251, 191, 36, 0.6) 0%,
+    rgba(251, 191, 36, 0.3) 30%,
+    rgba(251, 191, 36, 0.1) 60%,
+    transparent 100%
+  );
+}
+
+.glow-crimson::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(220, 38, 38, 0.6) 0%,
+    rgba(220, 38, 38, 0.3) 30%,
+    rgba(220, 38, 38, 0.1) 60%,
+    transparent 100%
+  );
+}
+
+.glow-purple::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(168, 85, 247, 0.6) 0%,
+    rgba(168, 85, 247, 0.3) 30%,
+    rgba(168, 85, 247, 0.1) 60%,
+    transparent 100%
+  );
+}
+
+/* Color Variants - Dark Mode */
+[data-theme='dark'] .glow-teal::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(20, 184, 166, 0.9) 0%,
+    rgba(20, 184, 166, 0.7) 30%,
+    rgba(20, 184, 166, 0.4) 60%,
+    transparent 100%
+  );
+}
+
+[data-theme='dark'] .glow-amber::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(251, 191, 36, 0.9) 0%,
+    rgba(251, 191, 36, 0.7) 30%,
+    rgba(251, 191, 36, 0.4) 60%,
+    transparent 100%
+  );
+}
+
+[data-theme='dark'] .glow-crimson::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(220, 38, 38, 0.9) 0%,
+    rgba(220, 38, 38, 0.7) 30%,
+    rgba(220, 38, 38, 0.4) 60%,
+    transparent 100%
+  );
+}
+
+[data-theme='dark'] .glow-purple::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(168, 85, 247, 0.9) 0%,
+    rgba(168, 85, 247, 0.7) 30%,
+    rgba(168, 85, 247, 0.4) 60%,
+    transparent 100%
+  );
+}
+
+/* Legacy class for backwards compatibility */
 .opensource-glow {
   position: relative;
   overflow: visible;
   z-index: 1;
 }
 
-/* Soft elliptical glow */
 .opensource-glow::before {
   content: '';
   position: absolute;
@@ -440,7 +558,6 @@ code:not([class*="language-"]) {
   z-index: -2;
 }
 
-/* Hard rectangle to cut off bottom */
 .opensource-glow::after {
   content: '';
   position: absolute;
@@ -466,8 +583,60 @@ code:not([class*="language-"]) {
 
 /* Hide glow on tablet and smaller screens */
 @media (max-width: 1024px) {
+  .glow-effect::before,
+  .glow-effect::after,
   .opensource-glow::before,
   .opensource-glow::after {
     display: none;
   }
+}
+
+/* Mobile carousel visibility controls */
+.visible-mobile-500 {
+  display: none;
+}
+
+.hidden-mobile-500 {
+  display: block;
+}
+
+@media (max-width: 500px) {
+  .visible-mobile-500 {
+    display: block;
+  }
+
+  .hidden-mobile-500 {
+    display: none;
+  }
+}
+
+/* Loading Overlay Animations */
+/* Pulsing animation for loading logo */
+@keyframes loading-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(0.95);
+  }
+}
+
+.loading-overlay__logo {
+  animation: loading-pulse 2s ease-in-out infinite;
+}
+
+/* Fade-out animation for overlay */
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.loading-overlay--fade-out {
+  animation: fade-out 0.5s ease-out forwards;
 }

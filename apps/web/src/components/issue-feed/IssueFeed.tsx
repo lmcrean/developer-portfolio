@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IssuesApiResponse, IssueGroup } from '@shared/types/issues';
 import IssueRepositoryGroup from './components/IssueRepositoryGroup';
 import IssueFilters from './components/IssueFilters';
 import LoadingState from './components/LoadingState';
 import { useIssuesApi } from './hooks/useIssuesApi';
+import { useLoadingContext } from '../../contexts/LoadingContext';
 
 interface IssueFeedProps {
   username?: string;
@@ -16,7 +17,9 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
 }) => {
   const [expandedRepos, setExpandedRepos] = useState<Set<string>>(new Set());
   const [selectedRepos, setSelectedRepos] = useState<string[]>([]);
-  
+  const hasNotifiedLoadingRef = useRef(false);
+  const { setIssuesLoaded } = useLoadingContext();
+
   const { data, loading, error, refetch } = useIssuesApi({
     username
   });
@@ -28,6 +31,14 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
       setExpandedRepos(new Set(allRepos));
     }
   }, [data]);
+
+  // Notify loading context when issues are loaded
+  useEffect(() => {
+    if (!loading && !hasNotifiedLoadingRef.current) {
+      hasNotifiedLoadingRef.current = true;
+      setIssuesLoaded(true);
+    }
+  }, [loading, setIssuesLoaded]);
 
   const toggleRepo = (repoName: string) => {
     setExpandedRepos(prev => {
@@ -73,11 +84,13 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
   return (
     <div className={`w-full max-sm:px-1 max-sm:py-2 ${className}`} style={{ fontFamily: '"IBM Plex Serif", serif' }}>
       {/* Table Header - Consistent with Pull Request Feed */}
-      <div className="grid gap-4 max-sm:gap-2 px-4 max-sm:px-1 text-sm font-semibold pr-text-secondary  light:border-gray-200">
-        Agile Approach
-      </div>
-      <div className="px-4 pb-3 text-xs italic text-gray-400 light:text-gray-600 mt-1 border-b border-gray-700">
-        <span>Github Issues</span>
+      <div className="glow-effect glow-crimson px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200">
+        <div className="text-sm font-semibold pr-text-secondary">
+          Agile Approach
+        </div>
+        <div className="text-xs italic text-gray-400 light:text-gray-600 mt-1">
+          Github Issues
+        </div>
       </div>
 
       {/* Filters and Controls - Hidden */}
@@ -112,7 +125,7 @@ export const IssueFeed: React.FC<IssueFeedProps> = ({
       </div>
 
       {/* Issue Repository List - Consistent container */}
-      <div className="divide-y divide-gray-700 light:divide-gray-200" style={{ borderTop: 'none' }}>
+      <div className="divide-y divide-gray-700 light:divide-gray-200 relative" style={{ borderTop: 'none', backgroundColor: 'var(--ifm-background-color)', zIndex: 10 }}>
         {filteredGroups.length === 0 ? (
           <div className="px-4 py-12 text-center">
             <span className="text-sm text-gray-400 light:text-gray-200 font-medium">

@@ -3,6 +3,7 @@ import { PullRequestFeedProps, PullRequestListData } from '@shared/types/pull-re
 import { usePullRequestState } from './hooks/usePullRequestState';
 import { usePullRequestApi } from './hooks/usePullRequestApi';
 import PullRequestList from './components/PullRequestList';
+import { useLoadingContext } from '../../contexts/LoadingContext';
 
 export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
   username = 'lmcrean',
@@ -10,7 +11,8 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
 }) => {
   // Use custom hooks for state and API management
   const state = usePullRequestState();
-  
+  const { setPullRequestsLoaded } = useLoadingContext();
+
   const api = usePullRequestApi({
     username,
     onListSuccess: state.handleListSuccess,
@@ -21,6 +23,7 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
 
   // Track if initial fetch has been performed
   const initialFetchRef = useRef(false);
+  const hasNotifiedLoadingRef = useRef(false);
 
   // Handle card click to open GitHub PR in new tab
   const handleCardClick = useCallback((pr: PullRequestListData) => {
@@ -79,6 +82,14 @@ export const PullRequestFeed: React.FC<PullRequestFeedProps> = ({
       api.cleanup();
     };
   }, [username, api.cleanup]); // Only depend on username and cleanup function
+
+  // Notify loading context when pull requests are loaded
+  useEffect(() => {
+    if (!state.loading && state.isClient && !hasNotifiedLoadingRef.current) {
+      hasNotifiedLoadingRef.current = true;
+      setPullRequestsLoaded(true);
+    }
+  }, [state.loading, state.isClient, setPullRequestsLoaded]);
 
   // Get displayed pull requests (data is already pre-filtered at API generation level)
   const displayedPullRequests = state.allPullRequests.slice(0, state.displayedCount);

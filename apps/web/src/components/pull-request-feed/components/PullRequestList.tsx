@@ -116,21 +116,21 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
                   Approved in production
                 </div>
               </div>
-              <div className="divide-y divide-gray-700 light:divide-gray-200 relative z-10">
+              <div className="divide-y divide-gray-700 light:divide-gray-200 relative" style={{backgroundColor: 'var(--ifm-background-color)', zIndex: 10}}>
                 {renderPRCards(mergedPRs, 'teal')}
               </div>
             </>
           )}
-          
+
           {/* Open PRs Section */}
           {openPRs.length > 0 && (
             <>
-              <div className="px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200 mt-6">
+              <div className="glow-effect glow-amber px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200 mt-24">
                 <div className="text-xs italic text-gray-400 light:text-gray-600 mt-1">
                   Pending approval
                 </div>
               </div>
-              <div className="divide-y divide-gray-700 light:divide-gray-200 relative z-10">
+              <div className="divide-y divide-gray-700 light:divide-gray-200 relative" style={{backgroundColor: 'var(--ifm-background-color)', zIndex: 10}}>
                 {renderPRCards(openPRs, 'orange')}
               </div>
             </>
