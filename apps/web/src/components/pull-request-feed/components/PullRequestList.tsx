@@ -108,7 +108,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
           {/* Merged PRs Section */}
           {mergedPRs.length > 0 && (
             <>
-              <div className="px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200">
+              <div className="opensource-glow px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200">
                 <div className="text-sm font-semibold pr-text-secondary">
                   Open Source Contributions
                 </div>
@@ -116,7 +116,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
                   Approved in production
                 </div>
               </div>
-              <div className="divide-y divide-gray-700 light:divide-gray-200">
+              <div className="divide-y divide-gray-700 light:divide-gray-200 relative z-10">
                 {renderPRCards(mergedPRs, 'teal')}
               </div>
             </>
@@ -130,7 +130,7 @@ export const PullRequestList: React.FC<PullRequestListProps> = ({
                   Pending approval
                 </div>
               </div>
-              <div className="divide-y divide-gray-700 light:divide-gray-200">
+              <div className="divide-y divide-gray-700 light:divide-gray-200 relative z-10">
                 {renderPRCards(openPRs, 'orange')}
               </div>
             </>

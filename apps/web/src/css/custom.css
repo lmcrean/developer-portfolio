@@ -411,3 +411,63 @@ code:not([class*="language-"]) {
   border-radius: 0.25rem;
   font-size: 0.9em;
 }
+
+/* Open Source Contributions Glow Effect - Soft ellipse with hard bottom cutoff */
+.opensource-glow {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+/* Soft elliptical glow */
+.opensource-glow::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 35px;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(20, 184, 166, 0.6) 0%,
+    rgba(20, 184, 166, 0.3) 30%,
+    rgba(20, 184, 166, 0.1) 60%,
+    transparent 100%
+  );
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: -2;
+}
+
+/* Hard rectangle to cut off bottom */
+.opensource-glow::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 500px;
+  background: var(--ifm-background-color);
+  pointer-events: none;
+  z-index: -1;
+}
+
+[data-theme='dark'] .opensource-glow::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(20, 184, 166, 0.9) 0%,
+    rgba(20, 184, 166, 0.7) 30%,
+    rgba(20, 184, 166, 0.4) 60%,
+    transparent 100%
+  );
+}
+
+/* Hide glow on tablet and smaller screens */
+@media (max-width: 1024px) {
+  .opensource-glow::before,
+  .opensource-glow::after {
+    display: none;
+  }
+}
