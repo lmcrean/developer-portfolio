@@ -116,8 +116,10 @@ const TitleSection: React.FC = () => {
         <style>
           {`
             .email-button {
+              position: relative;
+              background-color: #1a1a1a;
               text-decoration: none !important;
-              z-index:30
+              z-index: 30;
             }
 
             .email-button:hover {
