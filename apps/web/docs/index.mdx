@@ -10,6 +10,10 @@ description: Live activity feed
 import PullRequestFeed from '../src/components/pull-request-feed/PullRequestFeed';
 import IssueFeed from '../src/components/issue-feed/IssueFeed';
 import DeveloperBusinessCard from '@site/src/components/banner/banner';
+import ProjectCarousel from '@site/src/components/archive/ProjectCarousel';
+import GitHubBadges from '@site/src/components/project/GitHubBadges';
+import TechBadges from '@site/src/components/project/TechBadges';
+import TestBadges from '@site/src/components/project/TestBadges';
 
 <DeveloperBusinessCard />
 
@@ -22,7 +26,37 @@ import DeveloperBusinessCard from '@site/src/components/banner/banner';
 </div>
 
 <div className="pt-8 m-auto">
-  <IssueFeed username="lmcrean" className="mb-8" />
+  <IssueFeed username="lmcrean" className="mb-18" />
+</div>
+
+---
+<div style={{margin: 0, padding: 0}}>
+<div className="px-4 max-sm:px-1 py-3 border-b border-gray-700 light:border-gray-200 mt-6">
+<div className="text-sm font-semibold pr-text-secondary">Developer Project</div>
+<div className="text-xs italic text-gray-400 light:text-gray-600">Role: Backend Architect; DevOps</div>
+</div>
+</div>
+<section>
+
+<ProjectCarousel projectKey="dottie" />
+
+</section>
+
+<div className="project-details">
+
+<div className="project-buttons">
+  <a href="https://github.com/lmcrean/dottie" target="_blank"><button className="code-btn"><i className="fa fa-code"></i> code </button></a>
+  <a href="https://github.com/lmcrean/dottie" target="_blank"><button className="readme-btn"><i className="fa fa-book"></i> readme </button></a>
+  <a href="https://dottie-lmcreans-projects.vercel.app/" target="_blank"><button className="live-demo-btn"><i className="fa fa-play"></i> live demo </button></a>
+  <a href="https://discord.gg/FRxFFgU4cq" target="_blank"><button className="discord-btn"><i className="fa fa-discord"></i>discord </button></a>
+</div>
+
+<GitHubBadges className="mt-5"  repo="lmcrean/dottie" badges="contributors, commit-activity,created-at,last-commit," />
+
+<TechBadges className="mt-5" values="typescript,express,google_cloud,firebase,postgresql,neon_db,supertest,react,tailwindcss,vite,vitest,playwright,github_actions" />
+
+<TestBadges className="mt-5"  tests="vitest:303,playwright:40" />
+
 </div>
 
 ---
