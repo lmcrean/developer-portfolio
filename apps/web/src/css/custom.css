@@ -591,6 +591,25 @@ code:not([class*="language-"]) {
   }
 }
 
+/* Mobile carousel visibility controls */
+.visible-mobile-500 {
+  display: none;
+}
+
+.hidden-mobile-500 {
+  display: block;
+}
+
+@media (max-width: 500px) {
+  .visible-mobile-500 {
+    display: block;
+  }
+
+  .hidden-mobile-500 {
+    display: none;
+  }
+}
+
 /* Loading Overlay Animations */
 /* Pulsing animation for loading logo */
 @keyframes loading-pulse {

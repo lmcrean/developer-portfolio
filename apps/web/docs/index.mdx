@@ -40,7 +40,13 @@ import TestBadges from '@site/src/components/project/TestBadges';
 </div>
 <section style={{backgroundColor: 'var(--ifm-background-color)', position: 'relative', zIndex: 10}}>
 
+<div className="hidden-mobile-500">
 <ProjectCarousel projectKey="dottie" />
+</div>
+
+<div className="visible-mobile-500" style={{margin: '1rem auto', maxWidth: '700px', padding: '0 1rem'}}>
+<img src="/screenshots/dottie/landing.png" alt="Dottie Landing" style={{width: '100%', height: 'auto', borderRadius: '8px'}} />
+</div>
 
 </section>
 
