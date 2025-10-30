@@ -1,8 +1,8 @@
 {
   "total_count": 23,
   "total_pages": 1,
-  "per_page": 100,
-  "last_generated": "2025-10-18T12:34:15.780Z",
+  "per_page": 20,
+  "last_generated": "2025-10-30T18:01:41.556Z",
   "generator_version": "2.0.0",
   "pages_generated": 1,
   "external_prs_enhanced": 23,

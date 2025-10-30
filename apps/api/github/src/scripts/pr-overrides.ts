@@ -79,5 +79,11 @@ export const PR_OVERRIDES: Record<number, PullRequestOverride> = {
     id: 2805908000,
     state: "merged",
     merged_at: "2025-09-24T12:00:00Z"
+  },
+  // Google Guava PR #7986 - FileBackedOutputStream resource leak fix, manually marked as merged
+  2826605057: {
+    id: 2826605057,
+    state: "merged",
+    merged_at: "2025-10-30T14:00:00Z"
   }
 };
