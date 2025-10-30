@@ -1,8 +1,18 @@
 import React from 'react';
+import { useLocation } from '@docusaurus/router';
 import { useLoadingContext } from '../../contexts/LoadingContext';
 
 export const LoadingOverlay: React.FC = () => {
   const { shouldShowOverlay, isFullyLoaded } = useLoadingContext();
+  const location = useLocation();
+
+  // Only show loading overlay on the home page
+  const isHomePage = location.pathname === '/' || location.pathname === '/pull-request-feed';
+
+  // Don't render if we're not on the home page
+  if (!isHomePage) {
+    return null;
+  }
 
   // Don't render if overlay should be hidden
   if (!shouldShowOverlay) {
