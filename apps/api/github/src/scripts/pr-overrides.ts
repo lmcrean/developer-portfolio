@@ -45,10 +45,12 @@ export const PR_OVERRIDES: Record<number, PullRequestOverride> = {
     merged_at: "2025-07-26T12:15:30Z",
     html_url: "https://github.com/penpot/penpot/pull/6982"
   },
-  // GoCardless WooCommerce subscription fix
+  // GoCardless WooCommerce subscription fix - merged December 17, 2025
   2793359837: {
     id: 2793359837,
-    title: "Fix inconsistent subscriptions after cancellation with centralised logic"
+    title: "Fix inconsistent subscriptions after cancellation with centralised logic",
+    state: "merged",
+    merged_at: "2025-12-17T00:00:00Z"
   },
   // Google Guava PR #7988 - was closed but actually merged
   2826673514: {

@@ -1,6 +1,28 @@
 {
   "data": [
     {
+      "id": 2793359837,
+      "number": 88,
+      "title": "Fix inconsistent subscriptions after cancellation with centralised logic",
+      "created_at": "2025-09-02T16:50:26Z",
+      "merged_at": "2025-12-17T00:00:00Z",
+      "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless/pull/88",
+      "state": "merged",
+      "additions": 81,
+      "deletions": 0,
+      "comments": 6,
+      "repository": {
+        "name": "woocommerce-gateway",
+        "description": "A GoCardless payments integration for WooCommerce",
+        "language": "PHP",
+        "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless",
+        "owner": {
+          "login": "gocardless",
+          "avatar_url": "https://avatars.githubusercontent.com/u/790629?v=4"
+        }
+      }
+    },
+    {
       "id": 2826605057,
       "number": 7986,
       "title": "Fix resource leak in FileBackedOutputStream to prevent file handle exhaustion",
@@ -228,9 +250,9 @@
       "merged_at": null,
       "html_url": "https://github.com/stripe/stripe-go/pull/2178",
       "state": "open",
-      "additions": 580,
-      "deletions": 17,
-      "comments": 3,
+      "additions": 560,
+      "deletions": 16,
+      "comments": 5,
       "repository": {
         "name": "stripe-go",
         "description": "Go library for the Stripe API.    ",
@@ -271,10 +293,10 @@
       "created_at": "2025-10-11T18:06:33Z",
       "merged_at": null,
       "html_url": "https://github.com/Shopify/cli/pull/6505",
-      "state": "open",
+      "state": "closed",
       "additions": 7123,
       "deletions": 5821,
-      "comments": 1,
+      "comments": 2,
       "repository": {
         "name": "cli",
         "description": "Build apps, themes, and hydrogen storefronts for Shopify",
@@ -318,7 +340,7 @@
       "state": "open",
       "additions": 126,
       "deletions": 0,
-      "comments": 6,
+      "comments": 8,
       "repository": {
         "name": "guava",
         "description": "Google core libraries for Java",
@@ -340,7 +362,7 @@
       "state": "open",
       "additions": 111,
       "deletions": 12,
-      "comments": 1,
+      "comments": 4,
       "repository": {
         "name": "cli",
         "description": "Build apps, themes, and hydrogen storefronts for Shopify",
@@ -393,28 +415,6 @@
         "owner": {
           "login": "google",
           "avatar_url": "https://avatars.githubusercontent.com/u/1342004?v=4"
-        }
-      }
-    },
-    {
-      "id": 2793359837,
-      "number": 88,
-      "title": "Fix inconsistent subscriptions after cancellation with centralised logic",
-      "created_at": "2025-09-02T16:50:26Z",
-      "merged_at": null,
-      "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless/pull/88",
-      "state": "open",
-      "additions": 117,
-      "deletions": 0,
-      "comments": 3,
-      "repository": {
-        "name": "woocommerce-gateway",
-        "description": "A GoCardless payments integration for WooCommerce",
-        "language": "PHP",
-        "html_url": "https://github.com/gocardless/woocommerce-gateway-gocardless",
-        "owner": {
-          "login": "gocardless",
-          "avatar_url": "https://avatars.githubusercontent.com/u/790629?v=4"
         }
       }
     },
