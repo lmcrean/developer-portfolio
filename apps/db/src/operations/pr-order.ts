@@ -1,0 +1,85 @@
+import { getDb } from '../connection';
+import { PrOrder, UpdatePrOrderInput } from '../types';
+
+/**
+ * Get all PR order entries
+ */
+export async function getAllPrOrders(): Promise<PrOrder[]> {
+  const sql = getDb();
+  const result = await sql`
+    SELECT * FROM pr_order
+    ORDER BY display_order ASC
+  `;
+  return result as PrOrder[];
+}
+
+/**
+ * Get order for a specific PR
+ */
+export async function getPrOrder(prId: number): Promise<PrOrder | null> {
+  const sql = getDb();
+  const result = await sql`
+    SELECT * FROM pr_order
+    WHERE pr_id = ${prId}
+    LIMIT 1
+  `;
+  return (result[0] as PrOrder) || null;
+}
+
+/**
+ * Set order for a single PR (upsert)
+ */
+export async function setPrOrder(prId: number, displayOrder: number): Promise<PrOrder> {
+  const sql = getDb();
+
+  const result = await sql`
+    INSERT INTO pr_order (pr_id, display_order)
+    VALUES (${prId}, ${displayOrder})
+    ON CONFLICT (pr_id) DO UPDATE
+    SET display_order = ${displayOrder}, updated_at = CURRENT_TIMESTAMP
+    RETURNING *
+  `;
+
+  return result[0] as PrOrder;
+}
+
+/**
+ * Bulk update PR order (replaces all existing order data)
+ */
+export async function bulkUpdatePrOrder(orders: UpdatePrOrderInput[]): Promise<PrOrder[]> {
+  const sql = getDb();
+
+  // Delete all existing orders
+  await sql`DELETE FROM pr_order`;
+
+  if (orders.length === 0) {
+    return [];
+  }
+
+  // Insert all new orders one by one (Neon doesn't support bulk inserts the same way)
+  const results: PrOrder[] = [];
+  for (const order of orders) {
+    const result = await sql`
+      INSERT INTO pr_order (pr_id, display_order)
+      VALUES (${order.pr_id}, ${order.display_order})
+      RETURNING *
+    `;
+    results.push(result[0] as PrOrder);
+  }
+
+  return results;
+}
+
+/**
+ * Delete order for a specific PR
+ */
+export async function deletePrOrder(prId: number): Promise<boolean> {
+  const sql = getDb();
+
+  const result = await sql`
+    DELETE FROM pr_order
+    WHERE pr_id = ${prId}
+  `;
+
+  return (result as any).length > 0 || (result as any).rowCount > 0;
+}

@@ -1,0 +1,12 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile.api'
+      - '-t'
+      - 'gcr.io/lauriecrean-free-38256/api-github:latest'
+      - '.'
+images:
+  - 'gcr.io/lauriecrean-free-38256/api-github:latest'
+timeout: 1200s

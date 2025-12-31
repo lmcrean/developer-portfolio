@@ -8,6 +8,7 @@ import { setupHealthRoutes } from './routes/health';
 import { setupGitHubRoutes } from './routes/github';
 import { setupValidationRoutes } from './routes/validation';
 import { setupIssuesRoutes } from './issues/routes';
+import { setupTasksRoutes } from './routes/tasks';
 import { setup404Handler } from './utils/errorHandler';
 
 // Load environment variables from .env file
@@ -34,6 +35,7 @@ setupHealthRoutes(app);
 setupGitHubRoutes(app, githubService);
 setupValidationRoutes(app, githubService);
 setupIssuesRoutes(app, process.env.GITHUB_TOKEN || '');
+setupTasksRoutes(app);
 
 // Serve static files (for pre-generated JSON data)
 const staticPath = path.join(__dirname, '..', 'static');

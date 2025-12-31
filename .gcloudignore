@@ -1,0 +1,59 @@
+# Node modules
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Development files
+.git/
+.github/
+.vscode/
+*.log
+*.lock
+.env
+.env.local
+
+# Test files
+coverage/
+.nyc_output/
+**/*.test.ts
+**/*.spec.ts
+tests/
+**/__tests__/
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Static data (already embedded in web app)
+apps/web/static/
+
+# Other web app files (not needed for API build)
+apps/web/src/
+apps/web/blog/
+apps/web/docusaurus.config.ts
+apps/web/sidebars.ts
+
+# Playwright
+playwright-report/
+test-results/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Firebase
+.firebase/
+firebase-debug.log
+
+# Only include what we need for API build
+!apps/db/
+!apps/api/github/
+!shared/
+!Dockerfile.api
+!cloudbuild.yaml

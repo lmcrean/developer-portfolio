@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { labelTemplatesApi, labelAssignmentsApi } from '../api/tasks-api';
 
 export interface TaskLabel {
   id: string;
@@ -17,6 +18,7 @@ export interface PRLabel {
 
 const STORAGE_KEY_TEMPLATES = 'tasks_label_templates';
 const STORAGE_KEY_PR_LABELS = 'tasks_pr_labels';
+const STORAGE_KEY_MIGRATION = 'tasks_labels_migrated';
 
 // Default label templates
 const DEFAULT_LABEL_TEMPLATES: LabelTemplate[] = [
@@ -28,86 +30,210 @@ const DEFAULT_LABEL_TEMPLATES: LabelTemplate[] = [
 ];
 
 /**
- * Hook for managing labels in localStorage
- * Labels are templates that can be reused across PRs
+ * Hook for managing labels with API backend
+ * Migrates data from localStorage to SQL on first load
  */
 export const useTaskLabels = () => {
-  const [labelTemplates, setLabelTemplates] = useState<LabelTemplate[]>(DEFAULT_LABEL_TEMPLATES);
+  const [labelTemplates, setLabelTemplates] = useState<LabelTemplate[]>([]);
   const [prLabels, setPRLabels] = useState<PRLabel[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Load from localStorage on mount
-  useEffect(() => {
+  // Migrate localStorage data to API
+  const migrateLocalStorageToAPI = useCallback(async () => {
     try {
+      // Check if already migrated
+      if (localStorage.getItem(STORAGE_KEY_MIGRATION)) {
+        return false; // Already migrated
+      }
+
       const storedTemplates = localStorage.getItem(STORAGE_KEY_TEMPLATES);
       const storedPRLabels = localStorage.getItem(STORAGE_KEY_PR_LABELS);
 
+      let hasMigrated = false;
+
+      // Migrate templates
       if (storedTemplates) {
-        setLabelTemplates(JSON.parse(storedTemplates));
+        const localTemplates: LabelTemplate[] = JSON.parse(storedTemplates);
+        for (const template of localTemplates) {
+          try {
+            await labelTemplatesApi.create({
+              text: template.text,
+              color: template.color,
+              label_id: template.id,
+            });
+          } catch (err) {
+            console.warn(`Failed to migrate template ${template.id}:`, err);
+          }
+        }
+        hasMigrated = true;
       }
 
+      // Migrate PR label assignments
       if (storedPRLabels) {
-        setPRLabels(JSON.parse(storedPRLabels));
+        const localPRLabels: PRLabel[] = JSON.parse(storedPRLabels);
+        for (const assignment of localPRLabels) {
+          try {
+            await labelAssignmentsApi.create(assignment.prId, assignment.labelId);
+          } catch (err) {
+            console.warn(`Failed to migrate PR label ${assignment.prId}:`, err);
+          }
+        }
+        hasMigrated = true;
       }
+
+      if (hasMigrated) {
+        // Mark migration as complete
+        localStorage.setItem(STORAGE_KEY_MIGRATION, 'true');
+        console.log('✓ Successfully migrated labels from localStorage to API');
+      }
+
+      return hasMigrated;
     } catch (error) {
-      console.error('Failed to load labels from localStorage:', error);
-    } finally {
-      setIsLoaded(true);
+      console.error('Failed to migrate localStorage data:', error);
+      return false;
     }
   }, []);
 
-  // Save templates to localStorage
-  const saveTemplates = useCallback((templates: LabelTemplate[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY_TEMPLATES, JSON.stringify(templates));
-      setLabelTemplates(templates);
-    } catch (error) {
-      console.error('Failed to save label templates:', error);
-    }
-  }, []);
+  // Load from API on mount
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // First, try to migrate any existing localStorage data
+        await migrateLocalStorageToAPI();
 
-  // Save PR labels to localStorage
-  const savePRLabels = useCallback((labels: PRLabel[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY_PR_LABELS, JSON.stringify(labels));
-      setPRLabels(labels);
-    } catch (error) {
-      console.error('Failed to save PR labels:', error);
-    }
-  }, []);
+        // Then load from API
+        const [templates, assignments] = await Promise.all([
+          labelTemplatesApi.getAll(),
+          labelAssignmentsApi.getAll(),
+        ]);
 
-  // Add or update a label template
-  const saveTemplate = useCallback((template: Omit<LabelTemplate, 'id'> & { id?: string }) => {
-    const newTemplate: LabelTemplate = {
-      id: template.id || `label_${Date.now()}`,
-      text: template.text,
-      color: template.color
+        // Transform templates to match frontend format
+        const transformedTemplates: LabelTemplate[] = templates.map(t => ({
+          id: t.label_id,
+          text: t.text,
+          color: t.color,
+        }));
+
+        // If no templates exist in API, create defaults
+        if (transformedTemplates.length === 0) {
+          for (const defaultTemplate of DEFAULT_LABEL_TEMPLATES) {
+            await labelTemplatesApi.create({
+              text: defaultTemplate.text,
+              color: defaultTemplate.color,
+              label_id: defaultTemplate.id,
+            });
+          }
+          // Reload templates after creating defaults
+          const newTemplates = await labelTemplatesApi.getAll();
+          setLabelTemplates(newTemplates.map(t => ({
+            id: t.label_id,
+            text: t.text,
+            color: t.color,
+          })));
+        } else {
+          setLabelTemplates(transformedTemplates);
+        }
+
+        setPRLabels(assignments);
+      } catch (err) {
+        console.error('Failed to load labels from API:', err);
+        setError('Failed to load labels. Using fallback data.');
+
+        // Fallback to localStorage if API fails
+        try {
+          const storedTemplates = localStorage.getItem(STORAGE_KEY_TEMPLATES);
+          const storedPRLabels = localStorage.getItem(STORAGE_KEY_PR_LABELS);
+
+          if (storedTemplates) {
+            setLabelTemplates(JSON.parse(storedTemplates));
+          } else {
+            setLabelTemplates(DEFAULT_LABEL_TEMPLATES);
+          }
+
+          if (storedPRLabels) {
+            setPRLabels(JSON.parse(storedPRLabels));
+          }
+        } catch (localErr) {
+          console.error('Failed to load from localStorage:', localErr);
+          setLabelTemplates(DEFAULT_LABEL_TEMPLATES);
+        }
+      } finally {
+        setIsLoaded(true);
+      }
     };
 
-    const existing = labelTemplates.find(t => t.id === newTemplate.id);
-    if (existing) {
-      // Update existing
-      saveTemplates(labelTemplates.map(t => t.id === newTemplate.id ? newTemplate : t));
-    } else {
-      // Add new
-      saveTemplates([...labelTemplates, newTemplate]);
-    }
+    loadData();
+  }, [migrateLocalStorageToAPI]);
 
-    return newTemplate.id;
-  }, [labelTemplates, saveTemplates]);
+  // Add or update a label template
+  const saveTemplate = useCallback(async (template: Omit<LabelTemplate, 'id'> & { id?: string }) => {
+    try {
+      const labelId = template.id || `label_${Date.now()}`;
+
+      // Check if updating existing template
+      const existing = labelTemplates.find(t => t.id === labelId);
+
+      if (existing) {
+        // Update existing
+        await labelTemplatesApi.update(labelId, {
+          text: template.text,
+          color: template.color,
+        });
+        setLabelTemplates(labelTemplates.map(t =>
+          t.id === labelId ? { id: labelId, text: template.text, color: template.color } : t
+        ));
+      } else {
+        // Create new
+        const created = await labelTemplatesApi.create({
+          text: template.text,
+          color: template.color,
+          label_id: labelId,
+        });
+        setLabelTemplates([...labelTemplates, {
+          id: created.label_id,
+          text: created.text,
+          color: created.color,
+        }]);
+      }
+
+      setError(null);
+      return labelId;
+    } catch (err) {
+      console.error('Failed to save template:', err);
+      setError('Failed to save template');
+      throw err;
+    }
+  }, [labelTemplates]);
 
   // Add label to a PR
-  const addLabelToPR = useCallback((prId: number, labelId: string) => {
-    const exists = prLabels.some(pl => pl.prId === prId && pl.labelId === labelId);
-    if (!exists) {
-      savePRLabels([...prLabels, { prId, labelId }]);
+  const addLabelToPR = useCallback(async (prId: number, labelId: string) => {
+    try {
+      const exists = prLabels.some(pl => pl.prId === prId && pl.labelId === labelId);
+      if (!exists) {
+        await labelAssignmentsApi.create(prId, labelId);
+        setPRLabels([...prLabels, { prId, labelId }]);
+      }
+      setError(null);
+    } catch (err) {
+      console.error('Failed to add label to PR:', err);
+      setError('Failed to add label');
+      throw err;
     }
-  }, [prLabels, savePRLabels]);
+  }, [prLabels]);
 
   // Remove label from a PR
-  const removeLabelFromPR = useCallback((prId: number, labelId: string) => {
-    savePRLabels(prLabels.filter(pl => !(pl.prId === prId && pl.labelId === labelId)));
-  }, [prLabels, savePRLabels]);
+  const removeLabelFromPR = useCallback(async (prId: number, labelId: string) => {
+    try {
+      await labelAssignmentsApi.delete(prId, labelId);
+      setPRLabels(prLabels.filter(pl => !(pl.prId === prId && pl.labelId === labelId)));
+      setError(null);
+    } catch (err) {
+      console.error('Failed to remove label from PR:', err);
+      setError('Failed to remove label');
+      throw err;
+    }
+  }, [prLabels]);
 
   // Get labels for a specific PR
   const getLabelsForPR = useCallback((prId: number): TaskLabel[] => {
@@ -119,15 +245,25 @@ export const useTaskLabels = () => {
   }, [prLabels, labelTemplates]);
 
   // Delete a label template (removes from all PRs too)
-  const deleteTemplate = useCallback((labelId: string) => {
-    saveTemplates(labelTemplates.filter(t => t.id !== labelId));
-    savePRLabels(prLabels.filter(pl => pl.labelId !== labelId));
-  }, [labelTemplates, prLabels, saveTemplates, savePRLabels]);
+  const deleteTemplate = useCallback(async (labelId: string) => {
+    try {
+      // API will cascade delete all PR assignments
+      await labelTemplatesApi.delete(labelId);
+      setLabelTemplates(labelTemplates.filter(t => t.id !== labelId));
+      setPRLabels(prLabels.filter(pl => pl.labelId !== labelId));
+      setError(null);
+    } catch (err) {
+      console.error('Failed to delete template:', err);
+      setError('Failed to delete template');
+      throw err;
+    }
+  }, [labelTemplates, prLabels]);
 
   return {
     labelTemplates,
     prLabels,
     isLoaded,
+    error,
     saveTemplate,
     addLabelToPR,
     removeLabelFromPR,

@@ -1,0 +1,47 @@
+# Dockerfile for api-github service
+# Build from monorepo root to access shared packages
+
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy db package first
+COPY apps/db/package*.json ./apps/db/
+COPY apps/db/src ./apps/db/src/
+COPY apps/db/tsconfig.json ./apps/db/
+
+# Copy api package
+COPY apps/api/github/package*.json ./apps/api/github/
+COPY apps/api/github/tsconfig.json ./apps/api/github/
+COPY apps/api/github/src ./apps/api/github/src/
+COPY apps/api/github/static ./apps/api/github/static/
+
+# Copy shared types
+COPY shared ./shared/
+
+# Install and build db package
+WORKDIR /app/apps/db
+RUN npm ci && npm run build
+
+# Install and build api package
+WORKDIR /app/apps/api/github
+RUN npm ci && npm run build
+
+# Debug: Find all JS files to locate index.js
+RUN find dist -type f -name "*.js" | head -20
+
+# Remove dev dependencies
+RUN npm prune --production
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
+
+USER nodejs
+
+EXPOSE 8080
+
+ENV NODE_ENV=production
+
+CMD ["node", "dist/src/index.js"]

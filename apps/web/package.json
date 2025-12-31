@@ -32,6 +32,7 @@
     "deploy-and-test-all": "npm run deploy:prod && npm run test:prod:images && npm run test:prod:typefaces"
   },
   "dependencies": {
+    "@developer-portfolio/db": "file:../db",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
