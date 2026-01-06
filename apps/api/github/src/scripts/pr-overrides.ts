@@ -87,5 +87,13 @@ export const PR_OVERRIDES: Record<number, PullRequestOverride> = {
     id: 2826605057,
     state: "merged",
     merged_at: "2025-10-30T14:00:00Z"
+  },
+  // terraform-provider-cscdm PR #16 - HTTP timeout fix, merged January 5, 2026
+  2867917251: {
+    id: 2867917251,
+    title: "Fix: Add HTTP timeout to prevent Terraform from hanging indefinitely",
+    state: "merged",
+    merged_at: "2026-01-05T18:25:21Z",
+    html_url: "https://github.com/rropen/terraform-provider-cscdm/pull/16"
   }
 };
