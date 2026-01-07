@@ -1,6 +1,28 @@
 {
   "data": [
     {
+      "id": 2867917251,
+      "number": 16,
+      "title": "Fix: Add HTTP timeout to prevent Terraform from hanging indefinitely",
+      "created_at": "2025-09-28T14:16:39Z",
+      "merged_at": "2026-01-05T18:25:21Z",
+      "html_url": "https://github.com/rropen/terraform-provider-cscdm/pull/16",
+      "state": "merged",
+      "additions": 11,
+      "deletions": 8,
+      "comments": 0,
+      "repository": {
+        "name": "terraform-provider-c",
+        "description": "Terraform Provider for CSC Domain Manager.",
+        "language": "Go",
+        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
+        "owner": {
+          "login": "rropen",
+          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
+        }
+      }
+    },
+    {
       "id": 2793359837,
       "number": 88,
       "title": "Fix inconsistent subscriptions after cancellation with centralised logic",
@@ -305,28 +327,6 @@
         "owner": {
           "login": "Shopify",
           "avatar_url": "https://avatars.githubusercontent.com/u/8085?v=4"
-        }
-      }
-    },
-    {
-      "id": 2867917251,
-      "number": 16,
-      "title": " Fix: Add HTTP timeout to prevent Terraform from hanging indefinitely",
-      "created_at": "2025-09-28T14:16:39Z",
-      "merged_at": null,
-      "html_url": "https://github.com/rropen/terraform-provider-cscdm/pull/16",
-      "state": "open",
-      "additions": 11,
-      "deletions": 8,
-      "comments": 0,
-      "repository": {
-        "name": "terraform-provider-c",
-        "description": "Terraform Provider for CSC Domain Manager.",
-        "language": "Go",
-        "html_url": "https://github.com/rropen/terraform-provider-cscdm",
-        "owner": {
-          "login": "rropen",
-          "avatar_url": "https://avatars.githubusercontent.com/u/86787483?v=4"
         }
       }
     },

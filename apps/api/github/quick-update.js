@@ -32,6 +32,12 @@ const PR_OVERRIDES = {
     state: "merged",
     merged_at: "2025-09-14T11:44:42Z",
     comments: 1
+  },
+  // terraform-provider-cscdm PR #16 - HTTP timeout fix, merged January 5, 2026
+  2867917251: {
+    title: "Fix: Add HTTP timeout to prevent Terraform from hanging indefinitely",
+    state: "merged",
+    merged_at: "2026-01-05T18:25:21Z"
   }
 };
 
