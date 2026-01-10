@@ -286,29 +286,7 @@
         }
       }
     },
-    {
-      "id": 2907654120,
-      "number": 2177,
-      "title": "Add OpenTelemetry tracing support for Stripe API calls",
-      "created_at": "2025-10-12T12:52:23Z",
-      "merged_at": null,
-      "html_url": "https://github.com/stripe/stripe-go/pull/2177",
-      "state": "open",
-      "additions": 506,
-      "deletions": 11,
-      "comments": 2,
-      "repository": {
-        "name": "stripe-go",
-        "description": "Go library for the Stripe API.    ",
-        "language": "Go",
-        "html_url": "https://github.com/stripe/stripe-go",
-        "owner": {
-          "login": "stripe",
-          "avatar_url": "https://avatars.githubusercontent.com/u/856813?v=4"
-        }
-      }
-    },
-    {
+        {
       "id": 2906897445,
       "number": 6505,
       "title": "Feat(multi-store users): Deploy theme changes across multiple stores without manual conflict resolution ",
@@ -418,29 +396,7 @@
         }
       }
     },
-    {
-      "id": 2790279129,
-      "number": 16,
-      "title": "Fix NumberFormatException vulnerability in Content-Length header parsing",
-      "created_at": "2025-09-01T16:06:23Z",
-      "merged_at": null,
-      "html_url": "https://github.com/hsbc/cranker-connector/pull/16",
-      "state": "open",
-      "additions": 18,
-      "deletions": 2,
-      "comments": 0,
-      "repository": {
-        "name": "cranker-connector",
-        "description": "A Cranker connector for Java as a library that has no external dependencies.",
-        "language": "Java",
-        "html_url": "https://github.com/hsbc/cranker-connector",
-        "owner": {
-          "login": "hsbc",
-          "avatar_url": "https://avatars.githubusercontent.com/u/48318517?v=4"
-        }
-      }
-    },
-    {
+        {
       "id": 2786918386,
       "number": 17,
       "title": "Add Code Coverage Infrastructure",
@@ -509,11 +465,11 @@
   ],
   "meta": {
     "username": "lmcrean",
-    "count": 23,
+    "count": 21,
     "pagination": {
       "page": 1,
       "per_page": 100,
-      "total_count": 23,
+      "total_count": 21,
       "total_pages": 1,
       "has_next_page": false,
       "has_previous_page": false
