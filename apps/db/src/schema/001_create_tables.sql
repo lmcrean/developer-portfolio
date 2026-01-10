@@ -11,9 +11,10 @@ CREATE TABLE IF NOT EXISTS label_templates (
 
 -- Create pr_labels table
 -- Maps which labels are assigned to which PRs
+-- Note: pr_id uses BIGINT to handle large GitHub PR IDs (can exceed 2^31)
 CREATE TABLE IF NOT EXISTS pr_labels (
   id SERIAL PRIMARY KEY,
-  pr_id INTEGER NOT NULL,
+  pr_id BIGINT NOT NULL,
   label_id VARCHAR(255) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_label_id FOREIGN KEY (label_id) REFERENCES label_templates(label_id) ON DELETE CASCADE,
@@ -22,8 +23,9 @@ CREATE TABLE IF NOT EXISTS pr_labels (
 
 -- Create pr_order table
 -- Stores custom ordering for PRs in tasks view
+-- Note: pr_id uses BIGINT to handle large GitHub PR IDs (can exceed 2^31)
 CREATE TABLE IF NOT EXISTS pr_order (
-  pr_id INTEGER PRIMARY KEY,
+  pr_id BIGINT PRIMARY KEY,
   display_order INTEGER NOT NULL,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
