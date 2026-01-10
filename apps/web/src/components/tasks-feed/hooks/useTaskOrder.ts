@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { PullRequestListData } from '@shared/types/pull-requests';
 import { prOrderApi } from '../api/tasks-api';
+import { useDatabaseStatus } from '../context/DatabaseStatusContext';
 
 const STORAGE_KEY = 'tasks_pr_order';
 const STORAGE_KEY_MIGRATION = 'tasks_order_migrated';
@@ -17,6 +18,9 @@ export const useTaskOrder = () => {
   const [orderMap, setOrderMap] = useState<PROrderMap>({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get save status callbacks from context
+  const { markSaving, markSaved, markError } = useDatabaseStatus();
 
   // Migrate localStorage data to API
   const migrateLocalStorageToAPI = useCallback(async () => {
@@ -110,6 +114,7 @@ export const useTaskOrder = () => {
 
   // Update order after drag and drop
   const updateOrder = useCallback(async (prs: PullRequestListData[]) => {
+    markSaving();
     try {
       const newOrderMap: PROrderMap = {};
       prs.forEach((pr, index) => {
@@ -126,25 +131,30 @@ export const useTaskOrder = () => {
       await prOrderApi.bulkUpdate(orders);
       setOrderMap(newOrderMap);
       setError(null);
+      markSaved();
     } catch (err) {
       console.error('Failed to update PR order:', err);
       setError('Failed to update PR order');
+      markError('Failed to update order');
       throw err;
     }
-  }, []);
+  }, [markSaving, markSaved, markError]);
 
   // Reset order (clear all custom ordering)
   const resetOrder = useCallback(async () => {
+    markSaving();
     try {
       await prOrderApi.bulkUpdate([]);
       setOrderMap({});
       setError(null);
+      markSaved();
     } catch (err) {
       console.error('Failed to reset PR order:', err);
       setError('Failed to reset PR order');
+      markError('Failed to reset order');
       throw err;
     }
-  }, []);
+  }, [markSaving, markSaved, markError]);
 
   return {
     isLoaded,

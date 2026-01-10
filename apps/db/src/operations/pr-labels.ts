@@ -6,6 +6,9 @@ import { PrLabel, CreatePrLabelInput } from '../types';
  */
 export async function getAllPrLabels(): Promise<PrLabel[]> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const result = await sql`
     SELECT * FROM pr_labels
     ORDER BY created_at ASC
@@ -18,6 +21,9 @@ export async function getAllPrLabels(): Promise<PrLabel[]> {
  */
 export async function getLabelsForPr(prId: number): Promise<PrLabel[]> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const result = await sql`
     SELECT * FROM pr_labels
     WHERE pr_id = ${prId}
@@ -31,6 +37,9 @@ export async function getLabelsForPr(prId: number): Promise<PrLabel[]> {
  */
 export async function getPrsWithLabel(labelId: string): Promise<PrLabel[]> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const result = await sql`
     SELECT * FROM pr_labels
     WHERE label_id = ${labelId}
@@ -44,17 +53,32 @@ export async function getPrsWithLabel(labelId: string): Promise<PrLabel[]> {
  */
 export async function createPrLabel(input: CreatePrLabelInput): Promise<PrLabel> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
-  // Use ON CONFLICT to make it idempotent
-  const result = await sql`
-    INSERT INTO pr_labels (pr_id, label_id)
-    VALUES (${input.pr_id}, ${input.label_id})
-    ON CONFLICT (pr_id, label_id) DO UPDATE
-    SET created_at = pr_labels.created_at
-    RETURNING *
-  `;
+  console.log(`createPrLabel: Creating assignment for PR ${input.pr_id} with label ${input.label_id}`);
 
-  return result[0] as PrLabel;
+  try {
+    // Use ON CONFLICT to make it idempotent
+    const result = await sql`
+      INSERT INTO pr_labels (pr_id, label_id)
+      VALUES (${input.pr_id}, ${input.label_id})
+      ON CONFLICT (pr_id, label_id) DO UPDATE
+      SET created_at = pr_labels.created_at
+      RETURNING *
+    `;
+
+    console.log(`createPrLabel: Successfully created/updated assignment`);
+    return result[0] as PrLabel;
+  } catch (error) {
+    console.error(`createPrLabel: Failed to create assignment:`, {
+      pr_id: input.pr_id,
+      label_id: input.label_id,
+      error,
+    });
+    throw error;
+  }
 }
 
 /**
@@ -62,6 +86,9 @@ export async function createPrLabel(input: CreatePrLabelInput): Promise<PrLabel>
  */
 export async function deletePrLabel(prId: number, labelId: string): Promise<boolean> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
   const result = await sql`
     DELETE FROM pr_labels
@@ -76,6 +103,9 @@ export async function deletePrLabel(prId: number, labelId: string): Promise<bool
  */
 export async function deleteAllLabelsForPr(prId: number): Promise<number> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
   const result = await sql`
     DELETE FROM pr_labels

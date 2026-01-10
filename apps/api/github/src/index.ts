@@ -10,6 +10,7 @@ import { setupValidationRoutes } from './routes/validation';
 import { setupIssuesRoutes } from './issues/routes';
 import { setupTasksRoutes } from './routes/tasks';
 import { setup404Handler } from './utils/errorHandler';
+import { ensureDefaultTemplates } from '@developer-portfolio/db';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -57,18 +58,34 @@ setup404Handler(app);
 // Start server
 const PORT = process.env.PORT || 3000;
 
-// If running in test environment, use a different port
-if (process.env.NODE_ENV === 'test') {
-  findAvailablePort(3015, 3020).then(port => {
-    app.listen(port, () => {
-      console.log(`🚀 GitHub API server running on port ${port} (test mode)`);
+// Initialize database with default templates and start server
+async function startServer() {
+  // Seed default label templates
+  try {
+    console.log('🌱 Seeding default label templates...');
+    const result = await ensureDefaultTemplates();
+    console.log(`✅ Default templates ready: ${result.created} created, ${result.existing} existing`);
+  } catch (error) {
+    console.error('⚠️ Failed to seed default templates:', error);
+    // Continue anyway - the app can still work without defaults
+  }
+
+  // If running in test environment, use a different port
+  if (process.env.NODE_ENV === 'test') {
+    try {
+      const port = await findAvailablePort(3015, 3020);
+      app.listen(port, () => {
+        console.log(`🚀 GitHub API server running on port ${port} (test mode)`);
+      });
+    } catch (error) {
+      console.error('❌ Could not find available port:', error);
+      process.exit(1);
+    }
+  } else {
+    app.listen(PORT, () => {
+      console.log(`🚀 GitHub API server running on port ${PORT}`);
     });
-  }).catch(error => {
-    console.error('❌ Could not find available port:', error);
-    process.exit(1);
-  });
-} else {
-  app.listen(PORT, () => {
-    console.log(`🚀 GitHub API server running on port ${PORT}`);
-  });
-} 
+  }
+}
+
+startServer(); 

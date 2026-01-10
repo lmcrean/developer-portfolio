@@ -19,4 +19,12 @@ export declare function updateLabelTemplate(labelId: string, input: UpdateLabelT
  * Delete a label template and all its assignments
  */
 export declare function deleteLabelTemplate(labelId: string): Promise<boolean>;
+/**
+ * Ensure default label templates exist in the database
+ * This is idempotent - it won't create duplicates
+ */
+export declare function ensureDefaultTemplates(): Promise<{
+    created: number;
+    existing: number;
+}>;
 //# sourceMappingURL=label-templates.d.ts.map

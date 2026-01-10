@@ -10,9 +10,33 @@ import {
   deletePrLabel,
   getAllPrOrders,
   bulkUpdatePrOrder,
+  testConnection,
+  isDatabaseAvailable,
 } from '@developer-portfolio/db';
 
 export function setupTasksRoutes(app: Express) {
+  // Database Status Route
+  // GET /api/tasks/status - Check NeonDB connection status
+  app.get('/api/tasks/status', async (req: Request, res: Response) => {
+    try {
+      const connectionResult = await testConnection();
+      res.json({
+        database: connectionResult.success ? 'connected' : 'disconnected',
+        available: isDatabaseAvailable(),
+        message: connectionResult.message,
+        timestamp: connectionResult.timestamp || new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Error checking database status:', error);
+      res.json({
+        database: 'error',
+        available: false,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
   // Label Templates Routes
 
   // GET /api/tasks/labels/templates - Get all label templates
@@ -30,16 +54,20 @@ export function setupTasksRoutes(app: Express) {
   app.post('/api/tasks/labels/templates', async (req: Request, res: Response) => {
     try {
       const { text, color, label_id } = req.body;
+      console.log('Creating label template:', { text, color, label_id });
 
       if (!text || !color) {
         return res.status(400).json({ error: 'Missing required fields: text, color' });
       }
 
       const template = await createLabelTemplate({ text, color, label_id });
+      console.log('Successfully created label template:', template.label_id);
       res.status(201).json(template);
     } catch (error) {
       console.error('Error creating label template:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Full error details:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: 'Internal server error', details: errorMessage });
     }
   });
 
@@ -129,6 +157,15 @@ export function setupTasksRoutes(app: Express) {
         return res.status(400).json({ error: 'Missing required fields: prId, labelId' });
       }
 
+      // Check if label template exists (foreign key constraint)
+      const labelTemplate = await getLabelTemplateById(labelId);
+      if (!labelTemplate) {
+        console.error(`Label template not found: ${labelId}`);
+        return res.status(400).json({
+          error: `Label template not found: ${labelId}. Create the label template first.`
+        });
+      }
+
       const assignment = await createPrLabel({ pr_id: prId, label_id: labelId });
 
       res.status(201).json({
@@ -137,7 +174,9 @@ export function setupTasksRoutes(app: Express) {
       });
     } catch (error) {
       console.error('Error creating PR label assignment:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Full error details:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: 'Internal server error', details: errorMessage });
     }
   });
 
@@ -188,6 +227,7 @@ export function setupTasksRoutes(app: Express) {
   app.put('/api/tasks/order', async (req: Request, res: Response) => {
     try {
       const orders = req.body;
+      console.log('Received order update request:', JSON.stringify(orders));
 
       if (!Array.isArray(orders)) {
         return res.status(400).json({ error: 'Request body must be an array of orders' });
@@ -208,7 +248,9 @@ export function setupTasksRoutes(app: Express) {
         display_order: o.displayOrder,
       }));
 
+      console.log('Updating PR orders in database:', dbOrders.length, 'items');
       const updatedOrders = await bulkUpdatePrOrder(dbOrders);
+      console.log('Successfully updated PR orders:', updatedOrders.length, 'items');
 
       // Transform back to frontend format
       const formattedOrders = updatedOrders.map(o => ({
@@ -219,7 +261,9 @@ export function setupTasksRoutes(app: Express) {
       res.json(formattedOrders);
     } catch (error) {
       console.error('Error updating PR orders:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Full error details:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: 'Internal server error', details: errorMessage });
     }
   });
 

@@ -1,5 +1,5 @@
 // Connection
-export { getDb, testConnection } from './connection';
+export { getDb, testConnection, isDatabaseAvailable, getLastDbError } from './connection';
 
 // Types
 export * from './types';
@@ -11,6 +11,7 @@ export {
   createLabelTemplate,
   updateLabelTemplate,
   deleteLabelTemplate,
+  ensureDefaultTemplates,
 } from './operations/label-templates';
 
 // PR Labels Operations

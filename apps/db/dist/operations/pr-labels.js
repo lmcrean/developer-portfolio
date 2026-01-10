@@ -12,6 +12,9 @@ const connection_1 = require("../connection");
  */
 async function getAllPrLabels() {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     SELECT * FROM pr_labels
     ORDER BY created_at ASC
@@ -23,6 +26,9 @@ async function getAllPrLabels() {
  */
 async function getLabelsForPr(prId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     SELECT * FROM pr_labels
     WHERE pr_id = ${prId}
@@ -35,6 +41,9 @@ async function getLabelsForPr(prId) {
  */
 async function getPrsWithLabel(labelId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     SELECT * FROM pr_labels
     WHERE label_id = ${labelId}
@@ -47,21 +56,39 @@ async function getPrsWithLabel(labelId) {
  */
 async function createPrLabel(input) {
     const sql = (0, connection_1.getDb)();
-    // Use ON CONFLICT to make it idempotent
-    const result = await sql `
-    INSERT INTO pr_labels (pr_id, label_id)
-    VALUES (${input.pr_id}, ${input.label_id})
-    ON CONFLICT (pr_id, label_id) DO UPDATE
-    SET created_at = pr_labels.created_at
-    RETURNING *
-  `;
-    return result[0];
+    if (!sql) {
+        throw new Error('Database not available');
+    }
+    console.log(`createPrLabel: Creating assignment for PR ${input.pr_id} with label ${input.label_id}`);
+    try {
+        // Use ON CONFLICT to make it idempotent
+        const result = await sql `
+      INSERT INTO pr_labels (pr_id, label_id)
+      VALUES (${input.pr_id}, ${input.label_id})
+      ON CONFLICT (pr_id, label_id) DO UPDATE
+      SET created_at = pr_labels.created_at
+      RETURNING *
+    `;
+        console.log(`createPrLabel: Successfully created/updated assignment`);
+        return result[0];
+    }
+    catch (error) {
+        console.error(`createPrLabel: Failed to create assignment:`, {
+            pr_id: input.pr_id,
+            label_id: input.label_id,
+            error,
+        });
+        throw error;
+    }
 }
 /**
  * Delete a PR label assignment
  */
 async function deletePrLabel(prId, labelId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     DELETE FROM pr_labels
     WHERE pr_id = ${prId} AND label_id = ${labelId}
@@ -73,6 +100,9 @@ async function deletePrLabel(prId, labelId) {
  */
 async function deleteAllLabelsForPr(prId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     DELETE FROM pr_labels
     WHERE pr_id = ${prId}

@@ -3,6 +3,13 @@ import apiClient from '../../api/Core';
 // Use the existing API client with automatic endpoint discovery
 // This will work in dev (localhost:3015), branch deployments (Cloud Run), and production
 
+export interface DatabaseStatus {
+  database: 'connected' | 'disconnected' | 'error';
+  available: boolean;
+  message: string;
+  timestamp: string;
+}
+
 export interface LabelTemplate {
   id: number;
   label_id: string;
@@ -32,6 +39,16 @@ export interface PrOrder {
   prId: number;
   displayOrder: number;
 }
+
+/**
+ * Database Status API
+ */
+export const databaseStatusApi = {
+  async getStatus(): Promise<DatabaseStatus> {
+    const response = await apiClient.get('/api/tasks/status');
+    return response.data;
+  },
+};
 
 /**
  * Label Templates API
