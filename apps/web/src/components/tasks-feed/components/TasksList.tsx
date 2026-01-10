@@ -244,7 +244,7 @@ export const TasksList: React.FC<TasksListProps> = ({
         </div>
 
         {/* Body */}
-        <div className="bg-gray-900/30 dark:bg-gray-800/30 rounded-lg border border-gray-700/50 overflow-hidden">
+        <div className="bg-gray-900/30 dark:bg-gray-800/30 rounded-lg border border-gray-700/50 overflow-visible">
           {renderTableBody()}
 
           {/* Loading more indicator */}
