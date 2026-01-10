@@ -10,9 +10,33 @@ import {
   deletePrLabel,
   getAllPrOrders,
   bulkUpdatePrOrder,
+  testConnection,
+  isDatabaseAvailable,
 } from '@developer-portfolio/db';
 
 export function setupTasksRoutes(app: Express) {
+  // Database Status Route
+  // GET /api/tasks/status - Check NeonDB connection status
+  app.get('/api/tasks/status', async (req: Request, res: Response) => {
+    try {
+      const connectionResult = await testConnection();
+      res.json({
+        database: connectionResult.success ? 'connected' : 'disconnected',
+        available: isDatabaseAvailable(),
+        message: connectionResult.message,
+        timestamp: connectionResult.timestamp || new Date().toISOString(),
+      });
+    } catch (error) {
+      console.error('Error checking database status:', error);
+      res.json({
+        database: 'error',
+        available: false,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString(),
+      });
+    }
+  });
+
   // Label Templates Routes
 
   // GET /api/tasks/labels/templates - Get all label templates

@@ -17,6 +17,9 @@ function generateLabelId() {
  */
 async function getAllLabelTemplates() {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     SELECT * FROM label_templates
     ORDER BY created_at ASC
@@ -28,6 +31,9 @@ async function getAllLabelTemplates() {
  */
 async function getLabelTemplateById(labelId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     SELECT * FROM label_templates
     WHERE label_id = ${labelId}
@@ -40,6 +46,9 @@ async function getLabelTemplateById(labelId) {
  */
 async function createLabelTemplate(input) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const labelId = input.label_id || generateLabelId();
     const result = await sql `
     INSERT INTO label_templates (label_id, text, color)
@@ -53,6 +62,9 @@ async function createLabelTemplate(input) {
  */
 async function updateLabelTemplate(labelId, input) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     UPDATE label_templates
     SET text = ${input.text}, color = ${input.color}, updated_at = CURRENT_TIMESTAMP
@@ -66,6 +78,9 @@ async function updateLabelTemplate(labelId, input) {
  */
 async function deleteLabelTemplate(labelId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     DELETE FROM label_templates
     WHERE label_id = ${labelId}

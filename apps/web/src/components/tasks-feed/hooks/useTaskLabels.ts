@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { labelTemplatesApi, labelAssignmentsApi } from '../api/tasks-api';
+import { useDatabaseStatus } from '../context/DatabaseStatusContext';
 
 export interface TaskLabel {
   id: string;
@@ -38,6 +39,9 @@ export const useTaskLabels = () => {
   const [prLabels, setPRLabels] = useState<PRLabel[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Get save status callbacks from context
+  const { markSaving, markSaved, markError } = useDatabaseStatus();
 
   // Migrate localStorage data to API
   const migrateLocalStorageToAPI = useCallback(async () => {
@@ -136,6 +140,7 @@ export const useTaskLabels = () => {
         }
 
         setPRLabels(assignments);
+        markSaved();
       } catch (err) {
         console.error('Failed to load labels from API:', err);
         setError('Failed to load labels. Using fallback data.');
@@ -164,10 +169,11 @@ export const useTaskLabels = () => {
     };
 
     loadData();
-  }, [migrateLocalStorageToAPI]);
+  }, [migrateLocalStorageToAPI, markSaved]);
 
   // Add or update a label template
   const saveTemplate = useCallback(async (template: Omit<LabelTemplate, 'id'> & { id?: string }) => {
+    markSaving();
     try {
       const labelId = template.id || `label_${Date.now()}`;
 
@@ -198,16 +204,19 @@ export const useTaskLabels = () => {
       }
 
       setError(null);
+      markSaved();
       return labelId;
     } catch (err) {
       console.error('Failed to save template:', err);
       setError('Failed to save template');
+      markError('Failed to save template');
       throw err;
     }
-  }, [labelTemplates]);
+  }, [labelTemplates, markSaving, markSaved, markError]);
 
   // Add label to a PR
   const addLabelToPR = useCallback(async (prId: number, labelId: string) => {
+    markSaving();
     try {
       const exists = prLabels.some(pl => pl.prId === prId && pl.labelId === labelId);
       if (!exists) {
@@ -215,25 +224,30 @@ export const useTaskLabels = () => {
         setPRLabels([...prLabels, { prId, labelId }]);
       }
       setError(null);
+      markSaved();
     } catch (err) {
       console.error('Failed to add label to PR:', err);
       setError('Failed to add label');
+      markError('Failed to add label');
       throw err;
     }
-  }, [prLabels]);
+  }, [prLabels, markSaving, markSaved, markError]);
 
   // Remove label from a PR
   const removeLabelFromPR = useCallback(async (prId: number, labelId: string) => {
+    markSaving();
     try {
       await labelAssignmentsApi.delete(prId, labelId);
       setPRLabels(prLabels.filter(pl => !(pl.prId === prId && pl.labelId === labelId)));
       setError(null);
+      markSaved();
     } catch (err) {
       console.error('Failed to remove label from PR:', err);
       setError('Failed to remove label');
+      markError('Failed to remove label');
       throw err;
     }
-  }, [prLabels]);
+  }, [prLabels, markSaving, markSaved, markError]);
 
   // Get labels for a specific PR
   const getLabelsForPR = useCallback((prId: number): TaskLabel[] => {
@@ -246,18 +260,21 @@ export const useTaskLabels = () => {
 
   // Delete a label template (removes from all PRs too)
   const deleteTemplate = useCallback(async (labelId: string) => {
+    markSaving();
     try {
       // API will cascade delete all PR assignments
       await labelTemplatesApi.delete(labelId);
       setLabelTemplates(labelTemplates.filter(t => t.id !== labelId));
       setPRLabels(prLabels.filter(pl => pl.labelId !== labelId));
       setError(null);
+      markSaved();
     } catch (err) {
       console.error('Failed to delete template:', err);
       setError('Failed to delete template');
+      markError('Failed to delete template');
       throw err;
     }
-  }, [labelTemplates, prLabels]);
+  }, [labelTemplates, prLabels, markSaving, markSaved, markError]);
 
   return {
     labelTemplates,

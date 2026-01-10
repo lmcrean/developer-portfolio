@@ -13,6 +13,9 @@ function generateLabelId(): string {
  */
 export async function getAllLabelTemplates(): Promise<LabelTemplate[]> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const result = await sql`
     SELECT * FROM label_templates
     ORDER BY created_at ASC
@@ -25,6 +28,9 @@ export async function getAllLabelTemplates(): Promise<LabelTemplate[]> {
  */
 export async function getLabelTemplateById(labelId: string): Promise<LabelTemplate | null> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const result = await sql`
     SELECT * FROM label_templates
     WHERE label_id = ${labelId}
@@ -38,6 +44,9 @@ export async function getLabelTemplateById(labelId: string): Promise<LabelTempla
  */
 export async function createLabelTemplate(input: CreateLabelTemplateInput): Promise<LabelTemplate> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const labelId = input.label_id || generateLabelId();
 
   const result = await sql`
@@ -57,6 +66,9 @@ export async function updateLabelTemplate(
   input: UpdateLabelTemplateInput
 ): Promise<LabelTemplate | null> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
   const result = await sql`
     UPDATE label_templates
@@ -73,6 +85,9 @@ export async function updateLabelTemplate(
  */
 export async function deleteLabelTemplate(labelId: string): Promise<boolean> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
   const result = await sql`
     DELETE FROM label_templates

@@ -33,6 +33,8 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isDatabaseAvailable = isDatabaseAvailable;
+exports.getLastDbError = getLastDbError;
 exports.getDb = getDb;
 exports.testConnection = testConnection;
 const serverless_1 = require("@neondatabase/serverless");
@@ -44,29 +46,59 @@ dotenv.config({ path: (0, path_1.resolve)(__dirname, '../.env') });
 serverless_1.neonConfig.fetchConnectionCache = true;
 // Extract the connection string from NEONDB_KEY
 const connectionString = process.env.NEONDB_KEY?.match(/postgresql:\/\/[^\s'"]+/)?.[0];
+// Track database availability
+let dbAvailable = !!connectionString;
+let lastError = null;
 if (!connectionString) {
-    throw new Error('NEONDB_KEY environment variable not found or invalid');
+    console.warn('⚠️ NEONDB_KEY environment variable not found or invalid. Database features will be disabled.');
+}
+/**
+ * Check if database is available
+ */
+function isDatabaseAvailable() {
+    return dbAvailable;
+}
+/**
+ * Get the last database error
+ */
+function getLastDbError() {
+    return lastError;
 }
 /**
  * Get a SQL query executor for the database
  * Uses Neon's serverless driver with connection pooling
+ * Returns null if database is not configured
  */
 function getDb() {
+    if (!connectionString) {
+        return null;
+    }
     return (0, serverless_1.neon)(connectionString);
 }
 /**
- * Test database connection
+ * Test database connection and return status
  */
 async function testConnection() {
+    if (!connectionString) {
+        return { success: false, message: 'NEONDB_KEY not configured' };
+    }
     try {
         const sql = getDb();
+        if (!sql) {
+            return { success: false, message: 'Database not available' };
+        }
         const result = await sql `SELECT NOW() as current_time`;
-        console.log('Database connected successfully at:', result[0].current_time);
-        return true;
+        const timestamp = result[0].current_time;
+        console.log('Database connected successfully at:', timestamp);
+        dbAvailable = true;
+        lastError = null;
+        return { success: true, message: 'Connected', timestamp };
     }
     catch (error) {
         console.error('Database connection failed:', error);
-        return false;
+        dbAvailable = false;
+        lastError = error instanceof Error ? error.message : 'Unknown error';
+        return { success: false, message: lastError };
     }
 }
 //# sourceMappingURL=connection.js.map

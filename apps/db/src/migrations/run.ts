@@ -11,6 +11,11 @@ async function runMigrations() {
   try {
     const sql = getDb();
 
+    if (!sql) {
+      console.error('✗ Database not available - NEONDB_KEY not configured');
+      process.exit(1);
+    }
+
     // Read and execute the schema SQL file from source directory
     // (SQL files are not copied to dist during build)
     const schemaPath = resolve(__dirname, '../../src/schema/001_create_tables.sql');

@@ -1,4 +1,4 @@
-export { getDb, testConnection } from './connection';
+export { getDb, testConnection, isDatabaseAvailable, getLastDbError } from './connection';
 export * from './types';
 export { getAllLabelTemplates, getLabelTemplateById, createLabelTemplate, updateLabelTemplate, deleteLabelTemplate, } from './operations/label-templates';
 export { getAllPrLabels, getLabelsForPr, getPrsWithLabel, createPrLabel, deletePrLabel, deleteAllLabelsForPr, } from './operations/pr-labels';

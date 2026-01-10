@@ -6,6 +6,9 @@ import { PrOrder, UpdatePrOrderInput } from '../types';
  */
 export async function getAllPrOrders(): Promise<PrOrder[]> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const result = await sql`
     SELECT * FROM pr_order
     ORDER BY display_order ASC
@@ -18,6 +21,9 @@ export async function getAllPrOrders(): Promise<PrOrder[]> {
  */
 export async function getPrOrder(prId: number): Promise<PrOrder | null> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
   const result = await sql`
     SELECT * FROM pr_order
     WHERE pr_id = ${prId}
@@ -31,6 +37,9 @@ export async function getPrOrder(prId: number): Promise<PrOrder | null> {
  */
 export async function setPrOrder(prId: number, displayOrder: number): Promise<PrOrder> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
   const result = await sql`
     INSERT INTO pr_order (pr_id, display_order)
@@ -48,6 +57,9 @@ export async function setPrOrder(prId: number, displayOrder: number): Promise<Pr
  */
 export async function bulkUpdatePrOrder(orders: UpdatePrOrderInput[]): Promise<PrOrder[]> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
   // Delete all existing orders
   await sql`DELETE FROM pr_order`;
@@ -75,6 +87,9 @@ export async function bulkUpdatePrOrder(orders: UpdatePrOrderInput[]): Promise<P
  */
 export async function deletePrOrder(prId: number): Promise<boolean> {
   const sql = getDb();
+  if (!sql) {
+    throw new Error('Database not available');
+  }
 
   const result = await sql`
     DELETE FROM pr_order

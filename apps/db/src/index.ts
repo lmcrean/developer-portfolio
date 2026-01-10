@@ -1,5 +1,5 @@
 // Connection
-export { getDb, testConnection } from './connection';
+export { getDb, testConnection, isDatabaseAvailable, getLastDbError } from './connection';
 
 // Types
 export * from './types';

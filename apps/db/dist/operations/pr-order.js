@@ -11,6 +11,9 @@ const connection_1 = require("../connection");
  */
 async function getAllPrOrders() {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     SELECT * FROM pr_order
     ORDER BY display_order ASC
@@ -22,6 +25,9 @@ async function getAllPrOrders() {
  */
 async function getPrOrder(prId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     SELECT * FROM pr_order
     WHERE pr_id = ${prId}
@@ -34,6 +40,9 @@ async function getPrOrder(prId) {
  */
 async function setPrOrder(prId, displayOrder) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     INSERT INTO pr_order (pr_id, display_order)
     VALUES (${prId}, ${displayOrder})
@@ -48,6 +57,9 @@ async function setPrOrder(prId, displayOrder) {
  */
 async function bulkUpdatePrOrder(orders) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     // Delete all existing orders
     await sql `DELETE FROM pr_order`;
     if (orders.length === 0) {
@@ -70,6 +82,9 @@ async function bulkUpdatePrOrder(orders) {
  */
 async function deletePrOrder(prId) {
     const sql = (0, connection_1.getDb)();
+    if (!sql) {
+        throw new Error('Database not available');
+    }
     const result = await sql `
     DELETE FROM pr_order
     WHERE pr_id = ${prId}
