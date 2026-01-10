@@ -139,6 +139,7 @@ export const useTaskLabels = () => {
           setLabelTemplates(transformedTemplates);
         }
 
+        console.log('📋 Loaded label assignments from API:', assignments);
         setPRLabels(assignments);
         markSaved();
       } catch (err) {
@@ -218,7 +219,7 @@ export const useTaskLabels = () => {
   const addLabelToPR = useCallback(async (prId: number, labelId: string) => {
     markSaving();
     try {
-      const exists = prLabels.some(pl => pl.prId === prId && pl.labelId === labelId);
+      const exists = prLabels.some(pl => Number(pl.prId) === Number(prId) && pl.labelId === labelId);
       if (!exists) {
         await labelAssignmentsApi.create(prId, labelId);
         setPRLabels([...prLabels, { prId, labelId }]);
@@ -238,7 +239,7 @@ export const useTaskLabels = () => {
     markSaving();
     try {
       await labelAssignmentsApi.delete(prId, labelId);
-      setPRLabels(prLabels.filter(pl => !(pl.prId === prId && pl.labelId === labelId)));
+      setPRLabels(prLabels.filter(pl => !(Number(pl.prId) === Number(prId) && pl.labelId === labelId)));
       setError(null);
       markSaved();
     } catch (err) {
@@ -252,7 +253,7 @@ export const useTaskLabels = () => {
   // Get labels for a specific PR
   const getLabelsForPR = useCallback((prId: number): TaskLabel[] => {
     const prLabelIds = prLabels
-      .filter(pl => pl.prId === prId)
+      .filter(pl => Number(pl.prId) === Number(prId))
       .map(pl => pl.labelId);
 
     return labelTemplates.filter(t => prLabelIds.includes(t.id));
