@@ -11,6 +11,7 @@ export {
   createLabelTemplate,
   updateLabelTemplate,
   deleteLabelTemplate,
+  ensureDefaultTemplates,
 } from './operations/label-templates';
 
 // PR Labels Operations

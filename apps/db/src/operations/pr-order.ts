@@ -61,24 +61,44 @@ export async function bulkUpdatePrOrder(orders: UpdatePrOrderInput[]): Promise<P
     throw new Error('Database not available');
   }
 
+  console.log(`bulkUpdatePrOrder: Processing ${orders.length} orders`);
+
   // Delete all existing orders
-  await sql`DELETE FROM pr_order`;
+  try {
+    await sql`DELETE FROM pr_order`;
+    console.log('bulkUpdatePrOrder: Deleted existing orders');
+  } catch (deleteError) {
+    console.error('bulkUpdatePrOrder: Failed to delete existing orders:', deleteError);
+    throw deleteError;
+  }
 
   if (orders.length === 0) {
+    console.log('bulkUpdatePrOrder: No orders to insert');
     return [];
   }
 
   // Insert all new orders one by one (Neon doesn't support bulk inserts the same way)
   const results: PrOrder[] = [];
-  for (const order of orders) {
-    const result = await sql`
-      INSERT INTO pr_order (pr_id, display_order)
-      VALUES (${order.pr_id}, ${order.display_order})
-      RETURNING *
-    `;
-    results.push(result[0] as PrOrder);
+  for (let i = 0; i < orders.length; i++) {
+    const order = orders[i];
+    try {
+      const result = await sql`
+        INSERT INTO pr_order (pr_id, display_order)
+        VALUES (${order.pr_id}, ${order.display_order})
+        RETURNING *
+      `;
+      results.push(result[0] as PrOrder);
+    } catch (insertError) {
+      console.error(`bulkUpdatePrOrder: Failed to insert order ${i + 1}/${orders.length}:`, {
+        pr_id: order.pr_id,
+        display_order: order.display_order,
+        error: insertError,
+      });
+      throw insertError;
+    }
   }
 
+  console.log(`bulkUpdatePrOrder: Successfully inserted ${results.length} orders`);
   return results;
 }
 

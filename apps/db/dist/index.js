@@ -14,7 +14,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deletePrOrder = exports.bulkUpdatePrOrder = exports.setPrOrder = exports.getPrOrder = exports.getAllPrOrders = exports.deleteAllLabelsForPr = exports.deletePrLabel = exports.createPrLabel = exports.getPrsWithLabel = exports.getLabelsForPr = exports.getAllPrLabels = exports.deleteLabelTemplate = exports.updateLabelTemplate = exports.createLabelTemplate = exports.getLabelTemplateById = exports.getAllLabelTemplates = exports.getLastDbError = exports.isDatabaseAvailable = exports.testConnection = exports.getDb = void 0;
+exports.deletePrOrder = exports.bulkUpdatePrOrder = exports.setPrOrder = exports.getPrOrder = exports.getAllPrOrders = exports.deleteAllLabelsForPr = exports.deletePrLabel = exports.createPrLabel = exports.getPrsWithLabel = exports.getLabelsForPr = exports.getAllPrLabels = exports.ensureDefaultTemplates = exports.deleteLabelTemplate = exports.updateLabelTemplate = exports.createLabelTemplate = exports.getLabelTemplateById = exports.getAllLabelTemplates = exports.getLastDbError = exports.isDatabaseAvailable = exports.testConnection = exports.getDb = void 0;
 // Connection
 var connection_1 = require("./connection");
 Object.defineProperty(exports, "getDb", { enumerable: true, get: function () { return connection_1.getDb; } });
@@ -30,6 +30,7 @@ Object.defineProperty(exports, "getLabelTemplateById", { enumerable: true, get: 
 Object.defineProperty(exports, "createLabelTemplate", { enumerable: true, get: function () { return label_templates_1.createLabelTemplate; } });
 Object.defineProperty(exports, "updateLabelTemplate", { enumerable: true, get: function () { return label_templates_1.updateLabelTemplate; } });
 Object.defineProperty(exports, "deleteLabelTemplate", { enumerable: true, get: function () { return label_templates_1.deleteLabelTemplate; } });
+Object.defineProperty(exports, "ensureDefaultTemplates", { enumerable: true, get: function () { return label_templates_1.ensureDefaultTemplates; } });
 // PR Labels Operations
 var pr_labels_1 = require("./operations/pr-labels");
 Object.defineProperty(exports, "getAllPrLabels", { enumerable: true, get: function () { return pr_labels_1.getAllPrLabels; } });

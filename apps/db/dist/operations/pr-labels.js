@@ -59,15 +59,27 @@ async function createPrLabel(input) {
     if (!sql) {
         throw new Error('Database not available');
     }
-    // Use ON CONFLICT to make it idempotent
-    const result = await sql `
-    INSERT INTO pr_labels (pr_id, label_id)
-    VALUES (${input.pr_id}, ${input.label_id})
-    ON CONFLICT (pr_id, label_id) DO UPDATE
-    SET created_at = pr_labels.created_at
-    RETURNING *
-  `;
-    return result[0];
+    console.log(`createPrLabel: Creating assignment for PR ${input.pr_id} with label ${input.label_id}`);
+    try {
+        // Use ON CONFLICT to make it idempotent
+        const result = await sql `
+      INSERT INTO pr_labels (pr_id, label_id)
+      VALUES (${input.pr_id}, ${input.label_id})
+      ON CONFLICT (pr_id, label_id) DO UPDATE
+      SET created_at = pr_labels.created_at
+      RETURNING *
+    `;
+        console.log(`createPrLabel: Successfully created/updated assignment`);
+        return result[0];
+    }
+    catch (error) {
+        console.error(`createPrLabel: Failed to create assignment:`, {
+            pr_id: input.pr_id,
+            label_id: input.label_id,
+            error,
+        });
+        throw error;
+    }
 }
 /**
  * Delete a PR label assignment
